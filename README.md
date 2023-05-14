@@ -38,7 +38,25 @@ To get started, follow these steps:
    npm start
    ```
 
-4. Open your web browser and navigate to `http://localhost:3000`. 
+4. Run Test :
+
+   ```bash
+   npm test
+   ```
+
+5. Run ESlint :
+
+   ```bash
+   npm run lint
+   ```
+
+6. Run Prettier :
+
+   ```bash
+   npm run format
+   ```
+
+7. Open your web browser and navigate to `http://localhost:3000`. 
 
 ## Project structure
 
