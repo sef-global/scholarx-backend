@@ -1,4 +1,4 @@
-import request from 'supertest';
+/*import request from 'supertest';
 import app from '../../src/app';
 import { testConnection } from '../../src/configs/dbConfig';
 import server from '../../src/index';
@@ -24,4 +24,12 @@ describe('Database Connection', () => {
 
     expect(testConnection).toHaveBeenCalled();
   });
+});*/
+import { testConnection } from '../../src/configs/dbConfig';
+
+describe('Database Connection', () => {
+  it('should test database connection', async () => {
+    await expect(testConnection()).resolves.not.toThrow();
+  });
 });
+

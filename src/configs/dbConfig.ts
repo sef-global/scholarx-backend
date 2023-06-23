@@ -9,12 +9,17 @@ export const pool = new Pool({
 });
 
 export async function testConnection() {
+  if (!process.env.USER || !process.env.HOST || !process.env.DATABASE || !process.env.PASSWORD || !process.env.PORT) {
+    throw new Error('Missing database configuration');
+  }
+
   let client: PoolClient | null = null;
   try {
     client = await pool.connect();
     console.log('Connected to the database');
   } catch (error) {
     console.error('Error connecting to the database:', error);
+    throw error;
   } finally {
     if (client) client.release();
     await pool.end();
