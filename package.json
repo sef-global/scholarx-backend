@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch 'src/**/*.ts' --exec ts-node-dev --respawn index.ts",
+    "start": "nodemon --watch 'src/**/*.ts' --exec ts-node-dev --respawn src/index.ts",
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
