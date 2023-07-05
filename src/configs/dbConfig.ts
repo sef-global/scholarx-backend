@@ -1,27 +1,25 @@
-import { Pool, PoolClient } from 'pg';
+import { DataSource } from 'typeorm';
 
-export const pool = new Pool({
-  user: process.env.USER,
+export const myDataSource = new DataSource({
+  type: 'postgres',
   host: process.env.HOST,
-  database: process.env.DATABASE,
+  port: parseInt(process.env.PORT || '3306'),
+  username: process.env.USER,
   password: process.env.PASSWORD,
-  port:5432// process.env.PORT || 5432,
+  database: process.env.DATABASE,
+  entities: ['src/entity/*.js'],
+  logging: true,
+  synchronize: true,
 });
 
 export async function testConnection() {
-  if (!process.env.USER || !process.env.HOST || !process.env.DATABASE || !process.env.PASSWORD || !process.env.PORT) {
-    throw new Error('Missing database configuration');
-  }
-
-  let client: PoolClient | null = null;
-  try {
-    client = await pool.connect();
-    console.log('Connected to the database');
-  } catch (error) {
-    console.error('Error connecting to the database:', error);
-    throw error;
-  } finally {
-    if (client) client.release();
-    await pool.end();
-  }
+  myDataSource
+    .initialize()
+    .then(() => {
+      console.log('Data Source has been initialized!');
+    })
+    .catch((err) => {
+      console.error('Error during Data Source initialization:', err);
+      throw new Error('Data Source initialization failed');
+    });
 }

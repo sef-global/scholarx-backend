@@ -1,9 +1,6 @@
 import app from './app';
 
-const port = process.env.PORT || 3000;
-import { testConnection } from './configs/dbConfig';
-
-//testConnection()
+const port = process.env.SERVER_PORT || 3000;
 
 const server = app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
