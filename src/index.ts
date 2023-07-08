@@ -1,16 +1,9 @@
-import "reflect-metadata";
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
+import app from './app';
 
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
+const port = process.env.SERVER_PORT || 3000;
 
-app.get("/", (req, res) => {
-    res.send("ScholarX Backend");
+const server = app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
 
-app.listen(3000, () => {
-  console.log("Server Started on PORT 3000");
-});
+export default server;
