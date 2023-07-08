@@ -1,9 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { myDataSource } from './configs/dbConfig';
+import { dataSource } from './configs/dbConfig';
 
-myDataSource
+dataSource
   .initialize()
   .then(() => {
     console.log('Data Source has been initialized!');
