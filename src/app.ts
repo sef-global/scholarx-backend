@@ -1,16 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { dataSource } from './configs/dbConfig';
+import { initConnection } from './configs/dbConfig';
 
-dataSource
-  .initialize()
-  .then(() => {
-    console.log('Data Source has been initialized!');
-  })
-  .catch((err) => {
-    console.error('Error during Data Source initialization');
-  });
+initConnection();
 
 const app = express();
 app.use(bodyParser.json());

@@ -1,7 +1,7 @@
-import { testConnection } from '../../src/configs/dbConfig';
+import { initConnection } from '../../src/configs/dbConfig';
 
 describe('typeorm connection', () => {
   it('should test typeorm connection', async () => {
-    await expect(testConnection()).resolves.not.toThrow();
+    await expect(initConnection()).resolves.not.toThrow();
   });
 });
