@@ -1,4 +1,3 @@
-// src/entity/user.entity.ts
 import bcrypt from 'bcrypt';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 

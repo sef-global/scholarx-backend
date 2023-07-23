@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { initConnection } from './configs/dbConfig';
-import userRouter from './routes/user.route';
+import userRouter from './routes/auth.route';
 import passport from 'passport';
 import './configs/passport'
 
@@ -17,6 +17,6 @@ app.get('/', (req, res) => {
   res.send('ScholarX Backend');
 });
 
-app.use('/api', userRouter);
+app.use('/api/auth', userRouter);
 
 export default app;

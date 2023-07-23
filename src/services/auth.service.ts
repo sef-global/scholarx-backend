@@ -1,4 +1,4 @@
-import { dataSource } from './../configs/dbConfig';
+import { dataSource } from '../configs/dbConfig';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -14,7 +14,7 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, contact_email, first_name, last_name, image_url, linkedin_url } = req.body;
 
-    if (!email || !password || !contact_email || !first_name || !last_name || !image_url || !linkedin_url) {
+    if (!email || !password) {
       return res
         .status(400)
         .json({ error: 'All fields are required' });

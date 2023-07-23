@@ -2,8 +2,11 @@ import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { dataSource } from './dbConfig';
 import User from '../entity/user.entity';
+import dotenv from 'dotenv';
 
-const JWT_SECRET = 'Nc$ykT*lUW3567^$@&iC1tpR$H$b29HJ'; // Same secret used for token creation
+dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
