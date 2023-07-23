@@ -2,10 +2,12 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { initConnection } from './configs/dbConfig';
-import userRouter from './routes/auth.route';
+import authRouter from './routes/auth.route';
 import passport from 'passport';
 import './configs/passport'
+import { SERVER_PORT } from './configs/envConfig';
 
+const port = SERVER_PORT;
 initConnection();
 
 const app = express();
@@ -17,6 +19,10 @@ app.get('/', (req, res) => {
   res.send('ScholarX Backend');
 });
 
-app.use('/api/auth', userRouter);
+app.use('/api/auth', authRouter);
 
-export default app;
+const server = app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
+export default server;

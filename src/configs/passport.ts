@@ -1,12 +1,8 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { dataSource } from './dbConfig';
-import User from '../entity/user.entity';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const JWT_SECRET = process.env.JWT_SECRET!;
+import Profile from '../entity/profile.entity'; // Import the Profile entity
+import { JWT_SECRET } from './envConfig';
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -16,14 +12,14 @@ const options = {
 passport.use(
   new JwtStrategy(options, async (jwtPayload, done) => {
     try {
-      const userRepository = dataSource.getRepository(User);
-      const user = await userRepository.findOne({ where: { id: jwtPayload.userId } });
+      const profileRepository = dataSource.getRepository(Profile);
+      const profile = await profileRepository.findOne({ where: { uuid: jwtPayload.userId } });
 
-      if (!user) {
+      if (!profile) {
         return done(null, false);
       }
 
-      return done(null, user);
+      return done(null, profile);
     } catch (error) {
       return done(error, false);
     }
