@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
 import {v4 as uuidv4} from 'uuid';
+import { ProfileTypes } from '../enums/profileType.enum';
 
 @Entity({ name: 'profile' })
 class Profile {
@@ -25,7 +26,7 @@ class Profile {
   @Column({ type: 'varchar', length: 255 })
   linkedin_url: string;
 
-  @Column({ type: 'varchar', length: 10, default:ProfileTypes.default})
+  @Column({ type: 'enum',enum: ProfileTypes, default:ProfileTypes.DEFAULT})
   type: ProfileTypes;
 
   @Column({ type: 'varchar', length: 255, select: false })
@@ -53,7 +54,7 @@ class Profile {
     this.last_name = last_name;
     this.image_url = image_uri;
     this.linkedin_url = linkedin_uri;
-    this.type = type || ProfileTypes.default;
+    this.type = type || ProfileTypes.DEFAULT;
     this.password = password;
   }
 

@@ -1,4 +1,0 @@
-enum ProfileTypes {
-    "default",
-    "admin"
-}
