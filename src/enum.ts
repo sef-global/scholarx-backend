@@ -1,0 +1,4 @@
+enum ProfileTypes {
+    "default",
+    "admin"
+}

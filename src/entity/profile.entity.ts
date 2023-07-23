@@ -25,8 +25,8 @@ class Profile {
   @Column({ type: 'varchar', length: 255 })
   linkedin_url: string;
 
-  @Column({ type: 'varchar', length: 10, default:"default"})
-  type: string;
+  @Column({ type: 'varchar', length: 10, default:ProfileTypes.default})
+  type: ProfileTypes;
 
   @Column({ type: 'varchar', length: 255, select: false })
   password: string;
@@ -44,7 +44,7 @@ class Profile {
     last_name: string,
     image_uri: string,
     linkedin_uri: string,
-    type: string,
+    type: ProfileTypes,
     password: string
   ) {
     this.primary_email = primary_email;
@@ -53,7 +53,7 @@ class Profile {
     this.last_name = last_name;
     this.image_url = image_uri;
     this.linkedin_url = linkedin_uri;
-    this.type = type || 'default';
+    this.type = type || ProfileTypes.default;
     this.password = password;
   }
 
