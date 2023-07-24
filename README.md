@@ -1,24 +1,31 @@
-# Scholarx-Backend
-This is the backend of the ScholarX project
+# ScholarX-Backend
+
+![ScholarX Logo](https://sefglobal.org/assets/img/brand/scholarx.png)
+
+Welcome to the backend of the ScholarX project!
+
+## What is ScholarX?
+
+ScholarX is an initiative that aims to provide free premium mentoring assistance to elite undergraduate students based in Sri Lanka. The program connects these students with Sri Lankan expatriates currently involved with some of the world's most renowned universities or Fortune 500 companies. The goal is to establish a sustainable education structure within Sri Lanka by leveraging knowledge and expertise from around the globe.
 
 ## Contribution
 
-#### Want to contribute to this project? 
+#### Want to contribute to this project?
 
-[**Send us a Pull Request**](https://github.com/sef-global/scholarx-backend/issues)
+We welcome contributions to make ScholarX even better! Feel free to send us a pull request with your changes or improvements. Check out our [Development Best Practices at SEF](https://handbook.sefglobal.org/engineering-team/team#development-best-practices) for guidelines.
 
-Read: [Development Best Practices at SEF](https://handbook.sefglobal.org/engineering-team/team#development-best-practices)
+- [**Send us a Pull Request**](https://github.com/sef-global/scholarx-backend/issues)
 
 ## Prerequisites
 
-To use this project, you need to have the following installed on your machine:
+Before you can start using this project, make sure you have the following installed on your machine:
 
 - Node.js (version 14 or later)
 - npm (version 6 or later)
 
-## Getting started
+## Getting Started
 
-To get started, follow these steps:
+Follow these steps to get started with the ScholarX backend:
 
 1. Clone this repository to your local machine:
 
@@ -32,47 +39,59 @@ To get started, follow these steps:
    npm install
    ```
 
-3. Start the server with :
+3. Copy the `.env` file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Replace the environment variables in the newly created `.env` file with your configuration.
+
+5. Start the server:
 
    ```bash
    npm start
    ```
 
-4. Run Test :
+6. Run Tests:
 
    ```bash
    npm test
    ```
 
-5. Run ESlint :
+7. Open your web browser and navigate to `http://localhost:${server_port}` to access the running server.
 
-   ```bash
-   npm run lint
-   ```
+#### Code Quality
 
-6. Run Prettier :
+We strive to maintain a high code quality. You can check for linting issues by running:
 
-   ```bash
-   npm run format
-   ```
+```bash
+npm run lint
+```
 
-7. Open your web browser and navigate to `http://localhost:3000`. 
+And to automatically format the code, use:
 
-## Project structure
+```bash
+npm run format
+```
+
+## Project Structure
 
 Here's an overview of the project structure:
 
 ```
-node-express-typescript-backend/
+scholarx-backend/
 ├── src/
 │   ├── controllers/
 │   │   └── index.ts
 │   ├── middleware/
-│   │   ├── error-handler.ts
-│   │   └── logger.ts
+│   │   └── index.ts
 │   ├── routes/
 │   │   └── index.ts
-│   ├── app.ts
+│   ├── services/
+│   │   └── auth.service.ts
+│   ├── entities/
+│   │   └── profile.entity.ts
 │   ├── index.ts
 │   └── types.ts
 ├── .env.example
@@ -83,12 +102,15 @@ node-express-typescript-backend/
 ```
 
 - `src/controllers/`: Contains the controller classes that handle incoming requests.
-- `src/middleware/`: Contains the middleware functions that are used to modify requests and responses.
+- `src/middleware/`: Contains the middleware functions used to modify requests and responses.
 - `src/routes/`: Contains the route definitions for the application.
-- `src/app.ts`: Creates and configures the Express application.
-- `src/index.ts`: Starts the server.
+- `src/services/`: Contains the service definitions for the application.
+- `src/entities/`: Contains the entity models for the application.
+- `src/index.ts`: Creates and configures the Express application and starts the server.
 - `src/types.ts`: Defines custom types for the application.
 - `.env.example`: An example configuration file for environment variables.
-- `.gitignore`: A list of files and directories that should be ignored by Git.
+- `.gitignore`: A list of files and directories to be ignored by Git.
 - `package.json`: Contains information about the project and its dependencies.
 - `tsconfig.json`: Configuration file for the TypeScript compiler.
+
+We appreciate your interest in ScholarX. Happy contributing! If you have any questions or need assistance, please don't hesitate to reach out to us.
