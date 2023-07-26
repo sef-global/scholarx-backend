@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
-app.use('/api/profile', profileRouter);
+app.use('/api/me', profileRouter);
 
 const server = app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
