@@ -52,3 +52,5 @@ class Mentee {
         this.mentor_id = mentor_id;
     }
 }
+
+export default Mentee;

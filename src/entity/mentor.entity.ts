@@ -8,7 +8,7 @@ import {
 import profileEntity from "./profile.entity";
 
 @Entity("mentor")
-export class Mentor {
+class Mentor {
     @PrimaryGeneratedColumn('uuid')
     id!: bigint
     // Should be Enum
@@ -48,3 +48,5 @@ export class Mentor {
         this.profile = profile;
     }
 }
+
+export default Mentor;
