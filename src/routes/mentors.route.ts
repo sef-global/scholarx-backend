@@ -1,12 +1,14 @@
 import express from 'express';
 import { createMentor } from '../services/mentor.service';
 import requireAuth from '../services/auth.service';
+import { validateMentorData } from '../middleware/mentor.middleware';
 
 const mentorRouter = express.Router();
 
 mentorRouter.post(
   '/',
   requireAuth,
+  validateMentorData,
   async (req, res) => {
     try {
       const mentorData = req.body;
