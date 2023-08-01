@@ -83,3 +83,17 @@ export const loginUser = async (
     return { statusCode: 500, message: 'Internal server error' }
   }
 }
+const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
+  passport.authenticate('jwt', { session: false }, (err: Error, user: any) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    next();
+  })(req, res, next);
+};
+
+export default requireAuth;
