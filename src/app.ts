@@ -6,9 +6,14 @@ import { dataSource } from './configs/dbConfig'
 import authRouter from './routes/auth/auth.route'
 import profileRouter from './routes/profile/profile.route'
 import adminRouter from './routes/admin/admin.route'
+import mentorRouter from './routes/mentors.route'
 import passport from 'passport'
 import './configs/passport'
+import { SERVER_PORT } from './configs/envConfig'
 import cookieParser from 'cookie-parser'
+
+
+const port = SERVER_PORT
 
 const app = express()
 
@@ -24,6 +29,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRouter)
 app.use('/api/me', profileRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/mentors', mentorRouter)
 
 export const startServer = async (port: number): Promise<Express> => {
   try {
