@@ -1,13 +1,9 @@
 import express from 'express';
-import passport from 'passport';
 import { getProfile } from '../controllers/profile.controller';
+import { requireAuth } from '../services/auth.service';
 
 const profileRouter = express.Router();
 
-profileRouter.get(
-  '/profile',
-  passport.authenticate('jwt', { session: false }),
-  getProfile
-);
+profileRouter.get('/profile', requireAuth, getProfile);
 
 export default profileRouter;
