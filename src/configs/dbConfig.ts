@@ -13,7 +13,7 @@ export const dataSource = new DataSource({
 });
 
 export async function initConnection() {
-  dataSource
+  await dataSource
     .initialize()
     .then(() => {
       console.log('Data Source has been initialized!');

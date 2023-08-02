@@ -13,7 +13,9 @@ passport.use(
   new JwtStrategy(options, async (jwtPayload, done) => {
     try {
       const profileRepository = dataSource.getRepository(Profile);
-      const profile = await profileRepository.findOne({ where: { uuid: jwtPayload.userId } });
+      const profile = await profileRepository.findOne({
+        where: { uuid: jwtPayload.userId },
+      });
 
       if (!profile) {
         return done(null, false);
@@ -25,3 +27,5 @@ passport.use(
     }
   })
 );
+
+export default passport;
