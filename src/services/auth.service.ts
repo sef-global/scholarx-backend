@@ -6,7 +6,6 @@ import passport from 'passport';
 import Profile from '../entity/profile.entity';
 import { FindOneOptions } from 'typeorm';
 import { JWT_SECRET } from '../configs/envConfig';
-// import passport from 'passport';
 
 export const register = async (req: Request, res: Response) => {
   try {
