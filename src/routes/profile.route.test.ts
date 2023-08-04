@@ -41,4 +41,60 @@ describe('profile', () => {
       expect(response.body).toHaveProperty('uuid');
     });
   });
+
+  describe('Update profile route', () => {
+    let accessToken: string;
+
+    beforeAll(async () => {
+      const testUser = {
+        email: 'test@gmail.com',
+        password: '123',
+      };
+
+      const response = await supertest(server)
+        .post('/api/auth/login')
+        .send(testUser)
+        .expect(200);
+
+      accessToken = response.body.token;
+    });
+
+    it('should return a 409 response if a similar primary_email already exists', async () => {
+      const mockUpdateProfile = {
+        primary_email: 'test2@gmail.com', // this primary_email should already exist in the db
+        contact_email: 'test_contact@example.com',
+        first_name: 'John',
+        last_name: 'Doe',
+        image_url: 'https://example.com/test_profile_image.jpg',
+        linkedin_url: 'https://www.linkedin.com/in/johndoe',
+      };
+
+      await supertest(server)
+        .put('/api/me/profile')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(mockUpdateProfile)
+        .expect(409);
+    });
+
+    it('should update the user profile and return a 200', async () => {
+      const updatedProfile = {
+        primary_email: 'test@gmail.com',
+        contact_email: 'test_contact@example.com',
+        first_name: 'John',
+        last_name: 'Doe',
+        image_url: 'https://example.com/test_profile_image.jpg',
+        linkedin_url: 'https://www.linkedin.com/in/johndoe',
+      };
+
+      await supertest(server)
+        .put('/api/me/profile')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(updatedProfile)
+        .expect(200);
+    });
+
+    it('should return a 401 without a valid access token', async () => {
+      await supertest(server).put('/api/me/profile').send({}).expect(401);
+    });
+  });
 });
