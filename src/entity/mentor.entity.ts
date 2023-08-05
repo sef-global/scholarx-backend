@@ -2,24 +2,26 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn, OneToMany,
+    JoinColumn,
+    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import profileEntity from "./profile.entity";
 import Mentee from "./mentee.entity";
+import Category from "./category.entity";
 
 @Entity("mentor")
 class Mentor {
     @PrimaryGeneratedColumn('uuid')
     id!: bigint
 
-    @Column()
+    @Column({type: 'varchar', length: 255})
     state: string
 
-    @Column()
-    category: string
+    @OneToMany(() => Category, category => category.category)
+    category: Category
 
     @Column()
     application: JSON
@@ -42,7 +44,7 @@ class Mentor {
 
     constructor(
         state: string,
-        category: string,
+        category: Category,
         application: JSON,
         availability: boolean,
         profile: profileEntity,

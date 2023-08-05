@@ -4,7 +4,7 @@ import {
     Entity,
     PrimaryGeneratedColumn
 } from "typeorm";
-import {EmailTypes} from "../enums/enums";
+import {EmailStatusTypes} from "../enums/enums";
 
 @Entity("email")
 class Email {
@@ -20,8 +20,8 @@ class Email {
     @Column({type: 'varchar', length: 655})
     content: string
 
-    @Column({type: 'enum', enum: EmailTypes})
-    state: EmailTypes
+    @Column({type: 'enum', enum: EmailStatusTypes})
+    state: EmailStatusTypes
 
     @CreateDateColumn()
     created_at: Date | undefined
@@ -30,7 +30,7 @@ class Email {
         recipient: string,
         subject: string,
         content: string,
-        state: EmailTypes
+        state: EmailStatusTypes
     ) {
         this.recipient = recipient;
         this.subject = subject;

@@ -1,21 +1,25 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, JoinColumn, ManyToOne, OneToOne,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {MenteeApplication} from "../types";
 import Mentor from "./mentor.entity";
 import profileEntity from "./profile.entity";
+import {MenteeStateTypes} from "../enums/enums";
 
 @Entity('mentee')
 class Mentee {
     @PrimaryGeneratedColumn()
     id!: bigint
 
-    @Column()
-    state: string
+    @Column({type:"enum"})
+    state: MenteeStateTypes
 
     @Column()
     answers: MenteeApplication
@@ -40,7 +44,7 @@ class Mentee {
     updated_at: Date | undefined
 
     constructor(
-        state: string,
+        state: MenteeStateTypes,
         answers: MenteeApplication,
         certificate_id: bigint,
         blogs: JSON,

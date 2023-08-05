@@ -26,10 +26,10 @@ class Platform {
     @Column()
     email_templates: JSON
 
-    @Column()
+    @Column({type: 'varchar', length: 255})
     title: string
 
-    @Column()
+    @Column({type: 'varchar', length: 255})
     category: string
 
     @CreateDateColumn()

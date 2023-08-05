@@ -3,8 +3,14 @@ export enum ProfileTypes {
     ADMIN = "admin"
 }
 
-export enum EmailTypes {
+export enum EmailStatusTypes {
     SENT = "sent",
     DELIVERED = "delivered",
     FAILED = "failed"
+}
+
+export enum MenteeStateTypes {
+    PENDING = "pending",
+    REJECTED = "rejected",
+    ACCEPTED = "accepted"
 }
