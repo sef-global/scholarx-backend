@@ -13,6 +13,17 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: mydatabase 
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,6 +38,16 @@ jobs:
 
       - name: ESLint check
         run: npm run lint
+
+      - name: Set up environment variables
+        run: |
+          echo "DB_USER=postgres" >> .env
+          echo "DB_HOST=localhost" >> .env
+          echo "DB_NAME=mydatabase" >> .env
+          echo "DB_PASSWORD=password" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "SERVER_PORT=4000" >> .env 
+          echo "JWT_SECRET=your_jwt_secret_key" >> .env 
 
       - name: Run tests
         run: npm run test
