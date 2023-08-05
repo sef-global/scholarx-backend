@@ -1,18 +1,20 @@
 import {
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, JoinColumn, ManyToOne, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {MenteeApplication} from "../types";
+import Mentor from "./mentor.entity";
+import profileEntity from "./profile.entity";
 
 @Entity('mentee')
 class Mentee {
     @PrimaryGeneratedColumn()
     id!: bigint
 
-    @Column({type: "enum"})
+    @Column()
     state: string
 
     @Column()
@@ -24,11 +26,12 @@ class Mentee {
     @Column()
     blogs: JSON
 
-    @Column()
-    profile_id: bigint
+    @OneToOne(() => profileEntity)
+    @JoinColumn()
+    profile: profileEntity
 
-    @Column()
-    mentor_id: bigint
+    @ManyToOne(() => Mentor, mentor => mentor.mentees)
+    mentor: Mentor
 
     @CreateDateColumn()
     created_at: Date | undefined
@@ -41,15 +44,15 @@ class Mentee {
         answers: MenteeApplication,
         certificate_id: bigint,
         blogs: JSON,
-        profile_id: bigint,
-        mentor_id: bigint
+        profile: profileEntity,
+        mentor: Mentor
     ) {
         this.state = state;
         this.answers = answers;
         this.certificate_id = certificate_id;
         this.blogs = blogs;
-        this.profile_id = profile_id;
-        this.mentor_id = mentor_id;
+        this.profile = profile;
+        this.mentor = mentor;
     }
 }
 

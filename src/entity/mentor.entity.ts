@@ -1,20 +1,23 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, JoinColumn, OneToOne,
+    Entity,
+    JoinColumn, OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import profileEntity from "./profile.entity";
+import Mentee from "./mentee.entity";
 
 @Entity("mentor")
 class Mentor {
     @PrimaryGeneratedColumn('uuid')
     id!: bigint
-    // Should be Enum
+
     @Column()
     state: string
-    // Should be Enum
+
     @Column()
     category: string
 
@@ -28,6 +31,9 @@ class Mentor {
     @JoinColumn()
     profile: profileEntity
 
+    @OneToMany(() => Mentee, mentee => mentee.mentor)
+    mentees: Mentee[];
+
     @CreateDateColumn()
     created_at: Date | undefined
 
@@ -39,13 +45,15 @@ class Mentor {
         category: string,
         application: JSON,
         availability: boolean,
-        profile: profileEntity
+        profile: profileEntity,
+        mentees: Mentee[]
     ) {
         this.state = state;
         this.category = category;
         this.application = application;
         this.availability = availability;
         this.profile = profile;
+        this.mentees =mentees;
     }
 }
 

@@ -1,10 +1,10 @@
 interface Option {
-// To be completed
+// todo: To be determined
 }
 interface Question {
     question: string
     answer: string
-    // Types should be declared here
+    // todo: Types should be declared here
     type: "TYPES"
     options: Option
 }
