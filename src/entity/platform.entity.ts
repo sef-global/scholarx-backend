@@ -29,9 +29,6 @@ class Platform {
     @Column({type: 'varchar', length: 255})
     title: string
 
-    @Column({type: 'varchar', length: 255})
-    category: string
-
     @CreateDateColumn()
     created_at: Date | undefined
 
