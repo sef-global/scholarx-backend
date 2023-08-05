@@ -1,18 +1,18 @@
 import { startServer } from '../../app'
 import type { Express } from "express"
 import supertest from 'supertest'
-import { dataSource } from '../../configs/dbConfig'
 
 describe('profile', () => {
   let server: Express;
   describe('Get profile route', () => {
     let accessToken: string
+    const randomString = Math.random().toString(36).substr(2, 5);
 
     beforeAll(async () => {
       server = await startServer();
 
       const testUser = {
-        email: 'test@gmail.comae',
+        email: `test${randomString}@gmail.com`,
         password: '123'
       }
 
@@ -27,7 +27,7 @@ describe('profile', () => {
         .expect(200)
 
       accessToken = response.body.token
-    })
+    }, 5000)
 
     it('should return a 401 without a valid access token', async () => {
     

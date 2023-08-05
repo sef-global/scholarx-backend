@@ -1,6 +1,5 @@
 import express from 'express'
 import type { Express } from 'express'
-import type { Server } from 'http'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import { dataSource } from './configs/dbConfig'
@@ -11,15 +10,6 @@ import './configs/passport'
 import { SERVER_PORT } from './configs/envConfig'
 
 const port = SERVER_PORT
-
-dataSource
-  .initialize()
-  .then(() => {
-    console.log('DB connection is successful')
-  })
-  .catch((err) => {
-    console.log('DB connection was not successful', err)
-  })
 
 const app = express()
 app.use(bodyParser.json())
