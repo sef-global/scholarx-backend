@@ -50,7 +50,6 @@ class Platform {
         this.landing_page_url = landing_page_url;
         this.email_templates = email_templates;
         this.title = title;
-        this.category = category;
     }
 }
 
