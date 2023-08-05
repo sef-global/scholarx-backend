@@ -9,6 +9,6 @@ export const dataSource = new DataSource({
   password: DB_PASSWORD,
   database: DB_NAME,
   entities: ['src/entities/*.ts'],
-  logging: true,
+  logging: false,
   synchronize: true
 })

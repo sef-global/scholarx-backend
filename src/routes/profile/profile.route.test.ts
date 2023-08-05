@@ -1,16 +1,26 @@
-import server from '../app'
+import { startServer } from '../../app'
+import type { Express } from "express"
 import supertest from 'supertest'
+import { dataSource } from '../../configs/dbConfig'
 
 describe('profile', () => {
+  let server: Express;
   describe('Get profile route', () => {
     let accessToken: string
 
     beforeAll(async () => {
+      server = await startServer();
+
       const testUser = {
-        email: 'test@gmail.com',
+        email: 'test@gmail.comae',
         password: '123'
       }
 
+      await supertest(server)
+        .post('/api/auth/register')
+        .send(testUser)
+        .expect(201)
+     
       const response = await supertest(server)
         .post('/api/auth/login')
         .send(testUser)
@@ -20,6 +30,7 @@ describe('profile', () => {
     })
 
     it('should return a 401 without a valid access token', async () => {
+    
       await supertest(server).get('/api/me/profile').expect(401)
     })
 
