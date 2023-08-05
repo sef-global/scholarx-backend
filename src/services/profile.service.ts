@@ -24,21 +24,6 @@ export const updateProfile = async (req: Request, res: Response) => {
     }: Profile = req.body;
     const profileRepository = dataSource.getRepository(Profile);
 
-    const checkForExistingPrimaryEmail = await dataSource
-      .getRepository(Profile)
-      .createQueryBuilder()
-      .where('uuid <> :uuid AND primary_email = :primary_email', {
-        uuid: user.uuid,
-        primary_email: primary_email,
-      })
-      .getOne();
-
-    if (checkForExistingPrimaryEmail) {
-      return res
-        .status(409)
-        .json({ message: 'A similar primary_email already exists' });
-    }
-
     const updatedProfile = await profileRepository
       .createQueryBuilder()
       .update(Profile)
