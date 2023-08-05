@@ -27,7 +27,6 @@ export const startServer = async (): Promise<Express> => {
   try {
     await dataSource.initialize()
     console.log('DB connection is successful')
-
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`)
     })

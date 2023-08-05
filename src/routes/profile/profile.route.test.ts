@@ -1,12 +1,13 @@
-import { startServer } from '../../app'
+import  { startServer } from '../../app'
 import type { Express } from "express"
 import supertest from 'supertest'
+import { dataSource } from '../../configs/dbConfig';
 
 describe('profile', () => {
   let server: Express;
   describe('Get profile route', () => {
     let accessToken: string
-    const randomString = Math.random().toString(36).substr(2, 5);
+    const randomString = Math.random().toString(36);
 
     beforeAll(async () => {
       server = await startServer();
@@ -30,7 +31,6 @@ describe('profile', () => {
     }, 5000)
 
     it('should return a 401 without a valid access token', async () => {
-    
       await supertest(server).get('/api/me/profile').expect(401)
     })
 
