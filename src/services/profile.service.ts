@@ -21,7 +21,7 @@ export const updateProfile = async (req: Request, res: Response) => {
       last_name,
       image_url,
       linkedin_url,
-    }: any = req.body;
+    }: Profile = req.body;
     const profileRepository = dataSource.getRepository(Profile);
 
     const checkForExistingPrimaryEmail = await dataSource
