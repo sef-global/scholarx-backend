@@ -1,4 +1,4 @@
 export enum ProfileTypes {
-    DEFAULT = "default",
-    ADMIN = "admin"
+  DEFAULT = 'default',
+  ADMIN = 'admin'
 }
