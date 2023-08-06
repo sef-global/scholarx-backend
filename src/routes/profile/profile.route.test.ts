@@ -30,7 +30,7 @@ describe('profile', () => {
   }, 5000)
 
   describe('Get profile route', () => {
-    it('should return a 401 without a valid access token', async () => {
+    it('should return a 401 when a valid access token is not provided', async () => {
       await supertest(server).get('/api/me/profile').expect(401)
     })
 
@@ -50,6 +50,7 @@ describe('profile', () => {
       expect(response.body).toHaveProperty('linkedin_url')
       expect(response.body).toHaveProperty('type')
       expect(response.body).toHaveProperty('uuid')
+      expect(response.body).not.toHaveProperty('password')
     })
   })
 
@@ -70,7 +71,7 @@ describe('profile', () => {
         .expect(200)
     })
 
-    it('should return a 401 without a valid access token', async () => {
+    it('should return a 401 when a valid access token is not provided', async () => {
       await supertest(server).put('/api/me/profile').send({}).expect(401)
     })
 

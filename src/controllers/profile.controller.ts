@@ -1,69 +1,40 @@
-import { type Request, type Response } from 'express'
-import { dataSource } from '../configs/dbConfig'
-import Profile from '../entities/profile.entity'
+import type { Request, Response } from 'express'
+import { getProfile, updateProfile } from '../services/profile.service'
 
-export const getProfile = async (
+export const getProfileHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    res.status(200).json(req.user)
+    const user = await getProfile(req)
+    if (!user) {
+      res.status(404).json({ message: 'Profile not found' })
+    }
+
+    res.status(200).json(user)
   } catch (err) {
     console.error('Error executing query', err)
     res.status(500).json({ error: err })
   }
 }
 
-export const updateProfile = async (
+export const updateProfileHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const user: Profile | undefined = req.user as Profile
-
-    const {
-      primary_email,
-      contact_email,
-      first_name,
-      last_name,
-      image_url,
-      linkedin_url
-    } = req.body
-
-    const profileRepository = dataSource.getRepository(Profile)
-
-    const updatedProfile = await profileRepository
-      .createQueryBuilder()
-      .update(Profile)
-      .set({
-        primary_email,
-        contact_email,
-        first_name,
-        last_name,
-        image_url,
-        linkedin_url,
-        updated_at: new Date().toISOString()
-      })
-      .where('uuid = :uuid', { uuid: user?.uuid })
-      .returning([
-        'uuid',
-        'primary_email',
-        'contact_email',
-        'first_name',
-        'last_name',
-        'image_url',
-        'linkedin_url',
-        'type',
-        'created_at',
-        'updated_at'
-      ])
-      .execute()
-
-    if (updatedProfile.raw.length === 0) {
+    const user = await getProfile(req)
+    if (!user) {
       res.status(404).json({ message: 'Profile not found' })
     }
 
-    res.status(200).json(updatedProfile.raw[0])
+    const updatedProfile = user && (await updateProfile(user, req.body))
+
+    if (!updatedProfile) {
+      res.status(404).json({ message: 'Profile not found' })
+    }
+
+    res.status(200).json(updatedProfile)
   } catch (err) {
     console.error('Error executing query', err)
     res.status(500).json({ error: err })
