@@ -50,3 +50,14 @@ export const updateProfile = async (
 
   return updatedProfile.raw.length === 0 ? undefined : updatedProfile.raw[0]
 }
+
+export const deleteProfile = async (user: Profile): Promise<void> => {
+  const profileRepository = dataSource.getRepository(Profile)
+
+  await profileRepository
+    .createQueryBuilder()
+    .delete()
+    .from(Profile)
+    .where('uuid = :uuid', { uuid: user?.uuid })
+    .execute()
+}

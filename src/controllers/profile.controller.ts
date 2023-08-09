@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import { getProfile, updateProfile } from '../services/profile.service'
+import { getProfile, updateProfile, deleteProfile } from '../services/profile.service'
 
 export const getProfileHandler = async (
   req: Request,
@@ -36,6 +36,25 @@ export const updateProfileHandler = async (
 
     res.status(200).json(updatedProfile)
   } catch (err) {
+    console.error('Error executing query', err)
+    res.status(500).json({ error: err })
+  }
+}
+
+export const deleteProfileHandler = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.uuid
+    const user = await getProfile(req)
+    if (!user || user.uuid !== userId) {
+      res.status(404).json({ message: 'Profile not found' })
+    } else {
+      await deleteProfile(user)
+      res.status(200).json({ message: 'Profile deleted' })
+    }
+  }catch (err) {
     console.error('Error executing query', err)
     res.status(500).json({ error: err })
   }
