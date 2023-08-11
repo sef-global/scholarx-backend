@@ -1,15 +1,17 @@
 import {
+    BeforeInsert, BeforeUpdate,
     Column,
     CreateDateColumn,
     Entity,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
+import {v4 as uuidv4} from "uuid";
 
 @Entity("platform")
 class Platform {
     @PrimaryGeneratedColumn('uuid')
-    id!: bigint
+    uuid!: string
 
     @Column()
     description: string
@@ -29,11 +31,11 @@ class Platform {
     @Column({type: 'varchar', length: 255})
     title: string
 
-    @CreateDateColumn()
-    created_at: Date | undefined
+    @Column({type: 'timestamp', default:() => 'CURRENT_TIMESTAMP' })
+    created_at: Date | undefined;
 
-    @UpdateDateColumn()
-    updated_at: Date | undefined
+    @Column({type: 'timestamp', default:() => 'CURRENT_TIMESTAMP' })
+    updated_at: Date | undefined;
 
     constructor(
         description: string,
@@ -42,7 +44,6 @@ class Platform {
         landing_page_url: string,
         email_templates: JSON,
         title: string,
-        category: string,
     ) {
         this.description = description;
         this.mentor_questions = mentor_questions;
@@ -50,6 +51,22 @@ class Platform {
         this.landing_page_url = landing_page_url;
         this.email_templates = email_templates;
         this.title = title;
+    }
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    updateTimestamps() {
+        this.updated_at = new Date();
+        if (!this.uuid) {
+            this.created_at = new Date();
+        }
+    }
+
+    @BeforeInsert()
+    async generateUuid() {
+        if (!this.uuid) {
+            this.uuid = uuidv4();
+        }
     }
 }
 

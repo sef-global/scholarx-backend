@@ -1,15 +1,18 @@
 import {
+    BeforeInsert,
+    BeforeUpdate,
     Column,
-    CreateDateColumn,
     Entity,
     PrimaryGeneratedColumn
 } from "typeorm";
 import {EmailStatusTypes} from "../enums/enums";
+import {v4 as uuidv4} from 'uuid';
+
 
 @Entity("email")
 class Email {
     @PrimaryGeneratedColumn('uuid')
-    id!: bigint
+    uuid!: string
 
     @Column({type: 'varchar', length: 255})
     recipient: string
@@ -23,8 +26,11 @@ class Email {
     @Column({type: 'enum', enum: EmailStatusTypes})
     state: EmailStatusTypes
 
-    @CreateDateColumn()
-    created_at: Date | undefined
+    @Column({type: 'timestamp', default:() => 'CURRENT_TIMESTAMP' })
+    created_at: Date | undefined;
+
+    @Column({type: 'timestamp', default:() => 'CURRENT_TIMESTAMP' })
+    updated_at: Date | undefined;
 
     constructor(
         recipient: string,
@@ -36,6 +42,22 @@ class Email {
         this.subject = subject;
         this.content = content;
         this.state = state;
+    }
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    updateTimestamps() {
+        this.updated_at = new Date();
+        if (!this.uuid) {
+            this.created_at = new Date();
+        }
+    }
+
+    @BeforeInsert()
+    async generateUuid() {
+        if (!this.uuid) {
+            this.uuid = uuidv4();
+        }
     }
 }
 

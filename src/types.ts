@@ -1,6 +1,7 @@
 interface Option {
 // todo: To be determined
 }
+
 interface Question {
     question: string
     answer: string

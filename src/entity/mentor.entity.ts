@@ -1,21 +1,21 @@
 import {
+    BeforeInsert, BeforeUpdate,
     Column,
-    CreateDateColumn,
     Entity,
     JoinColumn,
     OneToMany,
     OneToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
+    PrimaryGeneratedColumn
 } from "typeorm";
 import profileEntity from "./profile.entity";
 import Mentee from "./mentee.entity";
 import Category from "./category.entity";
+import {v4 as uuidv4} from "uuid";
 
 @Entity("mentor")
 class Mentor {
     @PrimaryGeneratedColumn('uuid')
-    id!: bigint
+    uuid!: string
 
     @Column({type: 'varchar', length: 255})
     state: string
@@ -36,11 +36,11 @@ class Mentor {
     @OneToMany(() => Mentee, mentee => mentee.mentor)
     mentees: Mentee[];
 
-    @CreateDateColumn()
-    created_at: Date | undefined
+    @Column({type: 'timestamp', default:() => 'CURRENT_TIMESTAMP' })
+    created_at: Date | undefined;
 
-    @UpdateDateColumn()
-    updated_at: Date | undefined
+    @Column({type: 'timestamp', default:() => 'CURRENT_TIMESTAMP' })
+    updated_at: Date | undefined;
 
     constructor(
         state: string,
@@ -56,6 +56,22 @@ class Mentor {
         this.availability = availability;
         this.profile = profile;
         this.mentees =mentees;
+    }
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    updateTimestamps() {
+        this.updated_at = new Date();
+        if (!this.uuid) {
+            this.created_at = new Date();
+        }
+    }
+
+    @BeforeInsert()
+    async generateUuid() {
+        if (!this.uuid) {
+            this.uuid = uuidv4();
+        }
     }
 }
 
