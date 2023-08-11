@@ -1,10 +1,8 @@
 import {
     BeforeInsert, BeforeUpdate,
     Column,
-    CreateDateColumn,
     Entity,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
+    PrimaryGeneratedColumn
 } from "typeorm";
 import {v4 as uuidv4} from "uuid";
 
@@ -55,7 +53,7 @@ class Platform {
 
     @BeforeInsert()
     @BeforeUpdate()
-    updateTimestamps() {
+    updateTimestamps() : void {
         this.updated_at = new Date();
         if (!this.uuid) {
             this.created_at = new Date();
@@ -63,7 +61,7 @@ class Platform {
     }
 
     @BeforeInsert()
-    async generateUuid() {
+    async generateUuid() : Promise<void> {
         if (!this.uuid) {
             this.uuid = uuidv4();
         }

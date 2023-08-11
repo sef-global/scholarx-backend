@@ -60,7 +60,7 @@ class Mentor {
 
     @BeforeInsert()
     @BeforeUpdate()
-    updateTimestamps() {
+    updateTimestamps() : void {
         this.updated_at = new Date();
         if (!this.uuid) {
             this.created_at = new Date();
@@ -68,7 +68,7 @@ class Mentor {
     }
 
     @BeforeInsert()
-    async generateUuid() {
+    async generateUuid() : Promise<void> {
         if (!this.uuid) {
             this.uuid = uuidv4();
         }
