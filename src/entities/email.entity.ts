@@ -5,7 +5,7 @@ import {
   Entity,
   PrimaryGeneratedColumn
 } from 'typeorm'
-import { EmailStatusTypes } from '../enums/enums'
+import { EmailStatusTypes } from '../enums'
 import { v4 as uuidv4 } from 'uuid'
 
 @Entity('email')

@@ -14,8 +14,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const newUser = await registerUser(email, password)
     res.status(201).json(newUser)
   } catch (err) {
-    console.error('Error executing query', err)
-    res.status(500).json({ error: 'Internal server error' })
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
   }
 }
 
@@ -30,8 +34,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const tokenData = await loginUser(email, password)
     res.json(tokenData)
   } catch (err) {
-    console.error('Error executing query', err)
-    res.status(500).json({ error: 'Internal server error' })
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
   }
 }
 

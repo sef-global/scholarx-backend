@@ -7,7 +7,7 @@ import { JWT_SECRET } from '../configs/envConfig'
 export const registerUser = async (
   email: string,
   password: string
-): Promise<Profile> => {
+): Promise<Profile | null> => {
   const profileRepository = dataSource.getRepository(Profile)
 
   const existingProfile = await profileRepository.findOne({
@@ -27,9 +27,14 @@ export const registerUser = async (
     image_url: '',
     linkedin_url: ''
   })
+
   await profileRepository.save(newProfile)
 
-  return newProfile
+  const savedProfile = await profileRepository.findOneBy({
+    primary_email: email
+  })
+
+  return savedProfile
 }
 
 export const loginUser = async (

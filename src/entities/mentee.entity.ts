@@ -11,7 +11,7 @@ import {
 import { MenteeApplication } from '../types'
 import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
-import { MenteeStateTypes } from '../enums/enums'
+import { MenteeStateTypes } from '../enums'
 import { v4 as uuidv4 } from 'uuid'
 
 @Entity('mentee')

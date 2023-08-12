@@ -7,7 +7,7 @@ import {
   BeforeUpdate
 } from 'typeorm'
 import { v4 as uuidv4 } from 'uuid'
-import { ProfileTypes } from '../enums/enums'
+import { ProfileTypes } from '../enums'
 
 @Entity({ name: 'profile' })
 class Profile {

@@ -13,8 +13,12 @@ export const getProfileHandler = async (
 
     res.status(200).json(user)
   } catch (err) {
-    console.error('Error executing query', err)
-    res.status(500).json({ error: err })
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
   }
 }
 
@@ -36,7 +40,11 @@ export const updateProfileHandler = async (
 
     res.status(200).json(updatedProfile)
   } catch (err) {
-    console.error('Error executing query', err)
-    res.status(500).json({ error: err })
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
   }
 }
