@@ -5,6 +5,7 @@ import cors from 'cors'
 import { dataSource } from './configs/dbConfig'
 import authRouter from './routes/auth.route'
 import profileRouter from './routes/profile/profile.route'
+import adminRouter from './routes/admin/admin.route'
 import passport from 'passport'
 import './configs/passport'
 import { SERVER_PORT } from './configs/envConfig'
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouter)
 app.use('/api/me', profileRouter)
+app.use('/api/admin', adminRouter)
 
 export const startServer = async (): Promise<Express> => {
   try {
