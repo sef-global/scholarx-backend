@@ -1,4 +1,4 @@
-import { dataSource } from "../../src/configs/dbConfig"
+import { dataSource } from '../../src/configs/dbConfig'
 
 export const initConnection = async (): Promise<void> => {
   await dataSource

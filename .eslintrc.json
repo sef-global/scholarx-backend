@@ -7,7 +7,7 @@
     "standard-with-typescript",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "plugin:prettier/recommended"
   ],
   "plugins": ["@typescript-eslint", "prettier", "unused-imports"],
   "parserOptions": {
