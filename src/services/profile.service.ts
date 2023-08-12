@@ -18,35 +18,24 @@ export const updateProfile = async (
     image_url,
     linkedin_url
   }: Partial<Profile>
-): Promise<Profile | undefined> => {
+): Promise<Profile | null> => {
   const profileRepository = dataSource.getRepository(Profile)
 
-  const updatedProfile = await profileRepository
-    .createQueryBuilder()
-    .update(Profile)
-    .set({
+  await profileRepository.update(
+    { uuid: user.uuid },
+    {
       primary_email,
       contact_email,
       first_name,
       last_name,
       image_url,
-      linkedin_url,
-      updated_at: new Date().toISOString()
-    })
-    .where('uuid = :uuid', { uuid: user?.uuid })
-    .returning([
-      'uuid',
-      'primary_email',
-      'contact_email',
-      'first_name',
-      'last_name',
-      'image_url',
-      'linkedin_url',
-      'type',
-      'created_at',
-      'updated_at'
-    ])
-    .execute()
+      linkedin_url
+    }
+  )
 
-  return updatedProfile.raw.length === 0 ? undefined : updatedProfile.raw[0]
+  const savedProfile = await profileRepository.findOneBy({
+    uuid: user.uuid
+  })
+
+  return savedProfile
 }
