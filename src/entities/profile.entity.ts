@@ -7,7 +7,7 @@ import {
   BeforeUpdate
 } from 'typeorm'
 import { v4 as uuidv4 } from 'uuid'
-import { ProfileTypes } from '../enums/profileType.enum'
+import { ProfileTypes } from '../enums/enums'
 
 @Entity({ name: 'profile' })
 class Profile {
@@ -60,7 +60,7 @@ class Profile {
     this.last_name = last_name
     this.image_url = image_uri
     this.linkedin_url = linkedin_uri
-    this.type = type ?? ProfileTypes.DEFAULT
+    this.type = type || ProfileTypes.DEFAULT
     this.password = password
   }
 

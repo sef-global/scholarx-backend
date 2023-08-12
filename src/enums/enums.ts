@@ -1,16 +1,16 @@
 export enum ProfileTypes {
-    DEFAULT = "default",
-    ADMIN = "admin"
+  DEFAULT = 'default',
+  ADMIN = 'admin'
 }
 
 export enum EmailStatusTypes {
-    SENT = "sent",
-    DELIVERED = "delivered",
-    FAILED = "failed"
+  SENT = 'sent',
+  DELIVERED = 'delivered',
+  FAILED = 'failed'
 }
 
 export enum MenteeStateTypes {
-    PENDING = "pending",
-    REJECTED = "rejected",
-    ACCEPTED = "accepted"
+  PENDING = 'pending',
+  REJECTED = 'rejected',
+  ACCEPTED = 'accepted'
 }
