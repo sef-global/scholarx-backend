@@ -9,7 +9,7 @@ export enum EmailStatusTypes {
   FAILED = 'failed'
 }
 
-export enum MenteeStateTypes {
+export enum ApplicationStatus {
   PENDING = 'pending',
   REJECTED = 'rejected',
   ACCEPTED = 'accepted'

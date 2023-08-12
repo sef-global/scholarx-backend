@@ -11,7 +11,7 @@ import {
 import { MenteeApplication } from '../types'
 import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
-import { MenteeStateTypes } from '../enums'
+import { ApplicationStatus } from '../enums'
 import { v4 as uuidv4 } from 'uuid'
 
 @Entity('mentee')
@@ -21,10 +21,10 @@ class Mentee {
 
   @Column({
     type: 'enum',
-    enum: MenteeStateTypes,
-    default: MenteeStateTypes.PENDING
+    enum: ApplicationStatus,
+    default: ApplicationStatus.PENDING
   })
-  state: MenteeStateTypes
+  state: ApplicationStatus
 
   @Column({ type: 'json' })
   answers: MenteeApplication
@@ -33,7 +33,7 @@ class Mentee {
   certificate_id: bigint
 
   @Column()
-  blogs: string
+  journal: string
 
   @OneToOne(() => profileEntity)
   @JoinColumn()
@@ -49,17 +49,17 @@ class Mentee {
   updated_at: Date | undefined
 
   constructor(
-    state: MenteeStateTypes,
+    state: ApplicationStatus,
     answers: MenteeApplication,
     certificate_id: bigint,
-    blogs: string,
+    journal: string,
     profile: profileEntity,
     mentor: Mentor
   ) {
     this.state = state
     this.answers = answers
     this.certificate_id = certificate_id
-    this.blogs = blogs
+    this.journal = journal
     this.profile = profile
     this.mentor = mentor
   }

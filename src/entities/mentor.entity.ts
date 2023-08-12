@@ -12,14 +12,19 @@ import profileEntity from './profile.entity'
 import Mentee from './mentee.entity'
 import Category from './category.entity'
 import { v4 as uuidv4 } from 'uuid'
+import { ApplicationStatus } from '../enums'
 
 @Entity('mentor')
 class Mentor {
   @PrimaryGeneratedColumn('uuid')
   uuid!: string
 
-  @Column({ type: 'varchar', length: 255 })
-  state: string
+  @Column({
+    type: 'enum',
+    enum: ApplicationStatus,
+    default: ApplicationStatus.PENDING
+  })
+  state: ApplicationStatus
 
   @OneToMany(() => Category, (category) => category.category)
   category: Category
@@ -44,7 +49,7 @@ class Mentor {
   updated_at: Date | undefined
 
   constructor(
-    state: string,
+    state: ApplicationStatus,
     category: Category,
     application: JSON,
     availability: boolean,
