@@ -17,7 +17,7 @@ class Mentor extends BaseEntity {
   @OneToMany(() => Category, (category) => category.category)
   category: Category
 
-  @Column({ type: 'json' })
+  @Column({ type: 'json', select: false })
   application: JSON
 
   @Column({ type: 'boolean' })
