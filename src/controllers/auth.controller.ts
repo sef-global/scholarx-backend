@@ -11,8 +11,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ error: 'Email and password are required fields' })
     }
 
-    const newUser = await registerUser(email, password)
-    res.status(201).json(newUser)
+    const { statusCode, message, profile } = await registerUser(email, password)
+
+    res.status(statusCode).json({ message, profile })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
@@ -31,8 +32,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ error: 'Email and password are required fields' })
     }
 
-    const tokenData = await loginUser(email, password)
-    res.json(tokenData)
+    const { statusCode, message, token } = await loginUser(email, password)
+
+    res.status(statusCode).json({ message, token })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
