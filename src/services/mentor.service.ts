@@ -4,9 +4,9 @@ import Profile from '../entities/profile.entity'
 import { ApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
 
-export const createMentor = async (req: any) => {
-  const userId = req.user.uuid
-  const userApplication = req.body
+export const createMentor = async (user: Profile, application: JSON) => {
+  const userId = user.uuid
+  const categoryId = '60b5b847-99a2-4e47-b35b-81b4284311dd'
 
   try {
     const profileRepository = dataSource.getRepository(Profile)
@@ -19,17 +19,20 @@ export const createMentor = async (req: any) => {
     }
 
     const mentorRepository = dataSource.getRepository(Mentor)
-    const existingMentor = await mentorRepository.findOne({
+    const existingMentorArray = await mentorRepository.find({
       where: { uuid: userId }
     })
 
-    if (existingMentor) {
-      if (existingMentor.state === ApplicationStatus.PENDING) {
-        return 'Application pending'
+    if (existingMentorArray.length > 0) {
+      const pendingMentors = existingMentorArray.filter(
+        (existingMentor) => existingMentor.state == ApplicationStatus.PENDING
+      )
+      if (pendingMentors.length > 0) {
+        throw new Error('Application pending')
       } else {
         const categoryRepository = dataSource.getRepository(Category)
         const category = await categoryRepository.findOne({
-          where: { uuid: '60b5b847-99a2-4e47-b35b-81b4284311dd' }
+          where: { uuid: categoryId }
         })
 
         if (!category) {
@@ -39,18 +42,18 @@ export const createMentor = async (req: any) => {
         const newMentor = new Mentor(
           ApplicationStatus.PENDING,
           category,
-          userApplication,
+          application,
           true,
-          userProfile,
+          user,
           []
         )
         await mentorRepository.save(newMentor)
-        return 'Mentor added'
+        return newMentor
       }
     } else {
       const categoryRepository = dataSource.getRepository(Category)
       const category = await categoryRepository.findOne({
-        where: { uuid: '60b5b847-99a2-4e47-b35b-81b4284311dd' }
+        where: { uuid: categoryId }
       })
 
       if (!category) {
@@ -60,13 +63,13 @@ export const createMentor = async (req: any) => {
       const newMentor = new Mentor(
         ApplicationStatus.PENDING,
         category,
-        userApplication,
+        application,
         true,
-        userProfile,
+        user,
         []
       )
       await mentorRepository.save(newMentor)
-      return 'Mentor added'
+      return newMentor
     }
   } catch (err) {
     console.error('Error creating mentor', err)
