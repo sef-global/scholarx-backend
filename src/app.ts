@@ -3,15 +3,15 @@ import type { Express } from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import { dataSource } from './configs/dbConfig'
-import authRouter from './routes/auth.route'
+import authRouter from './routes/auth/auth.route'
 import profileRouter from './routes/profile/profile.route'
 import passport from 'passport'
 import './configs/passport'
-import { SERVER_PORT } from './configs/envConfig'
-
-const port = SERVER_PORT
+import cookieParser from 'cookie-parser'
 
 const app = express()
+
+app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(cors())
 app.use(passport.initialize())
@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRouter)
 app.use('/api/me', profileRouter)
 
-export const startServer = async (): Promise<Express> => {
+export const startServer = async (port: number): Promise<Express> => {
   try {
     await dataSource.initialize()
     console.log('DB connection is successful')

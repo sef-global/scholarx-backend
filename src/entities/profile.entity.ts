@@ -1,19 +1,10 @@
 import bcrypt from 'bcrypt'
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BeforeInsert,
-  BeforeUpdate
-} from 'typeorm'
-import { v4 as uuidv4 } from 'uuid'
+import { Entity, Column } from 'typeorm'
 import { ProfileTypes } from '../enums'
+import BaseEntity from './baseEntity'
 
 @Entity({ name: 'profile' })
-class Profile {
-  @PrimaryGeneratedColumn('uuid')
-  uuid!: string
-
+class Profile extends BaseEntity {
   @Column({ type: 'varchar', length: 255, unique: true })
   primary_email: string
 
@@ -38,12 +29,6 @@ class Profile {
   @Column({ type: 'varchar', length: 255, select: false })
   password: string
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date | undefined
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updated_at: Date | undefined
-
   constructor(
     primary_email: string,
     contact_email: string,
@@ -54,6 +39,7 @@ class Profile {
     type: ProfileTypes,
     password: string
   ) {
+    super()
     this.primary_email = primary_email
     this.contact_email = contact_email
     this.first_name = first_name
@@ -66,22 +52,6 @@ class Profile {
 
   async comparePassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password)
-  }
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  updateTimestamps(): void {
-    this.updated_at = new Date()
-    if (!this.uuid) {
-      this.created_at = new Date()
-    }
-  }
-
-  @BeforeInsert()
-  async generateUuid(): Promise<void> {
-    if (!this.uuid) {
-      this.uuid = uuidv4()
-    }
   }
 }
 

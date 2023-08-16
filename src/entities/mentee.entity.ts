@@ -1,24 +1,12 @@
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn
-} from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm'
 import { MenteeApplication } from '../types'
 import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
 import { ApplicationStatus } from '../enums'
-import { v4 as uuidv4 } from 'uuid'
+import BaseEntity from './baseEntity'
 
 @Entity('mentee')
-class Mentee {
-  @PrimaryGeneratedColumn()
-  uuid!: string
-
+class Mentee extends BaseEntity {
   @Column({
     type: 'enum',
     enum: ApplicationStatus,
@@ -42,12 +30,6 @@ class Mentee {
   @ManyToOne(() => Mentor, (mentor) => mentor.mentees)
   mentor: Mentor
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date | undefined
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updated_at: Date | undefined
-
   constructor(
     state: ApplicationStatus,
     answers: MenteeApplication,
@@ -56,28 +38,13 @@ class Mentee {
     profile: profileEntity,
     mentor: Mentor
   ) {
+    super()
     this.state = state
     this.answers = answers
     this.certificate_id = certificate_id
     this.journal = journal
     this.profile = profile
     this.mentor = mentor
-  }
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  updateTimestamps(): void {
-    this.updated_at = new Date()
-    if (!this.uuid) {
-      this.created_at = new Date()
-    }
-  }
-
-  @BeforeInsert()
-  async generateUuid(): Promise<void> {
-    if (!this.uuid) {
-      this.uuid = uuidv4()
-    }
   }
 }
 

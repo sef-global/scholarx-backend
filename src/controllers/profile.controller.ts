@@ -1,12 +1,12 @@
 import type { Request, Response } from 'express'
-import { getProfile, updateProfile, deleteProfile } from '../services/profile.service'
-
+import { updateProfile, deleteProfile } from '../services/profile.service'
+import type Profile from '../entities/profile.entity'
 export const getProfileHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const user = await getProfile(req)
+    const { user } = req
     if (!user) {
       res.status(404).json({ message: 'Profile not found' })
     }
@@ -27,18 +27,15 @@ export const updateProfileHandler = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await getProfile(req)
+    const user = req.user as Profile
     if (!user) {
       res.status(404).json({ message: 'Profile not found' })
     }
 
-    const updatedProfile = user && (await updateProfile(user, req.body))
+    const { statusCode, message, profile } =
+      user && (await updateProfile(user, req.body))
 
-    if (!updatedProfile) {
-      res.status(404).json({ message: 'Profile not found' })
-    }
-
-    res.status(200).json(updatedProfile)
+    res.status(statusCode).json({ message, profile })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
