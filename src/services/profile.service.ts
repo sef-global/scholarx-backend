@@ -40,13 +40,13 @@ export const updateProfile = async (
   return savedProfile
 }
 
-export const deleteProfile = async (user: Profile): Promise<void> => {
+export const deleteProfile = async (userId: string): Promise<void> => {
   const profileRepository = dataSource.getRepository(Profile)
 
   await profileRepository
     .createQueryBuilder()
     .delete()
     .from(Profile)
-    .where('uuid = :uuid', { uuid: user?.uuid })
+    .where('uuid = :uuid', { uuid: userId })
     .execute()
 }

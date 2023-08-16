@@ -59,7 +59,7 @@ export const deleteProfileHandler = async (
     if (!user || user.uuid !== userId) {
       res.status(404).json({ message: 'Profile not found' })
     } else {
-      await deleteProfile(user)
+      await deleteProfile(user.uuid)
       res.status(200).json({ message: 'Profile deleted' })
     }
   }catch (err) {
