@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     services:
@@ -19,7 +18,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: mydatabase 
+          POSTGRES_DB: mydatabase
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -47,7 +46,7 @@ jobs:
           echo "DB_PASSWORD=password" >> .env
           echo "DB_PORT=5432" >> .env
           echo "SERVER_PORT=4000" >> .env 
-          echo "JWT_SECRET=your_jwt_secret_key" >> .env 
+          echo "JWT_SECRET=your_jwt_secret_key" >> .env
 
       - name: Run tests
         run: npm run test
