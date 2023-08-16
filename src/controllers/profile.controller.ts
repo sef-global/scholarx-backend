@@ -52,7 +52,7 @@ export const deleteProfileHandler = async (
 ): Promise<void> => {
   try {
     const userId = req.params.uuid
-    const user = await getProfile(req)
+    const user = req.user as Profile
     if (!user || user.uuid !== userId) {
       res.status(404).json({ message: 'Profile not found' })
     } else {
