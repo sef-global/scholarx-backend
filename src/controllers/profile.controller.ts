@@ -59,7 +59,7 @@ export const deleteProfileHandler = async (
       await deleteProfile(user.uuid)
       res.status(200).json({ message: 'Profile deleted' })
     }
-  }catch (err) {
+  } catch (err) {
     console.error('Error executing query', err)
     res.status(500).json({ error: err })
   }
