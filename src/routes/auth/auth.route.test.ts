@@ -8,7 +8,7 @@ const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 let server: Express
 let agent: supertest.SuperAgentTest
-
+let accessToken: string
 const testUser = {
   email: `test${randomString}@gmail.com`,
   password: '123'
@@ -43,55 +43,86 @@ describe('auth controllers', () => {
       expect(response.body.profile).toHaveProperty('type')
       expect(response.body.profile).toHaveProperty('uuid')
       expect(response.body.profile).not.toHaveProperty('password')
+
+      it('should login with correct credentials', async () => {
+        const response = await supertest(server)
+          .post('/api/auth/login')
+          .send({ testUser })
+
+        expect(response.status).toBe(200)
+        expect(response.body).toHaveProperty('token')
+
+        accessToken = response.body.token
+      })
+
+      it('should return a 401 when a valid access token is not provided', async () => {
+        await supertest(server).get('/api/me/profile').expect(401)
+      })
+
+      it('should return a 200 with a user profile object', async () => {
+        const response = await supertest(server)
+          .get('/api/me/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body).toHaveProperty('primary_email', testUser.email)
+      })
+
+      it('should not login with incorrect credentials', async () => {
+        const response = await supertest(server).post('/api/auth/login').send({
+          email: testUser.email,
+          password: 'wrongpassword'
+        })
+
+        it('should return a 400 when registering with a duplicate email', async () => {
+          await supertest(server)
+            .post('/api/auth/register')
+            .send(testUser)
+            .expect(409)
+        })
+      })
+
+      describe('login', () => {
+        it('should return a 400 when email or password is missing', async () => {
+          await supertest(server).post('/api/auth/login').send({}).expect(400)
+        })
+
+        it('should return a 200 after successful login', async () => {
+          const response = await supertest(server)
+            .post('/api/auth/login')
+            .send(testUser)
+            .expect(200)
+
+          expect(response.body).toHaveProperty('message')
+        })
+
+        it('should return a 401 when logging in with incorrect credentials', async () => {
+          const incorrectUser = {
+            email: `test${randomString}@gmail.com`,
+            password: 'incorrect_password'
+          }
+
+          await supertest(server)
+            .post('/api/auth/login')
+            .send({ email: incorrectUser.email, password: 'wrong_password' })
+            .expect(401)
+        })
+      })
+
+      describe('logout', () => {
+        it('should clear the jwt cookie and return a 200', async () => {
+          const response = await agent.get('/api/auth/logout').expect(200)
+
+          const jwtCookie = response.headers['set-cookie']
+          expect(
+            jwtCookie.some((cookie: string[]) => cookie.includes('jwt='))
+          ).toBe(true)
+        })
+      })
+
+      afterAll(async () => {
+        await dataSource.destroy()
+      })
     })
-
-    it('should return a 400 when registering with a duplicate email', async () => {
-      await supertest(server)
-        .post('/api/auth/register')
-        .send(testUser)
-        .expect(409)
-    })
-  })
-
-  describe('login', () => {
-    it('should return a 400 when email or password is missing', async () => {
-      await supertest(server).post('/api/auth/login').send({}).expect(400)
-    })
-
-    it('should return a 200 after successful login', async () => {
-      const response = await supertest(server)
-        .post('/api/auth/login')
-        .send(testUser)
-        .expect(200)
-
-      expect(response.body).toHaveProperty('message')
-    })
-
-    it('should return a 401 when logging in with incorrect credentials', async () => {
-      const incorrectUser = {
-        email: `test${randomString}@gmail.com`,
-        password: 'incorrect_password'
-      }
-
-      await supertest(server)
-        .post('/api/auth/login')
-        .send({ email: incorrectUser.email, password: 'wrong_password' })
-        .expect(401)
-    })
-  })
-
-  describe('logout', () => {
-    it('should clear the jwt cookie and return a 200', async () => {
-      const response = await agent.get('/api/auth/logout').expect(200)
-
-      const jwtCookie = response.headers['set-cookie']
-      expect(
-        jwtCookie.some((cookie: string[]) => cookie.includes('jwt='))
-      ).toBe(true)
-    })
-  })
-
-  afterAll(async () => {
-    await dataSource.destroy()
   })
 })
