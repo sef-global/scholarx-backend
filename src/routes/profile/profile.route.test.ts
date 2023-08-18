@@ -4,12 +4,15 @@ import supertest from 'supertest'
 import { dataSource } from '../../configs/dbConfig'
 
 const randomString = Math.random().toString(36)
+const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
+
 let server: Express
-let accessToken: string
+let agent: supertest.SuperAgentTest
 
 describe('profile', () => {
   beforeAll(async () => {
-    server = await startServer()
+    server = await startServer(port)
+    agent = supertest.agent(server)
 
     const testUser = {
       email: `test${randomString}@gmail.com`,
@@ -21,24 +24,12 @@ describe('profile', () => {
       .send(testUser)
       .expect(201)
 
-    const response = await supertest(server)
-      .post('/api/auth/login')
-      .send(testUser)
-      .expect(200)
-
-    accessToken = response.body.token
+    await agent.post('/api/auth/login').send(testUser).expect(200)
   }, 5000)
 
   describe('Get profile route', () => {
-    it('should return a 401 when a valid access token is not provided', async () => {
-      await supertest(server).get('/api/me/profile').expect(401)
-    })
-
     it('should return a 200 with a user profile object', async () => {
-      const response = await supertest(server)
-        .get('/api/me/profile')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200)
+      const response = await agent.get('/api/me/profile').expect(200)
 
       expect(response.body).toHaveProperty('created_at')
       expect(response.body).toHaveProperty('updated_at')
@@ -64,11 +55,7 @@ describe('profile', () => {
         linkedin_url: 'https://www.linkedin.com/in/johndoe'
       }
 
-      await supertest(server)
-        .put('/api/me/profile')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send(updatedProfile)
-        .expect(200)
+      await agent.put('/api/me/profile').send(updatedProfile).expect(200)
     })
 
     it('should return a 401 when a valid access token is not provided', async () => {

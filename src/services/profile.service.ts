@@ -1,12 +1,5 @@
-import type { Request } from 'express'
 import { dataSource } from '../configs/dbConfig'
 import Profile from '../entities/profile.entity'
-
-export const getProfile = async (
-  req: Request
-): Promise<Profile | undefined> => {
-  return req.user as Profile
-}
 
 export const updateProfile = async (
   user: Profile,
@@ -18,35 +11,37 @@ export const updateProfile = async (
     image_url,
     linkedin_url
   }: Partial<Profile>
-): Promise<Profile | undefined> => {
-  const profileRepository = dataSource.getRepository(Profile)
+): Promise<{
+  statusCode: number
+  profile?: Profile | null
+  message: string
+}> => {
+  try {
+    const profileRepository = dataSource.getRepository(Profile)
 
-  const updatedProfile = await profileRepository
-    .createQueryBuilder()
-    .update(Profile)
-    .set({
-      primary_email,
-      contact_email,
-      first_name,
-      last_name,
-      image_url,
-      linkedin_url,
-      updated_at: new Date().toISOString()
+    await profileRepository.update(
+      { uuid: user.uuid },
+      {
+        primary_email,
+        contact_email,
+        first_name,
+        last_name,
+        image_url,
+        linkedin_url
+      }
+    )
+
+    const savedProfile = await profileRepository.findOneBy({
+      uuid: user.uuid
     })
-    .where('uuid = :uuid', { uuid: user?.uuid })
-    .returning([
-      'uuid',
-      'primary_email',
-      'contact_email',
-      'first_name',
-      'last_name',
-      'image_url',
-      'linkedin_url',
-      'type',
-      'created_at',
-      'updated_at'
-    ])
-    .execute()
 
-  return updatedProfile.raw.length === 0 ? undefined : updatedProfile.raw[0]
+    return {
+      statusCode: 200,
+      profile: savedProfile,
+      message: 'Successfully updated the profile'
+    }
+  } catch (error) {
+    console.error('Error executing login', error)
+    return { statusCode: 500, message: 'Internal server error' }
+  }
 }
