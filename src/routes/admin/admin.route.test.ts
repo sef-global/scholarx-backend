@@ -1,5 +1,6 @@
 import type { Express } from 'express'
 import supertest from 'supertest'
+import Profile from '../../entities/profile.entity'
 
 let server: Express
 let accessToken: string
@@ -17,7 +18,7 @@ describe('Get all users route', () => {
 
     const userProfiles = response.body
 
-    userProfiles.forEach((userProfile: Object) => {
+    userProfiles.forEach((userProfile: Partial<Profile>) => {
       expect(userProfile).toHaveProperty('created_at')
       expect(userProfile).toHaveProperty('updated_at')
       expect(userProfile).toHaveProperty('primary_email')

@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import { getAllUsers } from '../services/admin.service'
+import { getAllUsers } from '../../services/admin.service'
 
 export const getAllUsersHandler = async (
   req: Request,
@@ -7,6 +7,7 @@ export const getAllUsersHandler = async (
 ): Promise<void> => {
   try {
     const users = await getAllUsers(req)
+    console.log(users)
     if (users && users.length != 0) {
       res.status(404).json({ message: 'No users available' })
     }
