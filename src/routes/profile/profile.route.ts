@@ -10,6 +10,6 @@ const profileRouter = express.Router()
 
 profileRouter.get('/profile', requireAuth, getProfileHandler)
 profileRouter.put('/profile', requireAuth, updateProfileHandler)
-profileRouter.delete('/profile/:uuid', requireAuth, deleteProfileHandler)
+profileRouter.delete('/profile', requireAuth, deleteProfileHandler)
 
 export default profileRouter

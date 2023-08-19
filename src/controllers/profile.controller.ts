@@ -51,16 +51,19 @@ export const deleteProfileHandler = async (
   res: Response
 ): Promise<void> => {
   try {
-    const userId = req.params.uuid
     const user = req.user as Profile
-    if (!user || user.uuid !== userId) {
+    if (!user) {
       res.status(404).json({ message: 'Profile not found' })
     } else {
       await deleteProfile(user.uuid)
       res.status(200).json({ message: 'Profile deleted' })
     }
   } catch (err) {
-    console.error('Error executing query', err)
-    res.status(500).json({ error: err })
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
   }
 }
