@@ -3,10 +3,12 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Profile from '../entities/profile.entity'
 import { JWT_SECRET } from '../configs/envConfig'
+import type { ProfileTypes } from '../enums'
 
 export const registerUser = async (
   email: string,
-  password: string
+  password: string,
+  userType: ProfileTypes
 ): Promise<{
   statusCode: number
   message: string
@@ -27,6 +29,7 @@ export const registerUser = async (
     const newProfile = profileRepository.create({
       primary_email: email,
       password: hashedPassword,
+      type: userType,
       contact_email: '',
       first_name: '',
       last_name: '',

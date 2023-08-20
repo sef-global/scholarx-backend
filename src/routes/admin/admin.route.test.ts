@@ -1,38 +1,58 @@
 import { startServer } from '../../app'
 import type { Express } from 'express'
 import supertest from 'supertest'
-import Profile from '../../entities/profile.entity'
+import type Profile from '../../entities/profile.entity'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 const randomString = Math.random().toString(36)
+const randomStringAdmin = Math.random().toString(36)
 let server: Express
 let agent: supertest.SuperAgentTest
+let adminAgent: supertest.SuperAgentTest
 
 describe('Get all users route', () => {
   beforeAll(async () => {
     server = await startServer(port)
     agent = supertest.agent(server)
+    adminAgent = supertest.agent(server)
 
-    const testUser = {
+    const defaultUser = {
       email: `test${randomString}@gmail.com`,
       password: '123'
     }
 
     await supertest(server)
       .post('/api/auth/register')
-      .send(testUser)
+      .send(defaultUser)
       .expect(201)
 
-    await agent.post('/api/auth/login').send(testUser).expect(200)
+    await agent.post('/api/auth/login').send(defaultUser).expect(200)
+
+    const adminUser = {
+      email: `test${randomStringAdmin}@gmail.com`,
+      password: 'admin123',
+      type: 'admin'
+    }
+
+    await supertest(server)
+      .post('/api/auth/register')
+      .send(adminUser)
+      .expect(201)
+
+    await adminAgent.post('/api/auth/login').send(adminUser).expect(200)
   }, 5000)
 
   it('should return a 401 when a valid access token is not provided', async () => {
     await supertest(server).get('/api/admin/users').expect(401)
   })
 
-  it('should return a 200 with all users from the DB', async () => {
-    const response = await agent.get('/api/admin/users').expect(200)
+  it('should return a 403 if user is not admin', async () => {
+    await agent.get('/api/admin/users').expect(403)
+  })
+
+  it('should return a 200 with all users if user is admin', async () => {
+    const response = await adminAgent.get('/api/admin/users').expect(200)
 
     const userProfiles = response.body.profiles
 
