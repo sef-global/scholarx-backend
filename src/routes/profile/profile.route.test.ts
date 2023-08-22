@@ -57,12 +57,12 @@ describe('profile', () => {
 
       await agent.put('/api/me/profile').send(updatedProfile).expect(200)
     })
- 
+
     it('should return a 401 when a valid access token is not provided', async () => {
       await supertest(server).put('/api/me/profile').send({}).expect(401)
     })
   })
- 
+
   describe('Delete profile route', () => {
     it('should delete the user profile and return a 200', async () => {
       await agent.delete('/api/me/profile').expect(200)
