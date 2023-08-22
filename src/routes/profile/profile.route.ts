@@ -1,5 +1,6 @@
 import express from 'express'
 import {
+  deleteProfileHandler,
   getProfileHandler,
   updateProfileHandler
 } from '../../controllers/profile.controller'
@@ -9,5 +10,6 @@ const profileRouter = express.Router()
 
 profileRouter.get('/profile', requireAuth, getProfileHandler)
 profileRouter.put('/profile', requireAuth, updateProfileHandler)
+profileRouter.delete('/profile', requireAuth, deleteProfileHandler)
 
 export default profileRouter
