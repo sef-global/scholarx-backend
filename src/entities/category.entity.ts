@@ -5,7 +5,7 @@ import Mentor from './mentor.entity'
 class Category extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   category: string
-  
+
   @OneToMany(() => Mentor, (mentor) => mentor.category)
   mentors: Mentor[]
 
