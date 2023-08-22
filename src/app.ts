@@ -9,7 +9,6 @@ import adminRouter from './routes/admin/admin.route'
 import mentorRouter from './routes/mentor/mentor.route'
 import passport from 'passport'
 import './configs/passport'
-import { SERVER_PORT } from './configs/envConfig'
 import cookieParser from 'cookie-parser'
 
 const app = express()
