@@ -12,9 +12,6 @@ import './configs/passport'
 import { SERVER_PORT } from './configs/envConfig'
 import cookieParser from 'cookie-parser'
 
-
-const port = SERVER_PORT
-
 const app = express()
 
 app.use(cookieParser())

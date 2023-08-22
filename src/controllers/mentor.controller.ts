@@ -8,13 +8,13 @@ export const mentorApplicationHandler = async (
 ): Promise<void> => {
   try {
     const user = req.user as Profile
-    const application = req.body
-    const mentor = await createMentor(user, application)
+    const { application, categoryId } = req.body
+    const { mentor, message } = await createMentor(user, application,categoryId)
     if (!mentor) {
       res.status(404).json({ message: 'Mentor not created' })
     }
 
-    res.status(200).json(mentor)
+    res.status(200).json({mentor, message})
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
@@ -24,23 +24,3 @@ export const mentorApplicationHandler = async (
     }
   }
 }
-
-// export const validateMentorData = (mentorApplication: any) => {
-//   if (!Array.isArray(mentorApplication) || mentorApplication.length === 0) {
-//     throw new Error('Mentors data must be an array with at least one element')
-//   }
-
-//   for (const mentor of mentorApplication) {
-//     if (
-//       !mentor.question ||
-//       typeof mentor.question !== 'string' ||
-//       !mentor.question.trim() ||
-//       !mentor.answers ||
-//       typeof mentor.answers !== 'string' ||
-//       !mentor.answers.trim()
-//     ) {
-//       throw new Error('Invalid mentor data format')
-//     }
-//   }
-//   return
-// }

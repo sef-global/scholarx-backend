@@ -1,76 +1,69 @@
 import { dataSource } from '../configs/dbConfig'
 import Mentor from '../entities/mentor.entity'
-import Profile from '../entities/profile.entity'
+import type Profile from '../entities/profile.entity'
 import { ApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
 
-export const createMentor = async (user: Profile, application: JSON) => {
-  const userId = user.uuid
-  const categoryId = '60b5b847-99a2-4e47-b35b-81b4284311dd'
-
+export const createMentor = async (user: Profile, application: JSON, categoryId: string): Promise<{
+  statusCode: number
+  mentor?: Mentor | null
+  message: string
+}> => {
   try {
-    const profileRepository = dataSource.getRepository(Profile)
-    const userProfile = await profileRepository.findOne({
-      where: { uuid: userId }
-    })
-
-    if (!userProfile) {
-      throw new Error('User profile not found')
-    }
-
     const mentorRepository = dataSource.getRepository(Mentor)
-    const existingMentorArray = await mentorRepository.find({
-      where: { uuid: userId }
+    const categoryRepository = dataSource.getRepository(Category)
+
+    const existingMentorApplications = await mentorRepository.find({
+      where: { profile: { uuid: user.uuid } }
     })
 
-    if (existingMentorArray.length > 0) {
-      const pendingMentors = existingMentorArray.filter(
-        (existingMentor) => existingMentor.state == ApplicationStatus.PENDING
-      )
-      if (pendingMentors.length > 0) {
-        throw new Error('Application pending')
-      } else {
-        const categoryRepository = dataSource.getRepository(Category)
-        const category = await categoryRepository.findOne({
-          where: { uuid: categoryId }
-        })
+    const category = await categoryRepository.findOne({
+      where: { uuid: categoryId }
+    })
 
-        if (!category) {
-          throw new Error('User profile not found')
-        }
-
-        const newMentor = new Mentor(
-          ApplicationStatus.PENDING,
-          category,
-          application,
-          true,
-          user,
-          []
-        )
-        await mentorRepository.save(newMentor)
-        return newMentor
+    if (!category) {
+      return {
+        statusCode: 404,
+        message: 'Category not found'
       }
-    } else {
-      const categoryRepository = dataSource.getRepository(Category)
-      const category = await categoryRepository.findOne({
-        where: { uuid: categoryId }
-      })
-
-      if (!category) {
-        throw new Error('User profile not found')
-      }
-
-      const newMentor = new Mentor(
-        ApplicationStatus.PENDING,
-        category,
-        application,
-        true,
-        user,
-        []
-      )
-      await mentorRepository.save(newMentor)
-      return newMentor
     }
+    
+    for (const mentor of existingMentorApplications) {
+      switch (mentor.state) {
+        case ApplicationStatus.PENDING:
+          return {
+            mentor,
+            statusCode: 409,
+            message: 'The mentor application is pending'
+          }
+        case ApplicationStatus.ACCEPTED:
+          return {
+            mentor,
+            statusCode: 409,
+            message: 'The user is already a mentor'
+          }
+        default:
+          break
+      }
+    }
+
+    const newMentor = new Mentor(
+      ApplicationStatus.PENDING,
+      category,
+      application,
+      true,
+      user,
+      []
+    )
+
+    await mentorRepository.save(newMentor)
+
+    return {
+      statusCode: 200,
+      mentor: newMentor,
+      message: 'Mentor application is successful'
+    }
+    
   } catch (err) {
     console.error('Error creating mentor', err)
     throw new Error('Error creating mentor')

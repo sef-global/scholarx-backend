@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne
+} from 'typeorm'
 import profileEntity from './profile.entity'
 import Mentee from './mentee.entity'
 import Category from './category.entity'
@@ -14,7 +21,7 @@ class Mentor extends BaseEntity {
   })
   state: ApplicationStatus
 
-  @OneToMany(() => Category, (category) => category.category)
+  @ManyToOne(() => Category, (category) => category.mentors)
   category: Category
 
   @Column({ type: 'json', select: false })
