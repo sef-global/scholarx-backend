@@ -63,7 +63,7 @@ export const deleteProfileHandler = async (
       console.error('Error executing query', err)
       res
         .status(500)
-        .json({ error: 'Internal server error', message: err.message })
+        .json({ error: 'Internal server errorrrr', message: err.message })
     }
   }
 }

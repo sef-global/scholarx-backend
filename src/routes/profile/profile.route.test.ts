@@ -60,27 +60,14 @@ describe('profile', () => {
     it('should return a 401 when a valid access token is not provided', async () => {
       await supertest(server).put('/api/me/profile').send({}).expect(401)
     })
-
-    afterAll(async () => {
-      await dataSource.destroy()
-    })
   })
   describe('Delete profile route', () => {
-    let profileUuid: string
-    beforeAll(async () => {
-      const response = await agent.get('/api/me/profile')
-      profileUuid = response.body.uuid
-    })
-
     it('should delete the user profile and return a 200', async () => {
-      await agent.delete(`/api/me/profile/${profileUuid}`).expect(200)
+      await agent.delete('/api/me/profile').expect(200)
     })
 
     it('should return a 401 when a valid access token is not provided', async () => {
-      await supertest(server)
-        .delete(`/api/me/profile/${profileUuid}`)
-        .send({})
-        .expect(401)
+      await supertest(server).delete(`/api/me/profile`).send({}).expect(401)
     })
 
     afterAll(async () => {
