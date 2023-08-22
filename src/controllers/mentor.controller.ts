@@ -14,7 +14,6 @@ export const mentorApplicationHandler = async (
       application,
       categoryId
     )
-    
     if (!mentor) {
       res.status(404).json({ message: 'Mentor not created' })
     }
