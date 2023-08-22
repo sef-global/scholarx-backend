@@ -4,7 +4,11 @@ import type Profile from '../entities/profile.entity'
 import { ApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
 
-export const createMentor = async (user: Profile, application: JSON, categoryId: string): Promise<{
+export const createMentor = async (
+  user: Profile,
+  application: JSON,
+  categoryId: string
+): Promise<{
   statusCode: number
   mentor?: Mentor | null
   message: string
@@ -27,7 +31,7 @@ export const createMentor = async (user: Profile, application: JSON, categoryId:
         message: 'Category not found'
       }
     }
-    
+
     for (const mentor of existingMentorApplications) {
       switch (mentor.state) {
         case ApplicationStatus.PENDING:
@@ -63,7 +67,6 @@ export const createMentor = async (user: Profile, application: JSON, categoryId:
       mentor: newMentor,
       message: 'Mentor application is successful'
     }
-    
   } catch (err) {
     console.error('Error creating mentor', err)
     throw new Error('Error creating mentor')
