@@ -57,7 +57,7 @@ describe('Mentor application', () => {
     })
 
     it('should return a 404 when the category id is not valid', async () => {
-      await supertest(server)
+      await agent(server)
         .post('/api/mentors')
         .send({ ...mentorApplicationInfo, categoryId: uuidv4() })
         .expect(401)
