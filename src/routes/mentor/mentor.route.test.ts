@@ -11,7 +11,7 @@ const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 let server: Express
 let agent: supertest.SuperAgentTest
 
-describe('Mentot application', () => {
+describe('Mentor application', () => {
   beforeAll(async () => {
     server = await startServer(port)
     agent = supertest.agent(server)
