@@ -44,7 +44,7 @@ describe('Mentot application', () => {
       const response = await supertest(server)
         .post('/api/mentors')
         .send(mentorApplicationInfo)
-        .expect(401)
+        .expect(409)
 
       expect(response.body).toHaveProperty('mentor')
       expect(response.body).toHaveProperty('message')
