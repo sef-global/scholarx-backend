@@ -29,7 +29,7 @@ describe('Register and login', () => {
     await agent.post('/api/auth/login').send(testUser).expect(200)
   }, 5000)
 
-  describe('Create mentor route', () => {
+  describe('Apply as a mentor route', () => {
     it('should return a 200 with a mentor object and the message', async () => {
       const response = await agent
         .post('/api/mentors')
