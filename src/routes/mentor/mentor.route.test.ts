@@ -47,7 +47,7 @@ describe('Mentor application', () => {
     })
 
     it('should return a 409 when the user is already a mentor or has an pending invitation', async () => {
-      const response = await agent(server)
+      const response = await agent
         .post('/api/mentors')
         .send({ ...mentorApplicationInfo, categoryId: savedCategory.uuid })
         .expect(409)
@@ -57,7 +57,7 @@ describe('Mentor application', () => {
     })
 
     it('should return a 404 when the category id is not valid', async () => {
-      await agent(server)
+      await agent
         .post('/api/mentors')
         .send({ ...mentorApplicationInfo, categoryId: uuidv4() })
         .expect(401)
