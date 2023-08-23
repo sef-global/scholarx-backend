@@ -9,7 +9,7 @@ export const mentorApplicationHandler = async (
   try {
     const user = req.user as Profile
     const { application, categoryId } = req.body
-    const { mentor, message } = await createMentor(
+    const { mentor, statusCode, message } = await createMentor(
       user,
       application,
       categoryId
@@ -18,7 +18,7 @@ export const mentorApplicationHandler = async (
       res.status(404).json({ message: 'Mentor not created' })
     }
 
-    res.status(200).json({ mentor, message })
+    res.status(statusCode).json({ mentor, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

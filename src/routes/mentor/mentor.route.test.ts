@@ -60,7 +60,7 @@ describe('Mentor application', () => {
       await agent
         .post('/api/mentors')
         .send({ ...mentorApplicationInfo, categoryId: uuidv4() })
-        .expect(401)
+        .expect(404)
     })
 
     it('should return a 401 when a valid access token is not provided', async () => {
