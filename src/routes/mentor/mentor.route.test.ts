@@ -47,7 +47,7 @@ describe('Mentor application', () => {
     })
 
     it('should return a 409 when the user is already a mentor or has an pending invitation', async () => {
-      const response = await supertest(server)
+      const response = await agent(server)
         .post('/api/mentors')
         .send({ ...mentorApplicationInfo, categoryId: savedCategory.uuid })
         .expect(409)
