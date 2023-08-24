@@ -40,7 +40,7 @@ export const createMentor = async (
             statusCode: 409,
             message: 'The mentor application is pending'
           }
-        case ApplicationStatus.ACCEPTED:
+        case ApplicationStatus.APPROVED:
           return {
             mentor,
             statusCode: 409,
