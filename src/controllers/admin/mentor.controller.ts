@@ -12,14 +12,13 @@ export const mentorStatusHandler = async (
     const { status } = req.body
     const { mentorId } = req.params
 
-    if (!(status.toUpperCase() in ApplicationStatus)) {
-      res.status(400).json({ message: 'Please provide a valid status' })
-      return
-    }
-
     if (user.type !== ProfileTypes.ADMIN) {
       res.status(403).json({ message: 'Only Admins are allowed' })
     } else {
+      if (!(status.toUpperCase() in ApplicationStatus)) {
+        res.status(400).json({ message: 'Please provide a valid status' })
+        return
+      }
       const { mentor, statusCode, message } = await updateMentorStatus(
         mentorId,
         status
