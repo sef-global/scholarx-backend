@@ -36,11 +36,11 @@ describe('Mentor application', () => {
   }, 5000)
 
   describe('Apply as a mentor route', () => {
-    it('should return a 200 with a mentor object and the message', async () => {
+    it('should return a 201 with a mentor and the message', async () => {
       const response = await agent
         .post('/api/mentors')
         .send({ ...mentorApplicationInfo, categoryId: savedCategory.uuid })
-        .expect(200)
+        .expect(201)
 
       expect(response.body).toHaveProperty('mentor')
       expect(response.body).toHaveProperty('message')

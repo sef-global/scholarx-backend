@@ -63,7 +63,7 @@ export const createMentor = async (
     await mentorRepository.save(newMentor)
 
     return {
-      statusCode: 200,
+      statusCode: 201,
       mentor: newMentor,
       message: 'Mentor application is successful'
     }

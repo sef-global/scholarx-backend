@@ -14,7 +14,7 @@ let server: Express
 let agent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
 
-describe('Admin user routes', () => {
+describe('Admin category routes', () => {
   beforeAll(async () => {
     server = await startServer(port)
     agent = supertest.agent(server)
@@ -56,31 +56,17 @@ describe('Admin user routes', () => {
     await adminAgent.post('/api/auth/login').send(adminUser).expect(200)
   }, 5000)
 
-  it('should return a 401 when a valid access token is not provided', async () => {
-    await supertest(server).get('/api/admin/users').expect(401)
+  it('should add a category', async () => {
+    await adminAgent
+      .post('/api/admin/categories')
+      .send({ categoryName: 'Computer Science' })
+      .expect(200)
   })
 
-  it('should return a 403 if user is not admin', async () => {
-    await agent.get('/api/admin/users').expect(403)
-  })
-
-  it('should return a 200 with all users if user is admin', async () => {
-    const response = await adminAgent.get('/api/admin/users').expect(200)
-
-    const userProfiles = response.body.profiles
-
-    userProfiles.forEach((userProfile: Partial<Profile>) => {
-      expect(userProfile).toHaveProperty('created_at')
-      expect(userProfile).toHaveProperty('updated_at')
-      expect(userProfile).toHaveProperty('primary_email')
-      expect(userProfile).toHaveProperty('contact_email')
-      expect(userProfile).toHaveProperty('first_name')
-      expect(userProfile).toHaveProperty('last_name')
-      expect(userProfile).toHaveProperty('image_url')
-      expect(userProfile).toHaveProperty('linkedin_url')
-      expect(userProfile).toHaveProperty('type')
-      expect(userProfile).toHaveProperty('uuid')
-      expect(userProfile).not.toHaveProperty('password')
-    })
+  it('should only allow admins to add a category', async () => {
+    await agent
+      .post('/api/admin/categories')
+      .send({ categoryName: 'Computer Science' })
+      .expect(403)
   })
 })
