@@ -2,11 +2,10 @@ import { startServer } from '../../app'
 import type { Express } from 'express'
 import supertest from 'supertest'
 import { dataSource } from '../../configs/dbConfig'
-import { mentorApplicationInfo } from '../../../mocks'
+import { mentorApplicationInfo, mockUser } from '../../../mocks'
 import { v4 as uuidv4 } from 'uuid'
 import Category from '../../entities/category.entity'
 
-const randomString = Math.random().toString(36)
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 let server: Express
@@ -18,17 +17,12 @@ describe('Mentor application', () => {
     server = await startServer(port)
     agent = supertest.agent(server)
 
-    const testUser = {
-      email: `test${randomString}@gmail.com`,
-      password: '123'
-    }
-
     await supertest(server)
       .post('/api/auth/register')
-      .send(testUser)
+      .send(mockUser)
       .expect(201)
 
-    await agent.post('/api/auth/login').send(testUser).expect(200)
+    await agent.post('/api/auth/login').send(mockUser).expect(200)
 
     const categoryRepository = dataSource.getRepository(Category)
     const newCategory = new Category('Random Category', [])

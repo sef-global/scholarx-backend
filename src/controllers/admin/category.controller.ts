@@ -18,7 +18,7 @@ export const addCategory = async (
         categoryName
       )
 
-      res.status(200).json({ category, statusCode, message })
+      res.status(statusCode).json({ category, message })
     }
   } catch (err) {
     console.error('Error executing query', err)

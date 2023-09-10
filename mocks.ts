@@ -1,3 +1,20 @@
+const randomString = Math.random().toString(36)
+
+export const mockMentor = {
+  email: `mentor${randomString}@gmail.com`,
+  password: '123'
+}
+
+export const mockAdmin = {
+  email: `admin${randomString}@gmail.com`,
+  password: 'admin123'
+}
+
+export const mockUser = {
+  email: `user${randomString}@gmail.com`,
+  password: '123'
+}
+
 export const mentorApplicationInfo = {
   application: [
     {

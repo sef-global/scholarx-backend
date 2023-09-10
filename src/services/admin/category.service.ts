@@ -16,7 +16,7 @@ export const createCategory = async (
     const saveCategory = await categoryRepository.save(newCategory)
 
     return {
-      statusCode: 200,
+      statusCode: 201,
       category: saveCategory,
       message: 'Category created successfully'
     }
