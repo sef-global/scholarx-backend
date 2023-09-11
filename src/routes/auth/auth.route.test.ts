@@ -2,17 +2,12 @@ import { startServer } from '../../app'
 import type { Express } from 'express'
 import supertest from 'supertest'
 import { dataSource } from '../../configs/dbConfig'
+import { mockUser } from '../../../mocks'
 
-const randomString = Math.random().toString(36)
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 let server: Express
 let agent: supertest.SuperAgentTest
-
-const testUser = {
-  email: `test${randomString}@gmail.com`,
-  password: '123'
-}
 
 beforeAll(async () => {
   server = await startServer(port)
@@ -28,7 +23,7 @@ describe('auth controllers', () => {
     it('should return a 201 with a user profile after successful registration', async () => {
       const response = await supertest(server)
         .post('/api/auth/register')
-        .send(testUser)
+        .send(mockUser)
         .expect(201)
 
       expect(response.body).toHaveProperty('message')
@@ -48,7 +43,7 @@ describe('auth controllers', () => {
     it('should return a 400 when registering with a duplicate email', async () => {
       await supertest(server)
         .post('/api/auth/register')
-        .send(testUser)
+        .send(mockUser)
         .expect(409)
     })
   })
@@ -61,7 +56,7 @@ describe('auth controllers', () => {
     it('should return a 200 after successful login', async () => {
       const response = await supertest(server)
         .post('/api/auth/login')
-        .send(testUser)
+        .send(mockUser)
         .expect(200)
 
       expect(response.body).toHaveProperty('message')
@@ -69,7 +64,7 @@ describe('auth controllers', () => {
 
     it('should return a 401 when logging in with incorrect credentials', async () => {
       const incorrectUser = {
-        email: `test${randomString}@gmail.com`,
+        email: mockUser.email,
         password: 'incorrect_password'
       }
 

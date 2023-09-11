@@ -9,14 +9,12 @@ export const mentorApplicationHandler = async (
   try {
     const user = req.user as Profile
     const { application, categoryId } = req.body
+
     const { mentor, statusCode, message } = await createMentor(
       user,
       application,
       categoryId
     )
-    if (!mentor) {
-      res.status(404).json({ message: 'Mentor not created' })
-    }
 
     res.status(statusCode).json({ mentor, message })
   } catch (err) {

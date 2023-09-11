@@ -1,9 +1,12 @@
 import express from 'express'
-import { getAllUsersHandler } from '../../controllers/admin/user.controller'
-import { requireAuth } from '../../controllers/auth.controller'
+import userRouter from './user/user.route'
+import mentorRouter from './mentor/mentor.route'
+import categoryRouter from './category/category.route'
 
-const adminRouter = express.Router()
+const adminRouter = express()
 
-adminRouter.get('/users', requireAuth, getAllUsersHandler)
+adminRouter.use('/users', userRouter)
+adminRouter.use('/mentors', mentorRouter)
+adminRouter.use('/categories', categoryRouter)
 
 export default adminRouter
