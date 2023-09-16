@@ -45,3 +45,14 @@ export const updateProfile = async (
     return { statusCode: 500, message: 'Internal server error' }
   }
 }
+
+export const deleteProfile = async (userId: string): Promise<void> => {
+  const profileRepository = dataSource.getRepository(Profile)
+
+  await profileRepository
+    .createQueryBuilder()
+    .delete()
+    .from(Profile)
+    .where('uuid = :uuid', { uuid: userId })
+    .execute()
+}
