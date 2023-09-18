@@ -35,7 +35,6 @@ export const createMentor = async (
     for (const mentor of existingMentorApplications) {
       switch (mentor.state) {
         case ApplicationStatus.PENDING:
-          ;``
           return {
             mentor,
             statusCode: 409,
