@@ -35,6 +35,7 @@ export const createMentor = async (
     for (const mentor of existingMentorApplications) {
       switch (mentor.state) {
         case ApplicationStatus.PENDING:
+          ;``
           return {
             mentor,
             statusCode: 409,
@@ -66,6 +67,36 @@ export const createMentor = async (
       statusCode: 201,
       mentor: newMentor,
       message: 'Mentor application is successful'
+    }
+  } catch (err) {
+    console.error('Error creating mentor', err)
+    throw new Error('Error creating mentor')
+  }
+}
+
+export const updateAvailability = async (
+  user: Profile,
+  availability: boolean
+): Promise<{ statusCode: number; updatedMentorApplication: Mentor }> => {
+  try {
+    const mentorRepository = dataSource.getRepository(Mentor)
+    const existingMentorApplications = await mentorRepository.find({
+      where: { profile: { uuid: user.uuid } }
+    })
+
+    const mentorApplication = existingMentorApplications[0]
+
+    if (mentorApplication) {
+      mentorApplication.availability = availability
+      const updatedMentorApplication = await mentorRepository.save(
+        mentorApplication
+      )
+      return {
+        statusCode: 200,
+        updatedMentorApplication
+      }
+    } else {
+      throw new Error('Mentor application not found')
     }
   } catch (err) {
     console.error('Error creating mentor', err)

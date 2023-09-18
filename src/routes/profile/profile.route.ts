@@ -4,6 +4,7 @@ import {
   getProfileHandler,
   updateProfileHandler
 } from '../../controllers/profile.controller'
+import { mentorAvailabilityHandler } from './../../controllers/mentor.controller'
 import { requireAuth } from '../../controllers/auth.controller'
 
 const profileRouter = express.Router()
@@ -11,5 +12,10 @@ const profileRouter = express.Router()
 profileRouter.get('/profile', requireAuth, getProfileHandler)
 profileRouter.put('/profile', requireAuth, updateProfileHandler)
 profileRouter.delete('/profile', requireAuth, deleteProfileHandler)
+profileRouter.put(
+  '/mentor/availability',
+  requireAuth,
+  mentorAvailabilityHandler
+)
 
 export default profileRouter
