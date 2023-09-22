@@ -67,7 +67,7 @@ describe('Mentor application', () => {
         async (availability) => {
           const response = await agent
             .put('/api/mentors/me/availability')
-            .send({ availability: availability })
+            .send({ availability })
             .expect(200)
 
           expect(response.body).toHaveProperty('availability', availability)
