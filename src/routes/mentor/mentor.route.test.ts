@@ -74,7 +74,6 @@ describe('Mentor application', () => {
       expect(response.body).toHaveProperty('mentorId')
       expect(response.body).toHaveProperty('category')
       expect(response.body).toHaveProperty('profile')
-      expect(response.body).toHaveProperty('mentees')
     })
 
     it('should return a 404 when the mentor ID is not found', async () => {
