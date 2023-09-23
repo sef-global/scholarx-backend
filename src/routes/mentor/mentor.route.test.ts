@@ -65,6 +65,20 @@ describe('Mentor application', () => {
     })
   })
 
+  describe('Update Mentor Availability', () => {
+    it.each([true, false])(
+      'should update mentor availability and return a 201 with the updated availability',
+      async (availability) => {
+        const response = await agent
+          .put('/api/mentors/me/availability')
+          .send({ availability })
+          .expect(200)
+
+        expect(response.body).toHaveProperty('availability', availability)
+      }
+    )
+  })
+
   describe('Get mentor details route', () => {
     it('should return a 200 with the mentor details', async () => {
       const response = await agent
@@ -81,18 +95,22 @@ describe('Mentor application', () => {
       await agent.get(`/api/mentors/${nonExistentId}`).expect(404)
     })
 
-    describe('Update Mentor Availability', () => {
-      it.each([true, false])(
-        'should update mentor availability and return a 201 with the updated availability',
-        async (availability) => {
-          const response = await agent
-            .put('/api/mentors/me/availability')
-            .send({ availability })
-            .expect(200)
+    it('should return a 200 with the mentor details', async () => {
+      const response = await supertest(server)
+        .get(`/api/mentors/${savedMentor.uuid}`)
+        .expect(200)
 
-          expect(response.body).toHaveProperty('availability', availability)
-        }
-      )
+      expect(response.body).toHaveProperty('mentorId')
+      expect(response.body).toHaveProperty('category')
+      expect(response.body).toHaveProperty('profile')
+    })
+
+    it('should return a 404 when the mentor ID is not found', async () => {
+      const nonExistentId = uuidv4()
+      const response = await supertest(server)
+        .get(`/api/mentors/${nonExistentId}`)
+        .expect(404)
+      expect(response.body).toHaveProperty('error', 'Mentor not found')
     })
 
     afterAll(async () => {
