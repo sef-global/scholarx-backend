@@ -69,8 +69,7 @@ export const mentorDetailsHandler = async (
           last_name: mentor.profile.last_name,
           image_url: mentor.profile.image_url,
           linkedin_url: mentor.profile.linkedin_url
-        },
-        mentees: mentor.mentees
+        }
       }
       res.status(statusCode).json({ ...mentorDetails })
     }
