@@ -1,5 +1,9 @@
 import type { Request, Response } from 'express'
-import { createMentor, updateAvailability } from '../services/mentor.service'
+import {
+  createMentor,
+  updateAvailability,
+  getMentor
+} from '../services/mentor.service'
 import type Profile from '../entities/profile.entity'
 
 export const mentorApplicationHandler = async (
@@ -35,6 +39,24 @@ export const mentorAvailabilityHandler = async (
     const { availability } = req.body
     const result = await updateAvailability(user, availability)
     res.status(result.statusCode).json(result.updatedMentorApplication)
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+  }
+}
+
+export const mentorDetailsHandler = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const mentorId = req.params.mentorId
+    const { mentor, statusCode, message } = await getMentor(mentorId)
+    res.status(statusCode).json({ mentor, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
