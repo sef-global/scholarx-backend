@@ -61,6 +61,20 @@ describe('Mentor application', () => {
       await supertest(server).post('/api/mentors').send({}).expect(401)
     })
 
+    describe('Update Mentor Availability', () => {
+      it.each([true, false])(
+        'should update mentor availability and return a 201 with the updated availability',
+        async (availability) => {
+          const response = await agent
+            .put('/api/mentors/me/availability')
+            .send({ availability })
+            .expect(200)
+
+          expect(response.body).toHaveProperty('availability', availability)
+        }
+      )
+    })
+
     afterAll(async () => {
       await dataSource.destroy()
     })
