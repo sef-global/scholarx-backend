@@ -5,11 +5,9 @@ import Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
 import { dataSource } from '../../configs/dbConfig'
 import bcrypt from 'bcrypt'
+import { mockAdmin, mockUser } from '../../../mocks'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
-
-const randomString = Math.random().toString(36)
-const randomStringAdmin = Math.random().toString(36)
 let server: Express
 let agent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
@@ -21,8 +19,7 @@ describe('Get all users route', () => {
     adminAgent = supertest.agent(server)
 
     const defaultUser = {
-      email: `test${randomString}@gmail.com`,
-      password: '123'
+      ...mockUser
     }
 
     await supertest(server)
@@ -33,8 +30,7 @@ describe('Get all users route', () => {
     await agent.post('/api/auth/login').send(defaultUser).expect(200)
 
     const adminUser = {
-      email: `test${randomStringAdmin}@gmail.com`,
-      password: 'admin123'
+      ...mockAdmin
     }
 
     const profileRepository = dataSource.getRepository(Profile)
