@@ -72,7 +72,7 @@ export const mentorDetailsHandler = async (
         },
         mentees: mentor.mentees
       }
-      res.status(statusCode).json({ mentorDetails, message })
+      res.status(statusCode).json({ ...mentorDetails })
     }
   } catch (err) {
     if (err instanceof Error) {

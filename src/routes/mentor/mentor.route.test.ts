@@ -5,12 +5,14 @@ import { dataSource } from '../../configs/dbConfig'
 import { mentorApplicationInfo, mockUser } from '../../../mocks'
 import { v4 as uuidv4 } from 'uuid'
 import Category from '../../entities/category.entity'
+import type Mentor from '../../entities/mentor.entity'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 let server: Express
 let agent: supertest.SuperAgentTest
 let savedCategory: Category
+let savedMentor: Mentor
 
 describe('Mentor application', () => {
   beforeAll(async () => {
@@ -38,6 +40,7 @@ describe('Mentor application', () => {
 
       expect(response.body).toHaveProperty('mentor')
       expect(response.body).toHaveProperty('message')
+      savedMentor = response.body.mentor
     })
 
     it('should return a 409 when the user is already a mentor or has an pending invitation', async () => {
@@ -59,6 +62,24 @@ describe('Mentor application', () => {
 
     it('should return a 401 when a valid access token is not provided', async () => {
       await supertest(server).post('/api/mentors').send({}).expect(401)
+    })
+  })
+
+  describe('Get mentor details route', () => {
+    it('should return a 200 with the mentor details', async () => {
+      const response = await agent
+        .get(`/api/mentors/${savedMentor.uuid}`)
+        .expect(200)
+
+      expect(response.body).toHaveProperty('mentorId')
+      expect(response.body).toHaveProperty('category')
+      expect(response.body).toHaveProperty('profile')
+      expect(response.body).toHaveProperty('mentees')
+    })
+
+    it('should return a 404 when the mentor ID is not found', async () => {
+      const nonExistentId = uuidv4()
+      await agent.get(`/api/mentors/${nonExistentId}`).expect(404)
     })
 
     describe('Update Mentor Availability', () => {
