@@ -2,7 +2,7 @@ import { startServer } from '../../../app'
 import type { Express } from 'express'
 import supertest from 'supertest'
 import Profile from '../../../entities/profile.entity'
-import { ProfileTypes } from '../../../enums'
+import { ApplicationStatus, ProfileTypes } from '../../../enums'
 import { dataSource } from '../../../configs/dbConfig'
 import bcrypt from 'bcrypt'
 import { mentorApplicationInfo, mockAdmin, mockMentor } from '../../../../mocks'
@@ -73,6 +73,20 @@ describe('Admin mentor routes', () => {
     await mentorAgent
       .put(`/api/admin/mentors/${mentorId}/status`)
       .send({ status: 'approved' })
+      .expect(403)
+  })
+
+  it('should return mentorsArray and a success message when mentors are found', async () => {
+    const response = await adminAgent
+      .get(`/api/admin/mentors?status=${ApplicationStatus.APPROVED}`)
+      .expect(200)
+
+    expect(response.body).toHaveProperty('mentors')
+  })
+
+  it('should only allow admins to get the mentors', async () => {
+    await mentorAgent
+      .get(`/api/admin/mentors?status=${ApplicationStatus.APPROVED}`)
       .expect(403)
   })
 })

@@ -49,10 +49,6 @@ export const getAllMentorsByStatus = async (
     if (user.type !== ProfileTypes.ADMIN) {
       res.status(403).json({ message: 'Only Admins are allowed' })
     } else {
-      if (!(status.toUpperCase() in ApplicationStatus)) {
-        res.status(400).json({ message: 'Please provide a valid status' })
-        return
-      }
       const { mentors, statusCode, message } = await getAllMentors(status)
       res.status(statusCode).json({ mentors, message })
     }

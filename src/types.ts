@@ -1,4 +1,3 @@
-import type Profile from './entities/profile.entity'
 interface Option {
   // todo: To be determined (Not final)
   answer: string
@@ -28,13 +27,4 @@ export interface MentorInfo {
   previous_experience_as_mentor: boolean
   reason_for_being_mentor: string
   cv_link: string
-}
-
-export interface AllMentorsArray {
-  mentor_id: number
-  state: string
-  category: string
-  application: MentorInfo
-  availability: boolean
-  profile: Profile
 }
