@@ -5,28 +5,43 @@ import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
 
-export const register = async (req: Request, res: Response): Promise<void> => {
+interface AuthResponse {
+  statusCode: number
+  message?: string
+  profile?: Profile | null
+}
+
+export const register = async (
+  req: Request,
+  res: Response
+): Promise<AuthResponse> => {
   try {
     const { email, password } = req.body
 
     if (!email || !password) {
       res.status(400).json({ error: 'Email and password are required fields' })
+      throw new Error('Email and password are required fields')
     }
 
     const { statusCode, message, profile } = await registerUser(email, password)
 
-    res.status(statusCode).json({ message, profile })
+    return res.status(statusCode).json({ message, profile })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
-      res
+      return res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
+
+    throw err
   }
 }
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (
+  req: Request,
+  res: Response
+): Promise<AuthResponse> => {
   try {
     const { email, password } = req.body
 
@@ -42,28 +57,35 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       secure: false // TODO: Set to true when using HTTPS
     })
 
-    res.status(statusCode).json({ message })
+    return res.status(statusCode).json({ message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
-      res
+      return res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
+
+    throw err
   }
 }
 
-export const logout = async (req: Request, res: Response): Promise<void> => {
+export const logout = async (
+  req: Request,
+  res: Response
+): Promise<AuthResponse> => {
   try {
     res.clearCookie('jwt', { httpOnly: true })
-    res.status(200).json({ message: 'Logged out successfully' })
+    return res.status(200).json({ message: 'Logged out successfully' })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Something went wrong', err)
-      res
+      return res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
+
+    throw err
   }
 }
 
