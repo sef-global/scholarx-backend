@@ -5,7 +5,7 @@ import {
   getMentor
 } from '../services/mentor.service'
 import type Profile from '../entities/profile.entity'
-import Mentor from '../entities/mentor.entity'
+import type Mentor from '../entities/mentor.entity'
 
 interface MentorResponse {
   statusCode: number

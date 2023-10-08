@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import type Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
 import { createCategory } from '../../services/admin/category.service'
-import Category from '../../entities/category.entity'
+import type Category from '../../entities/category.entity'
 
 interface CategoryResponse {
   statusCode: number

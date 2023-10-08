@@ -5,7 +5,7 @@ import {
 } from '../../services/admin/mentor.service'
 import { ApplicationStatus, ProfileTypes } from '../../enums'
 import type Profile from '../../entities/profile.entity'
-import Mentor from '../../entities/mentor.entity'
+import type Mentor from '../../entities/mentor.entity'
 
 interface MentorStatusResponse {
   statusCode: number
