@@ -36,3 +36,42 @@ export const updateMentorStatus = async (
     throw new Error('Error updating the mentor status')
   }
 }
+
+export const getAllMentors = async (
+  status: ApplicationStatus | undefined
+): Promise<{
+  statusCode: number
+  mentors?: Mentor[]
+  message: string
+}> => {
+  try {
+    const mentorRepository = dataSource.getRepository(Mentor)
+
+    const mentors: Mentor[] = await mentorRepository.find({
+      where: status ? { state: status } : {},
+      select: [
+        'application',
+        'availability',
+        'state',
+        'created_at',
+        'updated_at'
+      ],
+      relations: ['profile', 'category']
+    })
+
+    if (!mentors) {
+      return {
+        statusCode: 404,
+        message: 'Mentors not found'
+      }
+    }
+
+    return {
+      statusCode: 200,
+      mentors,
+      message: 'All Mentors found'
+    }
+  } catch (err) {
+    throw new Error('Error getting mentors')
+  }
+}

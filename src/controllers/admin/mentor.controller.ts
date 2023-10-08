@@ -1,5 +1,8 @@
 import type { Request, Response } from 'express'
-import { updateMentorStatus } from '../../services/admin/mentor.service'
+import {
+  getAllMentors,
+  updateMentorStatus
+} from '../../services/admin/mentor.service'
 import { ApplicationStatus, ProfileTypes } from '../../enums'
 import type Profile from '../../entities/profile.entity'
 import Mentor from '../../entities/mentor.entity'
@@ -42,5 +45,35 @@ export const mentorStatusHandler = async (
     }
 
     throw err
+  }
+}
+
+export const getAllMentorsByStatus = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = req.user as Profile
+    const status: ApplicationStatus | undefined = req.query.status as
+      | ApplicationStatus
+      | undefined
+
+    if (user.type !== ProfileTypes.ADMIN) {
+      res.status(403).json({ message: 'Only Admins are allowed' })
+    } else {
+      if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+        res.status(400).json({ message: 'Please provide a valid status' })
+        return
+      }
+      const { mentors, statusCode, message } = await getAllMentors(status)
+      res.status(statusCode).json({ mentors, message })
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
   }
 }
