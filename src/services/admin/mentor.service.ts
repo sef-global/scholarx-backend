@@ -38,7 +38,7 @@ export const updateMentorStatus = async (
 }
 
 export const getAllMentors = async (
-  status: ApplicationStatus | null
+  status: ApplicationStatus | undefined
 ): Promise<{
   statusCode: number
   mentors?: Mentor[]

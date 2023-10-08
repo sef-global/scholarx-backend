@@ -44,12 +44,14 @@ export const getAllMentorsByStatus = async (
 ): Promise<void> => {
   try {
     const user = req.user as Profile
-    const status: ApplicationStatus = req.query.status as ApplicationStatus
+    const status: ApplicationStatus | undefined = req.query.status as
+      | ApplicationStatus
+      | undefined
 
     if (user.type !== ProfileTypes.ADMIN) {
       res.status(403).json({ message: 'Only Admins are allowed' })
     } else {
-      if (!(status.toUpperCase() in ApplicationStatus)) {
+      if (status && !(status?.toUpperCase() in ApplicationStatus)) {
         res.status(400).json({ message: 'Please provide a valid status' })
         return
       }

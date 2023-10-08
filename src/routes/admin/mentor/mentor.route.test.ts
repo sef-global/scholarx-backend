@@ -89,4 +89,10 @@ describe('Admin mentor routes', () => {
       .get(`/api/admin/mentors?status=${ApplicationStatus.APPROVED}`)
       .expect(403)
   })
+
+  it('should return mentors and a success message when mentors are found', async () => {
+    const response = await adminAgent.get(`/api/admin/mentors`).expect(200)
+
+    expect(response.body).toHaveProperty('mentors')
+  })
 })
