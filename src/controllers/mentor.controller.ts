@@ -58,12 +58,8 @@ export const mentorAvailabilityHandler = async (
   try {
     const user = req.user as Profile
     const { availability } = req.body
-    const { statusCode, updatedMentorApplication } = await updateAvailability(
-      user,
-      availability
-    )
-
-    return res.status(statusCode).json({ updatedMentorApplication })
+    const result = await updateAvailability(user, availability)
+    return res.status(result.statusCode).json(result.updatedMentorApplication)
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

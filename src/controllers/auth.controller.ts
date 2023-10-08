@@ -19,8 +19,9 @@ export const register = async (
     const { email, password } = req.body
 
     if (!email || !password) {
-      res.status(400).json({ error: 'Email and password are required fields' })
-      throw new Error('Email and password are required fields')
+      return res
+        .status(400)
+        .json({ error: 'Email and password are required fields' })
     }
 
     const { statusCode, message, profile } = await registerUser(email, password)
@@ -46,7 +47,9 @@ export const login = async (
     const { email, password } = req.body
 
     if (!email || !password) {
-      res.status(400).json({ error: 'Email and password are required fields' })
+      return res
+        .status(400)
+        .json({ error: 'Email and password are required fields' })
     }
 
     const { statusCode, message, token } = await loginUser(email, password)
