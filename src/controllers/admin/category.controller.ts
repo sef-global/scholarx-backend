@@ -3,7 +3,7 @@ import type Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
 import { createCategory } from '../../services/admin/category.service'
 import type Category from '../../entities/category.entity'
-import { ApiResponse } from '../../types'
+import type { ApiResponse } from '../../types'
 
 export const addCategory = async (
   req: Request,

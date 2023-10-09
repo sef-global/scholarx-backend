@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import { getAllUsers } from '../../services/admin/user.service'
 import type Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
-import { ApiResponse } from '../../types'
+import type { ApiResponse } from '../../types'
 
 export const getAllUsersHandler = async (
   req: Request,

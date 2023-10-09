@@ -4,7 +4,7 @@ import passport from 'passport'
 import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
-import { ApiResponse } from '../types'
+import type { ApiResponse } from '../types'
 
 export const register = async (
   req: Request,

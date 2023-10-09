@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { updateProfile, deleteProfile } from '../services/profile.service'
 import type Profile from '../entities/profile.entity'
-import { ApiResponse } from '../types'
+import type { ApiResponse } from '../types'
 
 export const getProfileHandler = async (
   req: Request,
