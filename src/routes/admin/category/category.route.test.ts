@@ -6,12 +6,14 @@ import { ProfileTypes } from '../../../enums'
 import { dataSource } from '../../../configs/dbConfig'
 import bcrypt from 'bcrypt'
 import { mockUser, mockAdmin } from '../../../../mocks'
+import Category from '../../../entities/category.entity'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 let server: Express
 let agent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
+let savedCategory: Category
 
 describe('Admin category routes', () => {
   beforeAll(async () => {
@@ -42,6 +44,10 @@ describe('Admin category routes', () => {
     await profileRepository.save(newProfile)
 
     await adminAgent.post('/api/auth/login').send(mockAdmin).expect(200)
+
+    const categoryRepository = dataSource.getRepository(Category)
+    const newCategory = new Category('Random Category', [])
+    savedCategory = await categoryRepository.save(newCategory)
   }, 5000)
 
   it('should add a category', async () => {
@@ -60,7 +66,7 @@ describe('Admin category routes', () => {
 
   it('should update a category', async () => {
     const response = await adminAgent
-      .put('/api/admin/categories/0058ab92-1c82-4af1-9f84-c60a3e922245')
+      .put(`/api/admin/categories/${savedCategory.uuid}`)
       .send({ categoryName: 'Science' })
       .expect(201)
 
@@ -76,7 +82,7 @@ describe('Admin category routes', () => {
 
   it('should only allow admins to update a category', async () => {
     await agent
-      .put('/api/admin/categories/0058ab92-1c82-4af1-9f84-c60a3e922245')
+      .put(`/api/admin/categories/${savedCategory.uuid}`)
       .send({ categoryName: 'Science' })
       .expect(403)
   })
