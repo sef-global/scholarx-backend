@@ -7,6 +7,7 @@ import authRouter from './routes/auth/auth.route'
 import profileRouter from './routes/profile/profile.route'
 import adminRouter from './routes/admin/admin.route'
 import mentorRouter from './routes/mentor/mentor.route'
+import categoryRouter from './routes/category/category.route'
 import passport from 'passport'
 import './configs/passport'
 import cookieParser from 'cookie-parser'
@@ -26,6 +27,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/me', profileRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/mentors', mentorRouter)
+app.use('/api/categories', categoryRouter)
 
 export const startServer = async (port: number): Promise<Express> => {
   try {
