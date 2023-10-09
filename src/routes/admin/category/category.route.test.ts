@@ -57,4 +57,27 @@ describe('Admin category routes', () => {
       .send({ categoryName: 'Computer Science' })
       .expect(403)
   })
+
+  it('should update a category', async () => {
+    const response = await adminAgent
+      .put('/api/admin/categories/0058ab92-1c82-4af1-9f84-c60a3e922245')
+      .send({ categoryName: 'Science' })
+      .expect(201)
+
+    expect(response.body).toHaveProperty('category')
+  })
+
+  it('should return 404 when an invalid category id was provided', async () => {
+    await adminAgent
+      .put('/api/admin/categories/0058ab92-1c82-4af1-9f84-c60a3e922244')
+      .send({ categoryName: 'Computer Science' })
+      .expect(404)
+  })
+
+  it('should only allow admins to update a category', async () => {
+    await agent
+      .put('/api/admin/categories/0058ab92-1c82-4af1-9f84-c60a3e922245')
+      .send({ categoryName: 'Science' })
+      .expect(403)
+  })
 })
