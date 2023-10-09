@@ -3,17 +3,12 @@ import type Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
 import { createCategory } from '../../services/admin/category.service'
 import type Category from '../../entities/category.entity'
-
-interface CategoryResponse {
-  statusCode: number
-  message?: string
-  category?: Category | null
-}
+import { ApiResponse } from '../../types'
 
 export const addCategory = async (
   req: Request,
   res: Response
-): Promise<CategoryResponse> => {
+): Promise<ApiResponse<Category>> => {
   try {
     const user = req.user as Profile
     const { categoryName } = req.body

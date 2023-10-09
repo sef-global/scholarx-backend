@@ -6,29 +6,12 @@ import {
 } from '../services/mentor.service'
 import type Profile from '../entities/profile.entity'
 import type Mentor from '../entities/mentor.entity'
-
-interface MentorResponse {
-  statusCode: number
-  message?: string
-  mentor?: Mentor | null
-  updatedMentorApplication?: Mentor | null
-  mentorDetails?: {
-    mentorId: string
-    category: string
-    profile: {
-      contact_email: string
-      first_name: string
-      last_name: string
-      image_url: string
-      linkedin_url: string
-    }
-  } | null
-}
+import { ApiResponse } from '../types'
 
 export const mentorApplicationHandler = async (
   req: Request,
   res: Response
-): Promise<MentorResponse> => {
+): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
     const { application, categoryId } = req.body
@@ -54,7 +37,7 @@ export const mentorApplicationHandler = async (
 export const mentorAvailabilityHandler = async (
   req: Request,
   res: Response
-): Promise<MentorResponse> => {
+): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
     const { availability } = req.body
@@ -75,7 +58,7 @@ export const mentorAvailabilityHandler = async (
 export const mentorDetailsHandler = async (
   req: Request,
   res: Response
-): Promise<MentorResponse> => {
+): Promise<ApiResponse<Mentor>> => {
   try {
     const mentorId = req.params.mentorId
     const { mentor, statusCode, message } = await getMentor(mentorId)

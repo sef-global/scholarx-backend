@@ -6,17 +6,12 @@ import {
 import { ApplicationStatus, ProfileTypes } from '../../enums'
 import type Profile from '../../entities/profile.entity'
 import type Mentor from '../../entities/mentor.entity'
-
-interface MentorStatusResponse {
-  statusCode: number
-  message?: string
-  mentor?: Mentor | null
-}
+import { ApiResponse } from '../../types'
 
 export const mentorStatusHandler = async (
   req: Request,
   res: Response
-): Promise<MentorStatusResponse> => {
+): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
     const { status } = req.body

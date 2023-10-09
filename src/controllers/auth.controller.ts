@@ -4,17 +4,12 @@ import passport from 'passport'
 import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
-
-interface AuthResponse {
-  statusCode: number
-  message?: string
-  profile?: Profile | null
-}
+import { ApiResponse } from '../types'
 
 export const register = async (
   req: Request,
   res: Response
-): Promise<AuthResponse> => {
+): Promise<ApiResponse<Profile>> => {
   try {
     const { email, password } = req.body
 
@@ -42,7 +37,7 @@ export const register = async (
 export const login = async (
   req: Request,
   res: Response
-): Promise<AuthResponse> => {
+): Promise<ApiResponse<Profile>> => {
   try {
     const { email, password } = req.body
 
@@ -76,7 +71,7 @@ export const login = async (
 export const logout = async (
   req: Request,
   res: Response
-): Promise<AuthResponse> => {
+): Promise<ApiResponse<Profile>> => {
   try {
     res.clearCookie('jwt', { httpOnly: true })
     return res.status(200).json({ message: 'Logged out successfully' })

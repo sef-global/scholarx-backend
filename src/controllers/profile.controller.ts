@@ -1,18 +1,12 @@
 import type { Request, Response } from 'express'
 import { updateProfile, deleteProfile } from '../services/profile.service'
 import type Profile from '../entities/profile.entity'
-
-interface ProfileResponse {
-  statusCode: number
-  message?: string
-  profile?: Profile | null
-  user?: Profile | null
-}
+import { ApiResponse } from '../types'
 
 export const getProfileHandler = async (
   req: Request,
   res: Response
-): Promise<ProfileResponse> => {
+): Promise<ApiResponse<Profile>> => {
   try {
     const { user } = req
     if (!user) {
@@ -35,7 +29,7 @@ export const getProfileHandler = async (
 export const updateProfileHandler = async (
   req: Request,
   res: Response
-): Promise<ProfileResponse> => {
+): Promise<ApiResponse<Profile>> => {
   try {
     const user = req.user as Profile
     if (!user) {
@@ -61,7 +55,7 @@ export const updateProfileHandler = async (
 export const deleteProfileHandler = async (
   req: Request,
   res: Response
-): Promise<ProfileResponse> => {
+): Promise<ApiResponse<Profile>> => {
   try {
     const user = req.user as Profile
     if (!user) {
