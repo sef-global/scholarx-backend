@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 import {
   findAllMentorEmails,
   getAllMentors,
+  updateAvailability,
   updateMentorStatus
 } from '../../services/admin/mentor.service'
 import { ApplicationStatus, ProfileTypes } from '../../enums'
@@ -78,7 +79,7 @@ export const getAllMentorsByStatus = async (
 export const getAllMentorEmails = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<ApiResponse<string[]>> => {
   try {
     const user = req.user as Profile
     const status: ApplicationStatus | undefined = req.query.status as
@@ -86,21 +87,52 @@ export const getAllMentorEmails = async (
       | undefined
 
     if (user.type !== ProfileTypes.ADMIN) {
-      res.status(403).json({ message: 'Only Admins are allowed' })
-    } else {
-      if (status && !(status?.toUpperCase() in ApplicationStatus)) {
-        res.status(400).json({ message: 'Please provide a valid status' })
-        return
-      }
-      const { emails, statusCode, message } = await findAllMentorEmails(status)
-      res.status(statusCode).json({ emails, message })
+      return res.status(403).json({ message: 'Only Admins are allowed' })
     }
+
+    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+      return res.status(400).json({ message: 'Please provide a valid status' })
+    }
+
+    const { emails, statusCode, message } = await findAllMentorEmails(status)
+    return res.status(statusCode).json({ emails, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
-      res
+      return res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
+    throw err
+  }
+}
+
+export const updateMentorAvailability = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentor>> => {
+  try {
+    const user = req.user as Profile
+    const { availability } = req.body
+    const { mentorId } = req.params
+
+    if (user.type !== ProfileTypes.ADMIN) {
+      return res.status(403).json({ message: 'Only Admins are allowed' })
+    }
+
+    const { mentor, statusCode, message } = await updateAvailability(
+      mentorId,
+      availability
+    )
+    return res.status(statusCode).json({ mentor, message })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+
+    throw err
   }
 }

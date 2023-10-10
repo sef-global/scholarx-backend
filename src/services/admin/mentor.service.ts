@@ -109,3 +109,45 @@ export const findAllMentorEmails = async (
     throw new Error('Error getting mentors emails')
   }
 }
+
+export const updateAvailability = async (
+  mentorId: string,
+  availability: boolean
+): Promise<{ statusCode: number; mentor?: Mentor | null; message: string }> => {
+  try {
+    const mentorRepository = dataSource.getRepository(Mentor)
+
+    const existingMentor = await mentorRepository.findOne({
+      where: { uuid: mentorId },
+      select: [
+        'application',
+        'state',
+        'availability',
+        'uuid',
+        'category',
+        'profile',
+        'created_at'
+      ],
+      relations: ['category', 'profile']
+    })
+
+    if (!existingMentor) {
+      return {
+        statusCode: 404,
+        message: 'Mentor not found'
+      }
+    }
+
+    existingMentor.availability = availability
+    const mentor = await mentorRepository.save(existingMentor)
+
+    return {
+      statusCode: 200,
+      mentor,
+      message: 'Mentor Availability updated'
+    }
+  } catch (err) {
+    console.error('Error creating mentor', err)
+    throw new Error('Error creating mentor')
+  }
+}
