@@ -18,13 +18,10 @@ export const addCategory = async (
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
-    } else {
-      const { category, statusCode, message } = await createCategory(
-        categoryName
-      )
-
-      return res.status(statusCode).json({ category, message })
     }
+
+    const { category, statusCode, message } = await createCategory(categoryName)
+    return res.status(statusCode).json({ category, message })
   } catch (err) {
     console.error('Error executing query', err)
     return res.status(500).json({ error: err })
@@ -42,14 +39,13 @@ export const updateCategory = async (
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
-    } else {
-      const { category, statusCode, message } = await changeCategory(
-        categoryId,
-        categoryName
-      )
-
-      return res.status(statusCode).json({ category, message })
     }
+
+    const { category, statusCode, message } = await changeCategory(
+      categoryId,
+      categoryName
+    )
+    return res.status(statusCode).json({ category, message })
   } catch (err) {
     console.error('Error executing query', err)
     return res.status(500).json({ error: err })

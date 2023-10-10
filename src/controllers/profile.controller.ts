@@ -60,10 +60,10 @@ export const deleteProfileHandler = async (
     const user = req.user as Profile
     if (!user) {
       return res.status(404).json({ message: 'Profile not found' })
-    } else {
-      await deleteProfile(user.uuid)
-      return res.status(200).json({ message: 'Profile deleted' })
     }
+
+    await deleteProfile(user.uuid)
+    return res.status(200).json({ message: 'Profile deleted' })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

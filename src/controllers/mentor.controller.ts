@@ -65,20 +65,20 @@ export const mentorDetailsHandler = async (
 
     if (!mentor) {
       return res.status(statusCode).json({ error: message })
-    } else {
-      const mentorDetails = {
-        mentorId: mentor.uuid,
-        category: mentor.category.category,
-        profile: {
-          contact_email: mentor.profile.contact_email,
-          first_name: mentor.profile.first_name,
-          last_name: mentor.profile.last_name,
-          image_url: mentor.profile.image_url,
-          linkedin_url: mentor.profile.linkedin_url
-        }
-      }
-      return res.status(statusCode).json({ ...mentorDetails })
     }
+
+    const mentorDetails = {
+      mentorId: mentor.uuid,
+      category: mentor.category.category,
+      profile: {
+        contact_email: mentor.profile.contact_email,
+        first_name: mentor.profile.first_name,
+        last_name: mentor.profile.last_name,
+        image_url: mentor.profile.image_url,
+        linkedin_url: mentor.profile.linkedin_url
+      }
+    }
+    return res.status(statusCode).json({ ...mentorDetails })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

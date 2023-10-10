@@ -19,18 +19,17 @@ export const mentorStatusHandler = async (
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
-    } else {
-      if (!(status.toUpperCase() in ApplicationStatus)) {
-        return res
-          .status(400)
-          .json({ message: 'Please provide a valid status' })
-      }
-      const { mentor, statusCode, message } = await updateMentorStatus(
-        mentorId,
-        status
-      )
-      return res.status(statusCode).json({ mentor, message })
     }
+
+    if (!(status.toUpperCase() in ApplicationStatus)) {
+      return res.status(400).json({ message: 'Please provide a valid status' })
+    }
+
+    const { mentor, statusCode, message } = await updateMentorStatus(
+      mentorId,
+      status
+    )
+    return res.status(statusCode).json({ mentor, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
@@ -55,15 +54,14 @@ export const getAllMentorsByStatus = async (
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
-    } else {
-      if (status && !(status?.toUpperCase() in ApplicationStatus)) {
-        return res
-          .status(400)
-          .json({ message: 'Please provide a valid status' })
-      }
-      const { mentors, statusCode, message } = await getAllMentors(status)
-      return res.status(statusCode).json({ mentors, message })
     }
+
+    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+      return res.status(400).json({ message: 'Please provide a valid status' })
+    }
+
+    const { mentors, statusCode, message } = await getAllMentors(status)
+    return res.status(statusCode).json({ mentors, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

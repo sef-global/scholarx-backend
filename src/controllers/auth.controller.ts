@@ -20,7 +20,6 @@ export const register = async (
     }
 
     const { statusCode, message, profile } = await registerUser(email, password)
-
     return res.status(statusCode).json({ message, profile })
   } catch (err) {
     if (err instanceof Error) {
