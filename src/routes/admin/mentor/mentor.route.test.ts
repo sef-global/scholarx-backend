@@ -95,4 +95,26 @@ describe('Admin mentor routes', () => {
 
     expect(response.body).toHaveProperty('mentors')
   })
+
+  it('should return mentors emails and a success message when mentors emails are found', async () => {
+    const response = await adminAgent
+      .get(`/api/admin/mentors/emails?status=${ApplicationStatus.APPROVED}`)
+      .expect(200)
+
+    expect(response.body).toHaveProperty('emails')
+  })
+
+  it('should return mentors emails without status parameter and a success message when mentors emails are found', async () => {
+    const response = await adminAgent
+      .get(`/api/admin/mentors/emails?status=`)
+      .expect(200)
+
+    expect(response.body).toHaveProperty('emails')
+  })
+
+  it('should only allow admins to get the mentors', async () => {
+    await mentorAgent
+      .get(`/api/admin/mentors/emails?status=${ApplicationStatus.APPROVED}`)
+      .expect(403)
+  })
 })

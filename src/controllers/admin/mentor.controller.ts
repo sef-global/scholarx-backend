@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import {
+  findAllMentorEmails,
   getAllMentors,
   updateMentorStatus
 } from '../../services/admin/mentor.service'
@@ -70,6 +71,37 @@ export const getAllMentorsByStatus = async (
         .json({ error: 'Internal server error', message: err.message })
     }
 
+    throw err
+  }
+}
+
+export const getAllMentorEmails = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<string[]>> => {
+  try {
+    const user = req.user as Profile
+    const status: ApplicationStatus | undefined = req.query.status as
+      | ApplicationStatus
+      | undefined
+
+    if (user.type !== ProfileTypes.ADMIN) {
+      return res.status(403).json({ message: 'Only Admins are allowed' })
+    }
+
+    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+      return res.status(400).json({ message: 'Please provide a valid status' })
+    }
+
+    const { emails, statusCode, message } = await findAllMentorEmails(status)
+    return res.status(statusCode).json({ emails, message })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
     throw err
   }
 }

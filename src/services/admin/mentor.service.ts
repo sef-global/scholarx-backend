@@ -75,3 +75,37 @@ export const getAllMentors = async (
     throw new Error('Error getting mentors')
   }
 }
+
+export const findAllMentorEmails = async (
+  status: ApplicationStatus | undefined
+): Promise<{
+  statusCode: number
+  emails?: string[]
+  message: string
+}> => {
+  try {
+    const mentorRepository = dataSource.getRepository(Mentor)
+
+    const allMentors: Mentor[] = await mentorRepository.find({
+      where: status ? { state: status } : {},
+      relations: ['profile']
+    })
+
+    const emails = allMentors.map((mentor) => mentor?.profile?.primary_email)
+
+    if (!emails) {
+      return {
+        statusCode: 404,
+        message: 'Mentors Emails not found'
+      }
+    }
+
+    return {
+      statusCode: 200,
+      emails,
+      message: 'All Mentors Emails found'
+    }
+  } catch (err) {
+    throw new Error('Error getting mentors emails')
+  }
+}
