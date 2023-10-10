@@ -88,7 +88,6 @@ export const findAllMentorEmails = async (
 
     const allMentors: Mentor[] = await mentorRepository.find({
       where: status ? { state: status } : {},
-      select: ['profile'],
       relations: ['profile']
     })
 
