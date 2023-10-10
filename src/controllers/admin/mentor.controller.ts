@@ -46,7 +46,7 @@ export const mentorStatusHandler = async (
 export const getAllMentorsByStatus = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
     const status: ApplicationStatus | undefined = req.query.status as
@@ -54,21 +54,24 @@ export const getAllMentorsByStatus = async (
       | undefined
 
     if (user.type !== ProfileTypes.ADMIN) {
-      res.status(403).json({ message: 'Only Admins are allowed' })
+      return res.status(403).json({ message: 'Only Admins are allowed' })
     } else {
       if (status && !(status?.toUpperCase() in ApplicationStatus)) {
-        res.status(400).json({ message: 'Please provide a valid status' })
-        return
+        return res
+          .status(400)
+          .json({ message: 'Please provide a valid status' })
       }
       const { mentors, statusCode, message } = await getAllMentors(status)
-      res.status(statusCode).json({ mentors, message })
+      return res.status(statusCode).json({ mentors, message })
     }
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
-      res
+      return res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
+
+    throw err
   }
 }

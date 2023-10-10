@@ -10,7 +10,7 @@ export const getProfileHandler = async (
   try {
     const { user } = req
     if (!user) {
-      res.status(404).json({ message: 'Profile not found' })
+      return res.status(404).json({ message: 'Profile not found' })
     }
 
     return res.status(200).json(user)
@@ -67,7 +67,7 @@ export const deleteProfileHandler = async (
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
-      res
+      return res
         .status(500)
         .json({ error: 'Internal server errorrrr', message: err.message })
     }
