@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { getAllCategories } from '../services/category.service'
 import type { ApiResponse } from '../types'
-import Category from '../entities/category.entity'
+import type Category from '../entities/category.entity'
 
 export const getCategories = async (
   req: Request,
