@@ -14,6 +14,7 @@ let server: Express
 let mentorAgent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
 let mentorId: string
+let mentorProfileId: string
 
 describe('Admin mentor routes', () => {
   beforeAll(async () => {
@@ -54,6 +55,7 @@ describe('Admin mentor routes', () => {
       .expect(201)
 
     mentorId = response.body.mentor.uuid
+    mentorProfileId = response.body.mentor.profile.uuid
   }, 5000)
 
   it('should update the mentor application state', async () => {
@@ -123,11 +125,11 @@ describe('Admin mentor routes', () => {
     'should update mentor availability and return a 201 with the updated availability',
     async (availability) => {
       const response = await adminAgent
-        .put(`/api/admin/mentors/${mentorId}/availability`)
+        .put(`/api/admin/mentors/${mentorProfileId}/availability`)
         .send({ availability })
         .expect(200)
 
-      const mentor = response.body.mentor
+      const mentor = response.body.updatedMentorApplication
 
       expect(mentor).toHaveProperty('availability', availability)
     }
@@ -136,8 +138,9 @@ describe('Admin mentor routes', () => {
   it.each([true, false])(
     'should only allow admins to update the mentor availability',
     async (availability) => {
+      console.log(mentorProfileId)
       await mentorAgent
-        .put(`/api/admin/mentors/${mentorId}/availability`)
+        .put(`/api/admin/mentors/${mentorProfileId}/availability`)
         .send({ availability })
         .expect(403)
     }
@@ -153,4 +156,8 @@ describe('Admin mentor routes', () => {
         .expect(404)
     }
   )
+
+  afterAll(async () => {
+    await dataSource.destroy()
+  })
 })

@@ -74,13 +74,17 @@ export const createMentor = async (
 }
 
 export const updateAvailability = async (
-  user: Profile,
+  mentorId: string,
   availability: boolean
-): Promise<{ statusCode: number; updatedMentorApplication: Mentor }> => {
+): Promise<{
+  statusCode: number
+  updatedMentorApplication?: Mentor
+  message: string
+}> => {
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
     const existingMentorApplications = await mentorRepository.find({
-      where: { profile: { uuid: user.uuid } }
+      where: { profile: { uuid: mentorId } }
     })
 
     const mentorApplication = existingMentorApplications[0]
@@ -92,10 +96,14 @@ export const updateAvailability = async (
       )
       return {
         statusCode: 200,
-        updatedMentorApplication
+        updatedMentorApplication,
+        message: 'Mentor availability updated sucessfully'
       }
     } else {
-      throw new Error('Mentor application not found')
+      return {
+        statusCode: 404,
+        message: 'Mentor not found'
+      }
     }
   } catch (err) {
     console.error('Error creating mentor', err)

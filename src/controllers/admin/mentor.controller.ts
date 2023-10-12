@@ -2,13 +2,13 @@ import type { Request, Response } from 'express'
 import {
   findAllMentorEmails,
   getAllMentors,
-  updateAvailability,
   updateMentorStatus
 } from '../../services/admin/mentor.service'
 import { ApplicationStatus, ProfileTypes } from '../../enums'
 import type Profile from '../../entities/profile.entity'
 import type Mentor from '../../entities/mentor.entity'
 import type { ApiResponse } from '../../types'
+import { updateAvailability } from '../../services/mentor.service'
 
 export const mentorStatusHandler = async (
   req: Request,
@@ -120,11 +120,9 @@ export const updateMentorAvailability = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    const { mentor, statusCode, message } = await updateAvailability(
-      mentorId,
-      availability
-    )
-    return res.status(statusCode).json({ mentor, message })
+    const { statusCode, updatedMentorApplication, message } =
+      await updateAvailability(mentorId, availability)
+    return res.status(statusCode).json({ updatedMentorApplication, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
