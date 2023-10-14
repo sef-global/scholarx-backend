@@ -138,7 +138,6 @@ describe('Admin mentor routes', () => {
   it.each([true, false])(
     'should only allow admins to update the mentor availability',
     async (availability) => {
-      console.log(mentorProfileId)
       await mentorAgent
         .put(`/api/admin/mentors/${mentorProfileId}/availability`)
         .send({ availability })
