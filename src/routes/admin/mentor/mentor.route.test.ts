@@ -5,6 +5,7 @@ import Profile from '../../../entities/profile.entity'
 import { ApplicationStatus, ProfileTypes } from '../../../enums'
 import { dataSource } from '../../../configs/dbConfig'
 import bcrypt from 'bcrypt'
+import { v4 as uuidv4 } from 'uuid'
 import { mentorApplicationInfo, mockAdmin, mockMentor } from '../../../../mocks'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
@@ -13,6 +14,7 @@ let server: Express
 let mentorAgent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
 let mentorId: string
+let mentorProfileId: string
 
 describe('Admin mentor routes', () => {
   beforeAll(async () => {
@@ -53,6 +55,7 @@ describe('Admin mentor routes', () => {
       .expect(201)
 
     mentorId = response.body.mentor.uuid
+    mentorProfileId = response.body.mentor.profile.uuid
   }, 5000)
 
   it('should update the mentor application state', async () => {
@@ -116,5 +119,44 @@ describe('Admin mentor routes', () => {
     await mentorAgent
       .get(`/api/admin/mentors/emails?status=${ApplicationStatus.APPROVED}`)
       .expect(403)
+  })
+
+  it.each([true, false])(
+    'should update mentor availability and return a 201 with the updated availability',
+    async (availability) => {
+      const response = await adminAgent
+        .put(`/api/admin/mentors/${mentorProfileId}/availability`)
+        .send({ availability })
+        .expect(200)
+
+      const mentor = response.body.updatedMentorApplication
+
+      expect(mentor).toHaveProperty('availability', availability)
+    }
+  )
+
+  it.each([true, false])(
+    'should only allow admins to update the mentor availability',
+    async (availability) => {
+      await mentorAgent
+        .put(`/api/admin/mentors/${mentorProfileId}/availability`)
+        .send({ availability })
+        .expect(403)
+    }
+  )
+
+  it.each([true, false])(
+    'should return no mentor found',
+    async (availability) => {
+      const nonExistentMentorId = uuidv4()
+      await adminAgent
+        .put(`/api/admin/mentors/${nonExistentMentorId}/availability`)
+        .send({ availability })
+        .expect(404)
+    }
+  )
+
+  afterAll(async () => {
+    await dataSource.destroy()
   })
 })

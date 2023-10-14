@@ -41,7 +41,7 @@ export const mentorAvailabilityHandler = async (
   try {
     const user = req.user as Profile
     const { availability } = req.body
-    const result = await updateAvailability(user, availability)
+    const result = await updateAvailability(user.uuid, availability)
     return res.status(result.statusCode).json(result.updatedMentorApplication)
   } catch (err) {
     if (err instanceof Error) {
