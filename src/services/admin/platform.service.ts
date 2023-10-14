@@ -37,3 +37,24 @@ export const createPlatform = async ({
     throw new Error('Error creating Platform')
   }
 }
+
+export const getPlatformDetails = async (): Promise<{
+  statusCode: number
+  platform?: Platform[] | null
+  message: string
+}> => {
+  try {
+    const platformRepository = dataSource.getRepository(Platform)
+
+    const platform = await platformRepository.find()
+
+    return {
+      statusCode: 200,
+      platform,
+      message: 'Get Platform details successfully'
+    }
+  } catch (err) {
+    console.error('Error creating Platform', err)
+    throw new Error('Error creating Platform')
+  }
+}

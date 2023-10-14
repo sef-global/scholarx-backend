@@ -6,6 +6,7 @@ import { mockAdmin, mockUser, platformInfo } from '../../../../mocks'
 import { ProfileTypes } from '../../../enums'
 import { dataSource } from '../../../configs/dbConfig'
 import Profile from '../../../entities/profile.entity'
+import type Platform from '../../../entities/platform.entity'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
@@ -49,5 +50,24 @@ describe('Admin platform routes', () => {
   })
   it('should only allow admins to add a platform', async () => {
     await agent.post('/api/admin/categories').send(platformInfo).expect(403)
+  })
+
+  it('should return a 200 with platform details if user is admin', async () => {
+    const response = await adminAgent.get('/api/admin/platform').expect(200)
+
+    const platformDetails = response.body.platform
+
+    platformDetails.forEach((platform: Platform) => {
+      expect(platform).toHaveProperty('description')
+      expect(platform).toHaveProperty('mentor_questions')
+      expect(platform).toHaveProperty('image_url')
+      expect(platform).toHaveProperty('landing_page_url')
+      expect(platform).toHaveProperty('email_templates')
+      expect(platform).toHaveProperty('title')
+    })
+  })
+
+  it('should only allow admins to add a platform', async () => {
+    await agent.get('/api/admin/platform').expect(403)
   })
 })
