@@ -6,12 +6,14 @@ import { emailTemplateInfo, mockAdmin, mockUser } from '../../../../mocks'
 import { dataSource } from '../../../configs/dbConfig'
 import Profile from '../../../entities/profile.entity'
 import { ProfileTypes } from '../../../enums'
+import type Email from '../../../entities/email.entity'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 let server: Express
 let agent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
+let savedEmailTemplate: Email
 
 describe('Admin email template routes', () => {
   beforeAll(async () => {
@@ -45,10 +47,12 @@ describe('Admin email template routes', () => {
   }, 5000)
 
   it('should add a email template', async () => {
-    await adminAgent
+    const response = await adminAgent
       .post('/api/admin/emails/templates')
       .send({ ...emailTemplateInfo, recipient: mockUser.email })
       .expect(201)
+
+    savedEmailTemplate = response.body.emailTemplate
   })
 
   it('should only allow admins to add a email template', async () => {
@@ -56,5 +60,15 @@ describe('Admin email template routes', () => {
       .post('/api/admin/emails/templates')
       .send({ ...emailTemplateInfo, recipient: mockUser.email })
       .expect(403)
+  })
+
+  it('should get a email template by passing template id', async () => {
+    const response = await adminAgent
+      .get(`/api/admin/emails/templates/${savedEmailTemplate.uuid}`)
+      .expect(200)
+
+    const emailTemplate = response.body.emailTemplate
+
+    expect(emailTemplate).toHaveProperty('content')
   })
 })
