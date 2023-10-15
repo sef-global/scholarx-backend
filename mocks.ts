@@ -1,3 +1,5 @@
+import { EmailStatusTypes } from './src/enums'
+
 const randomString = Math.random().toString(36)
 
 export const mockMentor = {
@@ -65,4 +67,11 @@ export const platformInfo = {
     }
   },
   title: 'Sample Mentoring Program'
+}
+
+export const emailTemplateInfo = {
+  recipient: '',
+  subject: 'Follow-up on your mentoring session',
+  content: 'Sample content',
+  state: EmailStatusTypes.SENT
 }

@@ -2,11 +2,10 @@ import { startServer } from '../../../app'
 import type { Express } from 'express'
 import supertest from 'supertest'
 import bcrypt from 'bcrypt'
-import { mockAdmin, mockUser, platformInfo } from '../../../../mocks'
-import { ProfileTypes } from '../../../enums'
+import { emailTemplateInfo, mockAdmin, mockUser } from '../../../../mocks'
 import { dataSource } from '../../../configs/dbConfig'
 import Profile from '../../../entities/profile.entity'
-import type Platform from '../../../entities/platform.entity'
+import { ProfileTypes } from '../../../enums'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
@@ -14,7 +13,7 @@ let server: Express
 let agent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
 
-describe('Admin platform routes', () => {
+describe('Admin email template routes', () => {
   beforeAll(async () => {
     server = await startServer(port)
     agent = supertest.agent(server)
@@ -45,30 +44,17 @@ describe('Admin platform routes', () => {
     await adminAgent.post('/api/auth/login').send(mockAdmin).expect(200)
   }, 5000)
 
-  it('should add a platform', async () => {
-    await adminAgent.post('/api/admin/platform').send(platformInfo).expect(201)
+  it('should add a email template', async () => {
+    await adminAgent
+      .post('/api/admin/emails/templates')
+      .send({ ...emailTemplateInfo, recipient: mockUser.email })
+      .expect(201)
   })
 
-  it('should only allow admins to add a platform', async () => {
-    await agent.post('/api/admin/categories').send(platformInfo).expect(403)
-  })
-
-  it('should return a 200 with platform details if user is admin', async () => {
-    const response = await adminAgent.get('/api/admin/platform').expect(200)
-
-    const platformDetails = response.body.platform
-
-    platformDetails.forEach((platform: Platform) => {
-      expect(platform).toHaveProperty('description')
-      expect(platform).toHaveProperty('mentor_questions')
-      expect(platform).toHaveProperty('image_url')
-      expect(platform).toHaveProperty('landing_page_url')
-      expect(platform).toHaveProperty('email_templates')
-      expect(platform).toHaveProperty('title')
-    })
-  })
-
-  it('should only allow admins to get a platform', async () => {
-    await agent.get('/api/admin/platform').expect(403)
+  it('should only allow admins to add a email template', async () => {
+    await agent
+      .post('/api/admin/emails/templates')
+      .send({ ...emailTemplateInfo, recipient: mockUser.email })
+      .expect(403)
   })
 })
