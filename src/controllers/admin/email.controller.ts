@@ -14,22 +14,20 @@ export const addEmailTemplate = async (
 ): Promise<ApiResponse<Email>> => {
   try {
     const user = req.user as Profile
-    const { recipient, subject, content, state } = req.body
+    const { subject, content } = req.body
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (!recipient || !subject || !content || !state) {
+    if (!subject || !content) {
       return res.status(400).json({
         error: 'Receipent, subject, content and state are required fields'
       })
     }
     const { emailTemplate, statusCode, message } = await createEmailTemplate(
-      recipient,
       subject,
-      content,
-      state
+      content
     )
     return res.status(statusCode).json({ emailTemplate, message })
   } catch (err) {

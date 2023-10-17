@@ -1,12 +1,10 @@
 import { dataSource } from '../../configs/dbConfig'
 import Email from '../../entities/email.entity'
-import type { EmailStatusTypes } from '../../enums'
+import { EmailStatusTypes } from '../../enums'
 
 export const createEmailTemplate = async (
-  recipient: string,
   subject: string,
-  content: string,
-  state: EmailStatusTypes
+  content: string
 ): Promise<{
   statusCode: number
   emailTemplate?: Email | null
@@ -15,7 +13,12 @@ export const createEmailTemplate = async (
   try {
     const emailRepositroy = dataSource.getRepository(Email)
 
-    const newEmailTemplate = new Email(recipient, subject, content, state)
+    const newEmailTemplate = new Email(
+      '',
+      subject,
+      content,
+      EmailStatusTypes.SENT
+    )
 
     const savedEmailTemplate = await emailRepositroy.save(newEmailTemplate)
 
