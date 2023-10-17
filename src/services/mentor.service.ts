@@ -144,7 +144,7 @@ export const getMentor = async (
 }
 
 export const searchMentorsByQuery = async (
-  query?: string
+  q?: string
 ): Promise<{
   statusCode: number
   mentors?: Mentor[] | null
@@ -152,13 +152,17 @@ export const searchMentorsByQuery = async (
 }> => {
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
+    const query = q ? `${q}%` : ''
 
-    const mentors: Mentor[] | null = await mentorRepository
+    const mentors: Mentor[] = await mentorRepository
       .createQueryBuilder('mentor')
       .innerJoinAndSelect('mentor.profile', 'profile')
-      .where('profile.first_name ILIKE :name OR profile.last_name ILIKE :name', {
-        name: `${query}%`
-      })
+      .where(
+        'profile.first_name ILIKE :name OR profile.last_name ILIKE :name',
+        {
+          name: query
+        }
+      )
       .getMany()
 
     if (!mentors) {
@@ -170,7 +174,7 @@ export const searchMentorsByQuery = async (
 
     return {
       statusCode: 200,
-      mentors: mentors,
+      mentors,
       message: 'All search Mentors found'
     }
   } catch (err) {

@@ -171,8 +171,6 @@ describe('Admin mentor routes', () => {
       .get(`/api/admin/mentors/search?q=john`)
       .expect(200)
 
-      console.log(response.body)
-
     expect(response.body).toHaveProperty('mentors')
   })
 
