@@ -156,6 +156,30 @@ describe('Admin mentor routes', () => {
     }
   )
 
+  it('should return mentors first name starts with john and a success message when mentors are found', async () => {
+    const updatedProfile = {
+      contact_email: 'test_contact@example.com',
+      first_name: 'John',
+      last_name: 'Doe',
+      image_url: 'https://example.com/test_profile_image.jpg',
+      linkedin_url: 'https://www.linkedin.com/in/johndoe'
+    }
+
+    await mentorAgent.put('/api/me/profile').send(updatedProfile).expect(200)
+
+    const response = await adminAgent
+      .get(`/api/admin/mentors/search?q=john`)
+      .expect(200)
+
+      console.log(response.body)
+
+    expect(response.body).toHaveProperty('mentors')
+  })
+
+  it('should only allow admins to search mentors', async () => {
+    await mentorAgent.get(`/api/admin/mentors/search?q=john`).expect(403)
+  })
+
   afterAll(async () => {
     await dataSource.destroy()
   })
