@@ -1,26 +1,22 @@
 import { dataSource } from '../../configs/dbConfig'
-import Email from '../../entities/email.entity'
-import { EmailStatusTypes } from '../../enums'
+import EmailTemplate from '../../entities/emailTemplate.entity'
 
 export const createEmailTemplate = async (
   subject: string,
   content: string
 ): Promise<{
   statusCode: number
-  emailTemplate?: Email | null
+  emailTemplate?: EmailTemplate | null
   message: string
 }> => {
   try {
-    const emailRepositroy = dataSource.getRepository(Email)
+    const emailTemplateRepositroy = dataSource.getRepository(EmailTemplate)
 
-    const newEmailTemplate = new Email(
-      '',
-      subject,
-      content,
-      EmailStatusTypes.SENT
+    const newEmailTemplate = new EmailTemplate(subject, content)
+
+    const savedEmailTemplate = await emailTemplateRepositroy.save(
+      newEmailTemplate
     )
-
-    const savedEmailTemplate = await emailRepositroy.save(newEmailTemplate)
 
     return {
       statusCode: 201,
@@ -37,11 +33,11 @@ export const getEmailTemplateById = async (
   templateId: string
 ): Promise<{
   statusCode: number
-  emailTemplate?: Email | null
+  emailTemplate?: EmailTemplate | null
   message: string
 }> => {
   try {
-    const emailRepositroy = dataSource.getRepository(Email)
+    const emailRepositroy = dataSource.getRepository(EmailTemplate)
 
     const emailTemplate = await emailRepositroy.findOne({
       where: { uuid: templateId },

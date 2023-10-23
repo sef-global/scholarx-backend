@@ -1,17 +1,17 @@
 import type { Request, Response } from 'express'
 import type { ApiResponse } from '../../types'
-import type Email from '../../entities/email.entity'
 import type Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
 import {
   createEmailTemplate,
   getEmailTemplateById
-} from '../../services/admin/email.service'
+} from '../../services/admin/emailTemplate.service'
+import type EmailTemplate from '../../entities/emailTemplate.entity'
 
 export const addEmailTemplate = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<Email>> => {
+): Promise<ApiResponse<EmailTemplate>> => {
   try {
     const user = req.user as Profile
     const { subject, content } = req.body
@@ -22,7 +22,7 @@ export const addEmailTemplate = async (
 
     if (!subject || !content) {
       return res.status(400).json({
-        error: 'Receipent, subject, content and state are required fields'
+        error: 'Subject, content and state are required fields'
       })
     }
     const { emailTemplate, statusCode, message } = await createEmailTemplate(
@@ -39,7 +39,7 @@ export const addEmailTemplate = async (
 export const getEmailTemplate = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<Email>> => {
+): Promise<ApiResponse<EmailTemplate>> => {
   try {
     const user = req.user as Profile
     const templateId = req.params.mentorId
