@@ -66,3 +66,8 @@ export const platformInfo = {
   },
   title: 'Sample Mentoring Program'
 }
+
+export const emailTemplateInfo = {
+  subject: 'Follow-up on your mentoring session',
+  content: 'Sample content'
+}
