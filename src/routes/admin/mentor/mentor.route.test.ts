@@ -7,6 +7,8 @@ import { dataSource } from '../../../configs/dbConfig'
 import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid'
 import { mentorApplicationInfo, mockAdmin, mockMentor } from '../../../../mocks'
+import type Category from '../../../entities/category.entity'
+import type Mentor from '../../../entities/mentor.entity'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
@@ -15,6 +17,7 @@ let mentorAgent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
 let mentorId: string
 let mentorProfileId: string
+let category: Category
 
 describe('Admin mentor routes', () => {
   beforeAll(async () => {
@@ -56,6 +59,7 @@ describe('Admin mentor routes', () => {
 
     mentorId = response.body.mentor.uuid
     mentorProfileId = response.body.mentor.profile.uuid
+    category = categoryResponse.body.category
   }, 5000)
 
   it('should update the mentor application state', async () => {
@@ -176,6 +180,26 @@ describe('Admin mentor routes', () => {
 
   it('should only allow admins to search mentors', async () => {
     await mentorAgent.get(`/api/admin/mentors/search?q=john`).expect(403)
+  })
+
+  it('should return mentors category starts with Computer and a success message when mentors by category are found', async () => {
+    const response = await adminAgent
+      .get(`/api/admin/mentors/category?category=${category.category}`)
+      .expect(200)
+
+    const mentorDetails = response.body.mentors
+
+    mentorDetails.forEach((mentor: Mentor) => {
+      expect(mentor).toHaveProperty('profile')
+      expect(mentor).toHaveProperty('application')
+      expect(mentor).toHaveProperty('category')
+    })
+  })
+
+  it('should only allow admins to search mentors by category', async () => {
+    await mentorAgent
+      .get(`/api/admin/mentors/category?category=${category.category}`)
+      .expect(403)
   })
 
   afterAll(async () => {

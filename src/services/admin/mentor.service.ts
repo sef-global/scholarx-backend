@@ -109,3 +109,52 @@ export const findAllMentorEmails = async (
     throw new Error('Error getting mentors emails')
   }
 }
+
+export const searchMentorsByCategory = async (
+  category?: string
+): Promise<{
+  statusCode: number
+  mentors?: Mentor[] | null
+  message: string
+}> => {
+  try {
+    const mentorRepository = dataSource.getRepository(Mentor)
+
+    const categoryQuery = category ? `${category}%` : ''
+
+    const mentors: Mentor[] = await mentorRepository
+      .createQueryBuilder('mentor')
+      .innerJoinAndSelect('mentor.category', 'category')
+      .leftJoinAndSelect('mentor.profile', 'profile')
+      .select([
+        'mentor.uuid',
+        'category.category',
+        'mentor.application',
+        'profile.contact_email',
+        'profile.first_name',
+        'profile.last_name',
+        'profile.image_url',
+        'profile.linkedin_url'
+      ])
+      .where('category.category ILIKE :name', {
+        name: categoryQuery
+      })
+      .getMany()
+
+    if (!mentors) {
+      return {
+        statusCode: 404,
+        message: 'Mentors not found'
+      }
+    }
+
+    return {
+      statusCode: 200,
+      mentors,
+      message: 'All search Mentors by category found'
+    }
+  } catch (err) {
+    console.error('Error getting mentor', err)
+    throw new Error('Error getting mentor')
+  }
+}

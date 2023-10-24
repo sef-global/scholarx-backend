@@ -2,6 +2,7 @@ import express from 'express'
 import { requireAuth } from '../../../controllers/auth.controller'
 import {
   getAllMentorEmails,
+  getAllMentorsByCategory,
   getAllMentorsByStatus,
   mentorStatusHandler,
   searchMentors,
@@ -19,5 +20,6 @@ mentorRouter.put(
   updateMentorAvailability
 )
 mentorRouter.get('/search', requireAuth, searchMentors)
+mentorRouter.get('/category', requireAuth, getAllMentorsByCategory)
 
 export default mentorRouter
