@@ -58,3 +58,53 @@ export const getPlatformDetails = async (): Promise<{
     throw new Error('Error creating Platform')
   }
 }
+
+export const updatePlatformDetails = async ({
+  uuid,
+  description,
+  mentor_questions,
+  image_url,
+  landing_page_url,
+  email_templates,
+  title
+}: Platform): Promise<{
+  statusCode: number
+  platform?: Platform | null
+  message: string
+}> => {
+  try {
+    const platformRepository = dataSource.getRepository(Platform)
+
+    const updateData = {
+      description,
+      mentor_questions,
+      image_url,
+      landing_page_url,
+      email_templates,
+      title
+    }
+
+    const result = await platformRepository.update({ uuid }, updateData)
+
+    if (result.affected === 0) {
+      return {
+        statusCode: 404,
+        platform: null,
+        message: 'Platform not found'
+      }
+    }
+
+    const updatedPlatform = await platformRepository.findOne({
+      where: { uuid }
+    })
+
+    return {
+      statusCode: 201,
+      platform: updatedPlatform,
+      message: 'Platform created successfully '
+    }
+  } catch (err) {
+    console.error('Error creating Platform', err)
+    throw new Error('Error creating Platform')
+  }
+}
