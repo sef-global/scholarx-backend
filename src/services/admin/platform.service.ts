@@ -89,7 +89,6 @@ export const updatePlatformDetails = async ({
     if (result.affected === 0) {
       return {
         statusCode: 404,
-        platform: null,
         message: 'Platform not found'
       }
     }
@@ -99,12 +98,12 @@ export const updatePlatformDetails = async ({
     })
 
     return {
-      statusCode: 201,
+      statusCode: 200,
       platform: updatedPlatform,
-      message: 'Platform created successfully '
+      message: 'Platform updated successfully'
     }
   } catch (err) {
-    console.error('Error creating Platform', err)
-    throw new Error('Error creating Platform')
+    console.error('Error updateing platform', err)
+    throw new Error('Error updating platform')
   }
 }
