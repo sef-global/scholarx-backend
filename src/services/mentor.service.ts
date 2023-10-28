@@ -74,13 +74,17 @@ export const createMentor = async (
 }
 
 export const updateAvailability = async (
-  user: Profile,
+  mentorId: string,
   availability: boolean
-): Promise<{ statusCode: number; updatedMentorApplication: Mentor }> => {
+): Promise<{
+  statusCode: number
+  updatedMentorApplication?: Mentor
+  message: string
+}> => {
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
     const existingMentorApplications = await mentorRepository.find({
-      where: { profile: { uuid: user.uuid } }
+      where: { profile: { uuid: mentorId } }
     })
 
     const mentorApplication = existingMentorApplications[0]
@@ -92,10 +96,14 @@ export const updateAvailability = async (
       )
       return {
         statusCode: 200,
-        updatedMentorApplication
+        updatedMentorApplication,
+        message: 'Mentor availability updated sucessfully'
       }
     } else {
-      throw new Error('Mentor application not found')
+      return {
+        statusCode: 404,
+        message: 'Mentor not found'
+      }
     }
   } catch (err) {
     console.error('Error creating mentor', err)
@@ -128,6 +136,46 @@ export const getMentor = async (
       statusCode: 200,
       mentor,
       message: 'Mentor found'
+    }
+  } catch (err) {
+    console.error('Error getting mentor', err)
+    throw new Error('Error getting mentor')
+  }
+}
+
+export const searchMentorsByQuery = async (
+  q?: string
+): Promise<{
+  statusCode: number
+  mentors?: Mentor[] | null
+  message: string
+}> => {
+  try {
+    const mentorRepository = dataSource.getRepository(Mentor)
+    const query = q ? `${q}%` : ''
+
+    const mentors: Mentor[] = await mentorRepository
+      .createQueryBuilder('mentor')
+      .innerJoinAndSelect('mentor.profile', 'profile')
+      .where(
+        'profile.first_name ILIKE :name OR profile.last_name ILIKE :name',
+        {
+          name: query
+        }
+      )
+      .getMany()
+
+    if (!mentors) {
+      return {
+        statusCode: 404,
+        message: 'Mentors not found'
+      }
+    }
+
+    return {
+      statusCode: 200,
+      mentors,
+      message: 'All search Mentors found'
     }
   } catch (err) {
     console.error('Error getting mentor', err)

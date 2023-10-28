@@ -25,3 +25,41 @@ export const createCategory = async (
     throw new Error('Error creating category')
   }
 }
+
+export const changeCategory = async (
+  categoryId: string,
+  categoryName: string
+): Promise<{
+  statusCode: number
+  category?: Category | null
+  message: string
+}> => {
+  try {
+    const categoryRepository = dataSource.getRepository(Category)
+
+    const category = await categoryRepository.findOne({
+      where: { uuid: categoryId }
+    })
+
+    if (!category) {
+      return {
+        statusCode: 404,
+        message: 'Category not found'
+      }
+    }
+
+    await categoryRepository.update(
+      { uuid: categoryId },
+      { category: categoryName }
+    )
+
+    return {
+      statusCode: 201,
+      category,
+      message: 'Category updated successfully'
+    }
+  } catch (err) {
+    console.error('Error updating category', err)
+    throw new Error('Error updating category')
+  }
+}
