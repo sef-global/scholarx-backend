@@ -9,3 +9,5 @@ export const DB_PASSWORD = process.env.DB_PASSWORD
 export const DB_PORT = process.env.DB_PORT
 export const SERVER_PORT = process.env.SERVER_PORT ?? 3000
 export const JWT_SECRET = process.env.JWT_SECRET ?? ''
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID ?? ''
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET ?? ''

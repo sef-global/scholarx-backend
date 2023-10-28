@@ -26,6 +26,28 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
+export const googleAuth = async (req: Request, res: Response): Promise<void> => {
+  try {
+    console.log(req.body)
+    const { email, password } = req.body
+
+    if (!email || !password) {
+      res.status(400).json({ error: 'Email and password are required fields' })
+    }
+
+    const { statusCode, message, profile } = await registerUser(email, password)
+
+    res.status(statusCode).json({ message, profile })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+  }
+}
+
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body
