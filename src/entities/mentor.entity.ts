@@ -30,7 +30,7 @@ class Mentor extends BaseEntity {
   @Column({ type: 'boolean' })
   availability: boolean
 
-  @OneToOne(() => profileEntity)
+  @ManyToOne(() => profileEntity)
   @JoinColumn()
   profile: profileEntity
 
