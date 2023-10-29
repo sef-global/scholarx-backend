@@ -70,20 +70,13 @@ export const getAllMentorApplications = async (
 
     const existingMentorApplications = await mentorRepository
       .createQueryBuilder('mentor')
-      .select([
-        'mentor.state AS state',
-        'mentor.availability AS availability',
-        'mentor.uuid AS uuid',
-        'mentor.created_at AS created_at',
-        'mentor.updated_at AS updated_at',
-        'mentor.application AS application',
-        'category.category AS category',
-        'category.uuid AS category_uuid'
-      ])
-      .leftJoin('mentor.category', 'category')
+      .innerJoinAndSelect('mentor.profile', 'profile')
+      .innerJoinAndSelect('mentor.category', 'category')
+      .addSelect('mentor.application')
       .where('mentor.profile.uuid = :uuid', { uuid: user.uuid })
-      .getRawMany()
+      .getMany()
 
+    console.log(existingMentorApplications)
     if (existingMentorApplications.length === 0) {
       return {
         statusCode: 200,
