@@ -58,6 +58,52 @@ describe('profile', () => {
     })
   })
 
+  describe('Get my mentor applications route', () => {
+    it('should return a 200 with mentor applications for the user', async () => {
+      const response = await agent
+        .get('/api/me/applications?type=mentor')
+        .expect(200)
+
+      if (
+        response.body.message === 'No mentor applications found for the user'
+      ) {
+        expect(response.body).not.toHaveProperty('mentor applications')
+      } else {
+        expect(response.body).toHaveProperty('mentor applications')
+        expect(response.body['mentor applications']).toBeInstanceOf(Array)
+        expect(response.body['mentor applications']).toHaveProperty('state')
+        expect(response.body['mentor applications']).toHaveProperty('category')
+        expect(response.body['mentor applications']).toHaveProperty(
+          'availability'
+        )
+        expect(response.body['mentor applications']).toHaveProperty('uuid')
+        expect(response.body['mentor applications']).toHaveProperty(
+          'created_at'
+        )
+        expect(response.body['mentor applications']).toHaveProperty(
+          'updated_at'
+        )
+      }
+    })
+
+    it('should return a 404 for an invalid application type', async () => {
+      const response = await agent
+        .get('/api/me/applications?type=invalidType')
+        .expect(404)
+
+      expect(response.body).toHaveProperty(
+        'message',
+        'Invalid application type'
+      )
+    })
+
+    it('should return a 401 when a valid access token is not provided', async () => {
+      await supertest(server)
+        .get('/api/me/applications?type=mentor')
+        .expect(401)
+    })
+  })
+
   describe('Delete profile route', () => {
     it('should delete the user profile and return a 200', async () => {
       await agent.delete('/api/me/profile').expect(200)
@@ -66,9 +112,9 @@ describe('profile', () => {
     it('should return a 401 when a valid access token is not provided', async () => {
       await supertest(server).delete(`/api/me/profile`).send({}).expect(401)
     })
+  })
 
-    afterAll(async () => {
-      await dataSource.destroy()
-    })
+  afterAll(async () => {
+    await dataSource.destroy()
   })
 })
