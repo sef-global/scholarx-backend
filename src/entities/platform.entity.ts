@@ -15,9 +15,6 @@ class Platform extends BaseEntity {
   @Column()
   landing_page_url: string
 
-  @Column({ type: 'json' })
-  email_templates: JSON
-
   @Column({ type: 'varchar', length: 255 })
   title: string
 
@@ -26,7 +23,6 @@ class Platform extends BaseEntity {
     mentor_questions: JSON,
     image_url: string,
     landing_page_url: string,
-    email_templates: JSON,
     title: string
   ) {
     super()
@@ -34,7 +30,6 @@ class Platform extends BaseEntity {
     this.mentor_questions = mentor_questions
     this.image_url = image_url
     this.landing_page_url = landing_page_url
-    this.email_templates = email_templates
     this.title = title
   }
 }

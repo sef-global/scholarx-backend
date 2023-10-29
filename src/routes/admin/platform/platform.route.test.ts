@@ -69,7 +69,6 @@ describe('Admin platform routes', () => {
       expect(platform).toHaveProperty('mentor_questions')
       expect(platform).toHaveProperty('image_url')
       expect(platform).toHaveProperty('landing_page_url')
-      expect(platform).toHaveProperty('email_templates')
       expect(platform).toHaveProperty('title')
       expect(platform).toHaveProperty('uuid')
     })
