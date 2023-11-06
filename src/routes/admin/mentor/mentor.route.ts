@@ -4,6 +4,7 @@ import {
   getAllMentorEmails,
   getAllMentorsByStatus,
   mentorStatusHandler,
+  searchMentors,
   updateMentorAvailability
 } from '../../../controllers/admin/mentor.controller'
 
@@ -17,5 +18,6 @@ mentorRouter.put(
   requireAuth,
   updateMentorAvailability
 )
+mentorRouter.get('/search', requireAuth, searchMentors)
 
 export default mentorRouter

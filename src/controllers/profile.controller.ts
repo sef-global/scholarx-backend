@@ -1,7 +1,12 @@
-import type { Request, Response } from 'express'
-import { updateProfile, deleteProfile } from '../services/profile.service'
+import { type Request, type Response } from 'express'
+import {
+  updateProfile,
+  deleteProfile,
+  getAllMentorApplications
+} from '../services/profile.service'
 import type Profile from '../entities/profile.entity'
 import type { ApiResponse } from '../types'
+import type Mentor from '../entities/mentor.entity'
 
 export const getProfileHandler = async (
   req: Request,
@@ -73,5 +78,35 @@ export const deleteProfileHandler = async (
     }
 
     throw err
+  }
+}
+
+export const getApplicationsHandler = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentor[]>> => {
+  try {
+    const user = req.user as Profile
+    const applicationType = req.query.type
+    if (applicationType === 'mentor') {
+      const { mentorApplications, statusCode, message } =
+        await getAllMentorApplications(user)
+
+      return res.status(statusCode).json({
+        'mentor applications': mentorApplications,
+        message
+      })
+    } else {
+      return res.status(404).json({ message: 'Invalid application type' })
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error executing query', error)
+      return res
+        .status(500)
+        .json({ error: 'Internal server errorrrr', message: error.message })
+    }
+
+    throw error
   }
 }
