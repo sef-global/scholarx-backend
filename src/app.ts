@@ -11,13 +11,16 @@ import categoryRouter from './routes/category/category.route'
 import passport from 'passport'
 import './configs/passport'
 import cookieParser from 'cookie-parser'
-
+import session from 'express-session'
+import { SESSION_SECRET } from './configs/envConfig'
 const app = express()
 
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(cors())
+app.use(session({ secret: SESSION_SECRET }))
 app.use(passport.initialize())
+app.use(passport.session())
 
 app.get('/', (req, res) => {
   res.send('ScholarX Backend')

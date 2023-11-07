@@ -22,3 +22,14 @@ export interface ApiResponse<T> {
   message?: string
   data?: T | null
 }
+
+export interface LinkedInUser {
+  id: string
+  displayName: string
+  name: {
+    familyName: string
+    givenName: string
+  }
+  emails: [{ value: string }]
+  photos: [{ value: string }]
+}
