@@ -1,5 +1,5 @@
 import { startServer } from '../../../app'
-import type { Express } from 'express'
+import { response, type Express } from 'express'
 import supertest from 'supertest'
 import bcrypt from 'bcrypt'
 import { mockAdmin, mockUser } from '../../../../mocks'
@@ -78,5 +78,7 @@ describe('Admin mentee routes', () => {
     const response = await adminAgent
       .get('/api/admin/mentee/emails?status=wrongstatus')
       .expect(400)
+    const { message } = response.body
+    expect(message).toContain('Invalid Status')
   })
 })
