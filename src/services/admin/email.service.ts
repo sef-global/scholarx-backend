@@ -4,7 +4,7 @@ import type { ApplicationStatus } from '../../enums'
 
 export const getAllMenteeEmailsService = async (status: ApplicationStatus | undefined): Promise<{
   statusCode: number
-  emails?: String[]
+  emails?: string[]
   message: string
 }> => {
   const menteeRepositroy = dataSource.getRepository(Mentee)
@@ -16,6 +16,6 @@ export const getAllMenteeEmailsService = async (status: ApplicationStatus | unde
   return {
     statusCode: 200,
     emails,
-    message: "All mentee emails with status " + status
+    message: 'All mentee emails with status '+ (status || 'undefined'),
   }
 }

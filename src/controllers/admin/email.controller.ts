@@ -6,7 +6,7 @@ import { ApplicationStatus } from '../../enums'
 export const getAllMenteeEmails = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<String[]>> => {
+): Promise<ApiResponse<string[]>> => {
   try {
     const status = req.query.status
     if (
