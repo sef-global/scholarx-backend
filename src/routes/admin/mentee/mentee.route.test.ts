@@ -15,7 +15,7 @@ let agent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
 let savedEmailTemplate: EmailTemplate
 
-describe('Admin email template routes', () => {
+describe('Admin mentee routes', () => {
   beforeAll(async () => {
     server = await startServer(port)
     agent = supertest.agent(server)
@@ -76,7 +76,7 @@ describe('Admin email template routes', () => {
     expect(message).toContain('All mentee emails with status pending')
   })
 
-  it('should get all mentee emails with status pending', async () => {
+  it('should throw status code 400', async () => {
     const response = await adminAgent
       .get('/api/admin/mentee/emails?status=wrongstatus')
       .expect(400)
