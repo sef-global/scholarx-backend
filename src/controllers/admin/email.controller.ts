@@ -10,7 +10,8 @@ export const getAllMenteeEmails = async (
   try {
     const status = req.query.status
     console.log(
-      'API Call: http://localhost:8080/api/admin/mentee/emails?status=' + status
+      'API Call: http://localhost:8080/api/admin/mentee/emails?status=' +
+        (status ?? 'undefined')
     )
     if (
       status === ApplicationStatus.APPROVED ||
