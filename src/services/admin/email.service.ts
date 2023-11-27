@@ -18,6 +18,6 @@ export const getAllMenteeEmailsService = async (
   return {
     statusCode: 200,
     emails,
-    message: 'All mentee emails with status ' + (status || 'undefined')
+    message: 'All mentee emails with status ' + (status ?? 'undefined')
   }
 }
