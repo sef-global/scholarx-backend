@@ -4,6 +4,6 @@ import { getAllMenteeEmails } from '../../../controllers/admin/email.controller'
 
 const menteeRouter = express.Router()
 
-menteeRouter.get('/emails/', /*requireAuth,*/ getAllMenteeEmails)
+menteeRouter.get('/emails/', requireAuth, getAllMenteeEmails)
 
 export default menteeRouter
