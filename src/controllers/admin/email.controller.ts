@@ -9,12 +9,12 @@ export const getAllMenteeEmails = async (
 ): Promise<ApiResponse<string[]>> => {
   try {
     const status = req.query.status
+    console.log("API Call: http://localhost:8080/api/admin/mentee/emails?status="+status)
     if (
       status === ApplicationStatus.APPROVED ||
       status === ApplicationStatus.REJECTED ||
       status === ApplicationStatus.PENDING
     ) {
-      console.log(status)
       const { emails, statusCode, message } = await getAllMenteeEmailsService(
         status
       )
