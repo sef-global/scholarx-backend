@@ -1,5 +1,5 @@
 import { startServer } from '../../../app'
-import { response, type Express } from 'express'
+import { type Express } from 'express'
 import supertest from 'supertest'
 import bcrypt from 'bcrypt'
 import { mockAdmin, mockUser } from '../../../../mocks'
