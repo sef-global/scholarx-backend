@@ -6,14 +6,12 @@ import { mockAdmin, mockUser } from '../../../../mocks'
 import { dataSource } from '../../../configs/dbConfig'
 import Profile from '../../../entities/profile.entity'
 import { ProfileTypes } from '../../../enums'
-import type EmailTemplate from '../../../entities/emailTemplate.entity'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
 let server: Express
 let agent: supertest.SuperAgentTest
 let adminAgent: supertest.SuperAgentTest
-let savedEmailTemplate: EmailTemplate
 
 describe('Admin mentee routes', () => {
   beforeAll(async () => {
