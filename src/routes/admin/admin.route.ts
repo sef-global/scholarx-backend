@@ -10,7 +10,7 @@ const adminRouter = express()
 
 adminRouter.use('/users', userRouter)
 adminRouter.use('/mentors', mentorRouter)
-adminRouter.use('/mentee',menteeRouter)
+adminRouter.use('/mentee', menteeRouter)
 adminRouter.use('/categories', categoryRouter)
 adminRouter.use('/platform', platformRouter)
 adminRouter.use('/emailTemplate', emailTemplateRouter)

@@ -2,7 +2,9 @@ import { dataSource } from '../../configs/dbConfig'
 import Mentee from '../../entities/mentee.entity'
 import type { ApplicationStatus } from '../../enums'
 
-export const getAllMenteeEmailsService = async (status: ApplicationStatus | undefined): Promise<{
+export const getAllMenteeEmailsService = async (
+  status: ApplicationStatus | undefined
+): Promise<{
   statusCode: number
   emails?: string[]
   message: string
@@ -16,6 +18,6 @@ export const getAllMenteeEmailsService = async (status: ApplicationStatus | unde
   return {
     statusCode: 200,
     emails,
-    message: 'All mentee emails with status '+ (status || 'undefined'),
+    message: 'All mentee emails with status ' + (status || 'undefined')
   }
 }
