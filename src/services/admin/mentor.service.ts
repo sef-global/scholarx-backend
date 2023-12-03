@@ -126,16 +126,6 @@ export const searchMentorsByCategory = async (
       .createQueryBuilder('mentor')
       .innerJoinAndSelect('mentor.category', 'category')
       .leftJoinAndSelect('mentor.profile', 'profile')
-      .select([
-        'mentor.uuid',
-        'category.category',
-        'mentor.application',
-        'profile.contact_email',
-        'profile.first_name',
-        'profile.last_name',
-        'profile.image_url',
-        'profile.linkedin_url'
-      ])
       .where('category.category ILIKE :name', {
         name: categoryQuery
       })

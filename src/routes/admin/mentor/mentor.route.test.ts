@@ -191,7 +191,6 @@ describe('Admin mentor routes', () => {
 
     mentorDetails.forEach((mentor: Mentor) => {
       expect(mentor).toHaveProperty('profile')
-      expect(mentor).toHaveProperty('application')
       expect(mentor).toHaveProperty('category')
     })
   })
