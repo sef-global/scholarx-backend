@@ -18,4 +18,5 @@ describe('Category route', () => {
 
     expect(response.body).toHaveProperty('categories')
   })
+
 })

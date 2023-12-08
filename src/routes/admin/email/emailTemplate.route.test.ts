@@ -71,4 +71,9 @@ describe('Admin email template routes', () => {
 
     expect(emailTemplate).toHaveProperty('content')
   })
+
+  afterAll(async () => {
+    await dataSource.destroy()
+  })
+  
 })

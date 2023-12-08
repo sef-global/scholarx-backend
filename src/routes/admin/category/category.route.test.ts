@@ -86,4 +86,9 @@ describe('Admin category routes', () => {
       .send({ categoryName: 'Science' })
       .expect(403)
   })
+
+  afterAll(async () => {
+    await dataSource.destroy()
+  })
+  
 })

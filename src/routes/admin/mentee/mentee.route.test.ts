@@ -81,4 +81,8 @@ describe('Admin mentee routes', () => {
     const { message } = response.body
     expect(message).toContain('Invalid Status')
   })
+
+  afterAll(async () => {
+    await dataSource.destroy()
+  })
 })
