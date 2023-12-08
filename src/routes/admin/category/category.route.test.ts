@@ -90,5 +90,4 @@ describe('Admin category routes', () => {
   afterAll(async () => {
     await dataSource.destroy()
   })
-  
 })

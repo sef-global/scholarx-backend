@@ -75,5 +75,4 @@ describe('Admin email template routes', () => {
   afterAll(async () => {
     await dataSource.destroy()
   })
-  
 })
