@@ -71,4 +71,8 @@ describe('Admin user routes', () => {
       expect(userProfile).not.toHaveProperty('password')
     })
   })
+
+  afterAll(async () => {
+    await dataSource.destroy()
+  })
 })

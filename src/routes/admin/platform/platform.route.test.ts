@@ -107,4 +107,8 @@ describe('Admin platform routes', () => {
       })
       .expect(403)
   })
+
+  afterAll(async () => {
+    await dataSource.destroy()
+  })
 })
