@@ -1,6 +1,7 @@
 import { startServer } from '../../app'
 import type { Express } from 'express'
 import supertest from 'supertest'
+import { dataSource } from '../../configs/dbConfig'
 
 const port = Math.floor(Math.random() * (9999 - 3000 + 1)) + 3000
 
@@ -17,5 +18,9 @@ describe('Category route', () => {
     const response = await userAgent.get(`/api/categories`).expect(200)
 
     expect(response.body).toHaveProperty('categories')
+  })
+
+  afterAll(async () => {
+    await dataSource.destroy()
   })
 })
