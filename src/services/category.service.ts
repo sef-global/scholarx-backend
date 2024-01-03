@@ -1,14 +1,9 @@
 import { dataSource } from '../configs/dbConfig'
 import Category from '../entities/category.entity'
 
-interface CategoryType {
-  category: string
-  id: string
-}
-
 export const getAllCategories = async (): Promise<{
   statusCode: number
-  categories?: CategoryType[] | null
+  categories?: Array<Pick<Category, 'uuid' | 'category'>> | null
   message: string
 }> => {
   try {
@@ -18,7 +13,7 @@ export const getAllCategories = async (): Promise<{
     })
 
     const categories = allCategories.map((category) => {
-      return { category: category.category, id: category.uuid }
+      return { category: category.category, uuid: category.uuid }
     })
 
     if (!categories) {
