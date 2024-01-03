@@ -61,6 +61,37 @@ Follow these steps to get started with the ScholarX backend:
 
 7. Open your web browser and navigate to `http://localhost:${server_port}` to access the running server.
 
+## Docker Setup
+
+If you prefer to use Docker for development, follow these steps:
+
+1. Ensure Docker and Docker Compose are installed on your machine. You can download them from here.
+
+2. Build the Docker images:
+
+```docker-compose build```
+
+3. Start the Docker containers:
+
+```docker-compose up```
+
+4. The application and its services are now running in Docker containers. You can access the application at ```http://localhost:${SERVER_PORT}```, where ```SERVER_PORT``` is the port number specified in your ```.env``` file.
+
+5. To stop the Docker containers, use the following commnd:
+
+```docker-compose down```
+
+Please note that the Docker Compose setup assumes that you have a ```.env``` file in your project root. You can create one by copying the ```.env.example``` file:
+
+```cp .env.example .env```
+
+Then, replace the environment variables in the newly created ```.env``` file with your configuration.
+
+
+Remember to replace ```${SERVER_PORT}``` with the actual port number if it's a fixed value. If it's specified in the ```.env``` file, you can leave it as is.
+
+---
+
 #### Code Quality
 
 We strive to maintain a high code quality. You can check for linting issues by running:
