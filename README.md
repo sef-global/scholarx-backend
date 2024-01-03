@@ -65,7 +65,7 @@ Follow these steps to get started with the ScholarX backend:
 
 If you prefer to use Docker for development, follow these steps:
 
-1. Ensure Docker and Docker Compose are installed on your machine. You can download them from here.
+1. Ensure Docker and Docker Compose are installed on your machine. You can download them from here https://www.docker.com/products/docker-desktop/.
 
 2. Build the Docker images:
 
