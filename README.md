@@ -87,8 +87,32 @@ Please note that the Docker Compose setup assumes that you have a ```.env``` fil
 
 Then, replace the environment variables in the newly created ```.env``` file with your configuration.
 
+The environment directive sets environment variables inside the Docker container. These variables are used to configure the PostgreSQL server. The values for ```${DB_USER}```, ```${DB_PASSWORD}```, and ```${DB_NAME}``` should be specified in your .env file.
+
 
 Remember to replace ```${SERVER_PORT}``` with the actual port number if it's a fixed value. If it's specified in the ```.env``` file, you can leave it as is.
+
+
+In the `docker-compose.yml` file, we also have a `db` service for the PostgreSQL database:
+
+```dockercompose
+db:
+  image: postgres:15
+  ports:
+    - "5432:5432"
+  environment:
+    - POSTGRES_USER=${DB_USER}
+    - POSTGRES_PASSWORD=${DB_PASSWORD}
+    - POSTGRES_DB=${DB_NAME}
+```
+
+This service uses the official postgres:15 Docker image. The ports directive maps port 5432 inside the Docker container to port 5432 on your host machine, allowing you to connect to the PostgreSQL server at ```localhost:5432```.
+
+Now, you can connect to the PostgreSQL server running inside the Docker container using a database client. Use ```localhost:5432``` as the server address, and the ```${DB_USER}```, ```${DB_PASSWORD}```, and ```${DB_NAME}``` values from your ```.env``` file for the username, password, and database name, respectively.
+
+### Note 
+
+If you have a local PostgreSQL server running on port 5432, you will need to stop it before starting the Docker container, or change the port mapping to avoid a conflict.
 
 ---
 
