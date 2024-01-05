@@ -114,6 +114,9 @@ Now, you can connect to the PostgreSQL server running inside the Docker containe
 
 If you have a local PostgreSQL server running on port 5432, you will need to stop it before starting the Docker container, or change the port mapping to avoid a conflict.
 
+
+Remember to replace ```${SERVER_PORT}``` with the actual port number if it's a fixed value. If it's specified in the ```.env``` file, you can leave it as is.
+
 ---
 
 #### Code Quality
