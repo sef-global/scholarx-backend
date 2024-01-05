@@ -14,7 +14,7 @@ services:
     image: postgres:15
     ports:
       - "5432:5432"
-    image: postgres:13
+      
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
