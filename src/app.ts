@@ -18,7 +18,13 @@ app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(cors())
 app.use(passport.initialize())
-
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // allow to server to accept request from different origin
+    methods: 'GET, HEAD, PUT, PATCH, DELETE', // allow to perform http methods
+    credentials: true // allow session cookie from browser to pass through
+  })
+)
 app.get('/', (req, res) => {
   res.send('ScholarX Backend')
 })
