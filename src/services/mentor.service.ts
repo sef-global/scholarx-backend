@@ -206,7 +206,7 @@ export const getAllMentors = async (
         .leftJoinAndSelect('mentor.profile', 'profile')
         .leftJoinAndSelect('mentor.category', 'category')
         .where('mentor.state = :state', { state: 'approved' })
-        .andWhere('category.category = :category', { category: category }) 
+        .andWhere('category.category = :category', { category: category })
         .getMany()
     }
 

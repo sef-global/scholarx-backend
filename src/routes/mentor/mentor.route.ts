@@ -12,6 +12,6 @@ const mentorRouter = express.Router()
 mentorRouter.post('/', requireAuth, mentorApplicationHandler)
 mentorRouter.put('/me/availability', requireAuth, mentorAvailabilityHandler)
 mentorRouter.get('/:mentorId', mentorDetailsHandler)
-mentorRouter.get('/',getAllMentorsHandler)
- 
+mentorRouter.get('/', getAllMentorsHandler)
+
 export default mentorRouter

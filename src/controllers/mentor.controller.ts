@@ -6,7 +6,7 @@ import {
   getAllMentors
 } from '../services/mentor.service'
 import type Profile from '../entities/profile.entity'
-import Mentor from '../entities/mentor.entity'
+import type Mentor from '../entities/mentor.entity'
 import type { ApiResponse } from '../types'
 
 export const mentorApplicationHandler = async (
