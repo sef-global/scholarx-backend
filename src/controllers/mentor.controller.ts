@@ -2,7 +2,8 @@ import type { Request, Response } from 'express'
 import {
   createMentor,
   updateAvailability,
-  getMentor
+  getMentor,
+  getAllMentors
 } from '../services/mentor.service'
 import type Profile from '../entities/profile.entity'
 import type Mentor from '../entities/mentor.entity'
@@ -79,6 +80,41 @@ export const mentorDetailsHandler = async (
       }
     }
     return res.status(statusCode).json({ ...mentorDetails })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+
+    throw err
+  }
+}
+
+export const getAllMentorsHandler = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentor>> => {
+  try {
+    const category: string = req.query.category as string
+    const { mentors, statusCode } = await getAllMentors(category)
+    if (mentors !== null && mentors !== undefined) {
+      const mentorDetails = mentors.map((mentor) => ({
+        mentorId: mentor.uuid,
+        category: mentor.category.category,
+        profile: {
+          contact_email: mentor.profile.contact_email,
+          first_name: mentor.profile.first_name,
+          last_name: mentor.profile.last_name,
+          image_url: mentor.profile.image_url,
+          linkedin_url: mentor.profile.linkedin_url
+        }
+      }))
+      return res.status(statusCode).json({ mentors: mentorDetails })
+    } else {
+      return res.status(404).json({ error: 'Mentors not found' })
+    }
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
