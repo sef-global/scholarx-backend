@@ -1,12 +1,17 @@
 import { getAllMentors } from './mentor.service'
 import { dataSource } from '../configs/dbConfig'
 
-type MockMentorRepository = {
+interface Mentor {
+  id: number
+  name: string
+}
+
+interface MockMentorRepository {
   createQueryBuilder: jest.Mock
   leftJoinAndSelect: jest.Mock
   where: jest.Mock
   andWhere: jest.Mock
-  getMany: jest.Mock<Promise<any[]>>
+  getMany: jest.Mock<Promise<Mentor[]>>
 }
 
 jest.mock('../configs/dbConfig', () => ({
@@ -61,7 +66,7 @@ describe('getAllMentors', () => {
 })
 
 function createMockMentorRepository(
-  data: any[] | undefined,
+  data: Mentor[] | undefined,
   error?: Error
 ): MockMentorRepository {
   return {
