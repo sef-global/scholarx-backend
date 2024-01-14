@@ -3,16 +3,18 @@ import Category from '../entities/category.entity'
 
 export const getAllCategories = async (): Promise<{
   statusCode: number
-  categories?: string[] | null
+  categories?: Array<Pick<Category, 'uuid' | 'category'>> | null
   message: string
 }> => {
   try {
     const categoryRepository = dataSource.getRepository(Category)
     const allCategories: Category[] = await categoryRepository.find({
-      select: ['category']
+      select: ['category', 'uuid']
     })
 
-    const categories = allCategories.map((category) => category.category)
+    const categories = allCategories.map((category) => {
+      return { category: category.category, uuid: category.uuid }
+    })
 
     if (!categories) {
       return {
