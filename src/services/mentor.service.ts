@@ -184,7 +184,7 @@ export const searchMentorsByQuery = async (
 }
 
 export const getAllMentors = async (
-  category: string
+  category?: string | null
 ): Promise<{
   statusCode: number
   mentors?: Mentor[] | null
