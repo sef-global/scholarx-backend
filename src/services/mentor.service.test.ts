@@ -1,6 +1,14 @@
 import { getAllMentors } from './mentor.service'
 import { dataSource } from '../configs/dbConfig'
 
+type MockMentorRepository = {
+  createQueryBuilder: jest.Mock
+  leftJoinAndSelect: jest.Mock
+  where: jest.Mock
+  andWhere: jest.Mock
+  getMany: jest.Mock<Promise<any[]>>
+}
+
 jest.mock('../configs/dbConfig', () => ({
   dataSource: {
     getRepository: jest.fn()
@@ -52,7 +60,10 @@ describe('getAllMentors', () => {
   })
 })
 
-function createMockMentorRepository(data: any[] | undefined, error?: Error) {
+function createMockMentorRepository(
+  data: any[] | undefined,
+  error?: Error
+): MockMentorRepository {
   return {
     createQueryBuilder: jest.fn().mockReturnThis(),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
