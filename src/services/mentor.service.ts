@@ -182,3 +182,48 @@ export const searchMentorsByQuery = async (
     throw new Error('Error getting mentor')
   }
 }
+
+export const getAllMentors = async (
+  category?: string | null
+): Promise<{
+  statusCode: number
+  mentors?: Mentor[] | null
+  message: string
+}> => {
+  try {
+    let mentors: Mentor[] = []
+    const mentorRepository = dataSource.getRepository(Mentor)
+    if (category == null) {
+      mentors = await mentorRepository
+        .createQueryBuilder('mentor')
+        .leftJoinAndSelect('mentor.profile', 'profile')
+        .leftJoinAndSelect('mentor.category', 'category')
+        .where('mentor.state = :state', { state: 'approved' })
+        .getMany()
+    } else {
+      mentors = await mentorRepository
+        .createQueryBuilder('mentor')
+        .leftJoinAndSelect('mentor.profile', 'profile')
+        .leftJoinAndSelect('mentor.category', 'category')
+        .where('mentor.state = :state', { state: 'approved' })
+        .andWhere('category.category = :category', { category })
+        .getMany()
+    }
+
+    if (!mentors || mentors.length === 0) {
+      return {
+        statusCode: 404,
+        message: 'No mentors found'
+      }
+    }
+
+    return {
+      statusCode: 200,
+      mentors,
+      message: 'Mentors found'
+    }
+  } catch (err) {
+    console.error('Error getting mentors', err)
+    throw new Error('Error getting mentors')
+  }
+}
