@@ -2,9 +2,12 @@ import { registerUser, loginUser } from './auth.service'
 import { dataSource } from '../configs/dbConfig'
 
 jest.mock('bcrypt', () => ({
-  hash: jest.fn((password) => Promise.resolve(`hashed_${password}`)),
-  compare: jest.fn((password, hashedPassword) =>
-    Promise.resolve(password === hashedPassword)
+  hash: jest.fn(
+    async (password) => await Promise.resolve(`hashed_${password}`)
+  ),
+  compare: jest.fn(
+    async (password, hashedPassword) =>
+      await Promise.resolve(password === hashedPassword)
   )
 }))
 
@@ -23,7 +26,7 @@ describe('registerUser', () => {
     const mockProfileRepository = {
       findOne: jest.fn().mockResolvedValue(null),
       create: jest.fn((data) => data),
-      save: jest.fn((profile) => Promise.resolve(profile))
+      save: jest.fn(async (profile) => await Promise.resolve(profile))
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
