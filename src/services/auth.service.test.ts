@@ -3,7 +3,7 @@ import { dataSource } from '../configs/dbConfig'
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn(
-    async (password) => await Promise.resolve(`hashed_${password}`)
+    async (password: string) => await Promise.resolve(`hashed_${password}`)
   ),
   compare: jest.fn(
     async (password, hashedPassword) =>
@@ -11,8 +11,15 @@ jest.mock('bcrypt', () => ({
   )
 }))
 
+interface PayloadType {
+  userId: string
+}
+
 jest.mock('jsonwebtoken', () => ({
-  sign: jest.fn((payload, secret, options) => `mocked_token_${payload.userId}`)
+  sign: jest.fn(
+    (payload: PayloadType) =>
+      `mocked_token_${payload.userId}`
+  )
 }))
 
 jest.mock('../configs/dbConfig', () => ({
