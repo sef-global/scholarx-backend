@@ -16,10 +16,7 @@ interface PayloadType {
 }
 
 jest.mock('jsonwebtoken', () => ({
-  sign: jest.fn(
-    (payload: PayloadType) =>
-      `mocked_token_${payload.userId}`
-  )
+  sign: jest.fn((payload: PayloadType) => `mocked_token_${payload.userId}`)
 }))
 
 jest.mock('../configs/dbConfig', () => ({
