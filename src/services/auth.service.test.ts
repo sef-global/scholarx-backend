@@ -1,9 +1,5 @@
 import { registerUser, loginUser } from './auth.service'
 import { dataSource } from '../configs/dbConfig'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import Profile from '../entities/profile.entity'
-import { JWT_SECRET } from '../configs/envConfig'
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn((password) => Promise.resolve(`hashed_${password}`)),
@@ -39,7 +35,7 @@ describe('registerUser', () => {
     expect(result.message).toBe('Registration successful')
   })
 
-  it('should return conflict status code for existing user', async () => {
+  it('should return conflict status code for an existing user', async () => {
     const mockProfileRepository = {
       findOne: jest.fn().mockResolvedValue({})
     }
@@ -69,7 +65,7 @@ describe('registerUser', () => {
 })
 
 describe('loginUser', () => {
-  it('should return unauthorized status code for invalid email or password', async () => {
+  it('should return unauthorized status code for an invalid email or password', async () => {
     const mockProfileRepository = {
       createQueryBuilder: jest.fn().mockReturnThis(),
       addSelect: jest.fn().mockReturnThis(),
@@ -88,7 +84,7 @@ describe('loginUser', () => {
     expect(result.token).toBeUndefined()
   })
 
-  it('should return unauthorized status code for incorrect password', async () => {
+  it('should return unauthorized status code for an incorrect password', async () => {
     const mockProfileRepository = {
       createQueryBuilder: jest.fn().mockReturnThis(),
       addSelect: jest.fn().mockReturnThis(),
@@ -110,7 +106,7 @@ describe('loginUser', () => {
     expect(result.token).toBeUndefined()
   })
 
-  it('should handle internal server error during login', async () => {
+  it('should handle an internal server error during login', async () => {
     ;(dataSource.getRepository as jest.Mock).mockImplementation(() => {
       throw new Error('Test repository error')
     })
@@ -122,13 +118,13 @@ describe('loginUser', () => {
     expect(result.token).toBeUndefined()
   })
 
-  it('should return unauthorized status code for invalid email or password', async () => {
+  it('should return unauthorized status code for an invalid email or password', async () => {
     const mockError = new Error('Test repository error')
     const mockProfileRepository = {
       createQueryBuilder: jest.fn().mockReturnThis(),
       addSelect: jest.fn().mockReturnThis(),
       where: jest.fn().mockReturnThis(),
-      getOne: jest.fn().mockRejectedValue(mockError) // Simulate an error
+      getOne: jest.fn().mockRejectedValue(mockError)
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
