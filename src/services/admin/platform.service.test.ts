@@ -62,9 +62,9 @@ describe('Platform Service', () => {
         mockPlatformRepository
       )
 
-      await expect(createPlatform({} as Platform)).rejects.toThrowError(
-        'Error creating Platform'
-      )
+      await expect(
+        createPlatform({} as unknown as Platform)
+      ).rejects.toThrowError('Error creating Platform')
     })
   })
 
@@ -158,7 +158,7 @@ describe('Platform Service', () => {
 
       const result = await updatePlatformDetails({
         uuid: 'mock-uuid'
-      } as Platform)
+      } as unknown as Platform)
 
       expect(result.statusCode).toBe(200)
       expect(result.platform).toEqual(mockPlatform)
@@ -176,7 +176,7 @@ describe('Platform Service', () => {
 
       const result = await updatePlatformDetails({
         uuid: 'nonexistent-uuid'
-      } as Platform)
+      } as unknown as Platform)
 
       expect(result.statusCode).toBe(404)
       expect(result.message).toBe('Platform not found')
