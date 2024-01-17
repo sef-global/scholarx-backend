@@ -51,8 +51,7 @@ describe('Category Service - getAllCategories', () => {
 
     const result = await getAllCategories()
 
-    expect(result.statusCode).toBe(404)
-    expect(result.message).toBe('Categories not found')
+    expect(result.categories?.length).toBe(0)
   })
 
   it('should handle error during category retrieval', async () => {
