@@ -108,7 +108,9 @@ describe('Profile Service', () => {
         delete: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
-        execute: jest.fn().mockRejectedValue(new Error('Error executing delete query'))
+        execute: jest
+          .fn()
+          .mockRejectedValue(new Error('Error executing delete query'))
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
