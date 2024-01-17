@@ -191,9 +191,9 @@ describe('Platform Service', () => {
         mockPlatformRepository
       )
 
-      await expect(updatePlatformDetails({} as Platform)).rejects.toThrowError(
-        'Error updating platform'
-      )
+      await expect(
+        updatePlatformDetails({} as unknown as Platform)
+      ).rejects.toThrowError('Error updating platform')
     })
   })
 })
