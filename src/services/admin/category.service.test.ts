@@ -1,6 +1,5 @@
 import { createCategory, changeCategory } from './category.service'
 import { dataSource } from '../../configs/dbConfig'
-import type Category from '../../entities/category.entity'
 
 jest.mock('../../configs/dbConfig', () => ({
   dataSource: {
@@ -21,7 +20,7 @@ describe('Category Service', () => {
           updated_at: new Date(),
           updateTimestamps: jest.fn(),
           generateUuid: jest.fn()
-        } as Category)
+        } as const)
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
@@ -63,7 +62,7 @@ describe('Category Service', () => {
         updated_at: new Date(),
         updateTimestamps: jest.fn(),
         generateUuid: jest.fn()
-      } as Category
+      } as const
 
       const mockCategoryRepository = {
         findOne: jest.fn().mockResolvedValue(mockCategory),
