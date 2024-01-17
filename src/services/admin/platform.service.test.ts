@@ -16,7 +16,7 @@ jest.mock('../../configs/dbConfig', () => ({
 describe('Platform Service', () => {
   describe('createPlatform', () => {
     it('should create a platform successfully', async () => {
-      const mockPlatform = {
+      const mockPlatform: Platform = {
         uuid: 'mock-uuid',
         created_at: new Date(),
         updated_at: new Date(),
@@ -36,7 +36,7 @@ describe('Platform Service', () => {
         image_url: 'https://example.com/mock-image.jpg',
         landing_page_url: 'https://example.com/mock-landing-page',
         title: 'Mock Platform Title'
-      } as Platform
+      }
 
       const mockPlatformRepository = {
         save: jest.fn().mockResolvedValue(mockPlatform)
@@ -70,7 +70,7 @@ describe('Platform Service', () => {
 
   describe('getPlatformDetails', () => {
     it('should get platform details successfully', async () => {
-      const mockPlatform = {
+      const mockPlatform: Platform = {
         uuid: 'mock-uuid',
         created_at: new Date(),
         updated_at: new Date(),
@@ -90,7 +90,7 @@ describe('Platform Service', () => {
         image_url: 'https://example.com/mock-image.jpg',
         landing_page_url: 'https://example.com/mock-landing-page',
         title: 'Mock Platform Title'
-      } as Platform
+      }
       const mockPlatforms: Platform[] = [mockPlatform]
 
       const mockPlatformRepository = {
@@ -125,7 +125,7 @@ describe('Platform Service', () => {
 
   describe('updatePlatformDetails', () => {
     it('should update platform details successfully', async () => {
-      const mockPlatform = {
+      const mockPlatform: Platform = {
         uuid: 'mock-uuid',
         created_at: new Date(),
         updated_at: new Date(),
@@ -145,7 +145,7 @@ describe('Platform Service', () => {
         image_url: 'https://example.com/mock-image.jpg',
         landing_page_url: 'https://example.com/mock-landing-page',
         title: 'Mock Platform Title'
-      } as Platform
+      }
 
       const mockPlatformRepository = {
         update: jest.fn().mockResolvedValue({ affected: 1 }),
