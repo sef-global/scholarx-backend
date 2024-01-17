@@ -32,7 +32,7 @@ describe('Platform Service', () => {
           }
         },
         description: 'Mock Platform Description',
-        mentor_questions: {} as JSON,
+        mentor_questions: {} as unknown as JSON,
         image_url: 'https://example.com/mock-image.jpg',
         landing_page_url: 'https://example.com/mock-landing-page',
         title: 'Mock Platform Title'
@@ -86,7 +86,7 @@ describe('Platform Service', () => {
           }
         },
         description: 'Mock Platform Description',
-        mentor_questions: {} as JSON,
+        mentor_questions: {} as unknown as JSON,
         image_url: 'https://example.com/mock-image.jpg',
         landing_page_url: 'https://example.com/mock-landing-page',
         title: 'Mock Platform Title'
@@ -141,7 +141,7 @@ describe('Platform Service', () => {
           }
         },
         description: 'Mock Platform Description',
-        mentor_questions: {} as JSON,
+        mentor_questions: {} as unknown as JSON,
         image_url: 'https://example.com/mock-image.jpg',
         landing_page_url: 'https://example.com/mock-landing-page',
         title: 'Mock Platform Title'
