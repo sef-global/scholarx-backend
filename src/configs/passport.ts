@@ -13,6 +13,8 @@ import type { Request } from 'express'
 // Google Authencation Strategy  ----
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { findOrCreateUser } from '../services/auth.service'
+// Import the 'User' type from the appropriate module
+import { type User } from '../types'
 
 passport.use(
   new GoogleStrategy(
@@ -26,6 +28,7 @@ passport.use(
       try {
         const user = await findOrCreateUser(profile)
         done(null, user)
+        console.log('user', user)
       } catch (err) {
         done(err as Error)
       }
@@ -33,8 +36,8 @@ passport.use(
   )
 )
 
-passport.serializeUser((user: any, done) => {
-  done(null, user.primary_email)
+passport.serializeUser((user: Express.User, done) => {
+  done(null, (user as User).primary_email)
 })
 
 passport.deserializeUser(async (primary_email: string, done) => {
@@ -47,14 +50,12 @@ passport.deserializeUser(async (primary_email: string, done) => {
   }
 })
 
-// -----
 const cookieExtractor = (req: Request): string => {
   let token = null
   if (req?.cookies) {
     token = req.cookies.jwt
   }
   return token
-  console.log(token)
 }
 
 const options = {
