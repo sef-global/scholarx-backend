@@ -6,6 +6,38 @@ import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
 import type { ApiResponse } from '../types'
 
+// Google Authencation  Redirect code ----
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const googleRedirect = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  passport.authenticate(
+    'google',
+    { failureRedirect: '/login' },
+    (err: any, user: any, info: any) => {
+      if (err) {
+        next(err)
+        return
+      }
+      if (!user) {
+        res.redirect('/login')
+        return
+      }
+      req.logIn(user, function (err) {
+        if (err) {
+          next(err)
+          return
+        }
+        console.log('login success')
+        res.redirect('/')
+      })
+    }
+  )(req, res, next)
+}
+
+// -----
 export const register = async (
   req: Request,
   res: Response

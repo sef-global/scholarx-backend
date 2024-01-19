@@ -83,3 +83,27 @@ export const loginUser = async (
     return { statusCode: 500, message: 'Internal server error' }
   }
 }
+
+// findOrCreateUser function for Google OAuth
+export const findOrCreateUser = async (profile: any): Promise<Profile> => {
+  const profileRepository = dataSource.getRepository(Profile)
+  let user = await profileRepository.findOne({
+    where: { primary_email: profile.emails[0].value }
+  })
+  console.log('User found:', user)
+  if (!user) {
+    const hashedPassword = await bcrypt.hash(profile.id, 10) // Use Google ID as password
+    user = profileRepository.create({
+      primary_email: profile.emails[0].value,
+      password: hashedPassword,
+      contact_email: '',
+      first_name: profile.name.givenName,
+      last_name: profile.name.familyName,
+      image_url: profile.photos[0].value,
+      linkedin_url: ''
+    })
+    await profileRepository.save(user)
+  }
+
+  return user
+}
