@@ -20,13 +20,19 @@ passport.use(
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: GOOGLE_REDIRECT_URL,
-      scope: ['profile', 'email']
+      scope: ['profile', 'email'],
+      passReqToCallback: true // Add this line
     },
-    async function (accessToken, refreshToken, profile, done) {
+    async function (
+      req: Request, // Add this line
+      accessToken: string, // Remove this line if not used
+      refreshToken: string, // Remove this line if not used
+      profile: passport.Profile, // Update this line
+      done: (err: Error | null, user?: Profile) => void // Update this line
+    ) {
       try {
         const user = await findOrCreateUser(profile)
         done(null, user)
-        console.log('user', user)
       } catch (err) {
         done(err as Error)
       }
@@ -37,7 +43,6 @@ passport.use(
 passport.serializeUser((user: Express.User, done) => {
   done(null, (user as User).primary_email)
 })
-
 passport.deserializeUser(async (primary_email: string, done) => {
   try {
     const profileRepository = dataSource.getRepository(Profile)

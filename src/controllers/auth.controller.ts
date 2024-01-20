@@ -28,7 +28,6 @@ export const googleRedirect = async (
           next(err)
           return
         }
-        console.log('login success')
         res.redirect('/')
       })
     }
