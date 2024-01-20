@@ -13,7 +13,6 @@ authRouter.post('/register', register)
 authRouter.post('/login', login)
 authRouter.get('/logout', logout)
 
-// Google Authentication endpoint
 authRouter.get(
   '/google',
   passport.authenticate('google', {
@@ -21,6 +20,5 @@ authRouter.get(
   })
 )
 
-// Google Authentication callback
 authRouter.get('/google/callback', googleRedirect)
 export default authRouter

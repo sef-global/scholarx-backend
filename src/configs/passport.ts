@@ -10,10 +10,8 @@ import {
 } from './envConfig'
 import type { Request } from 'express'
 
-// Google Authencation Strategy  ----
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { findOrCreateUser } from '../services/auth.service'
-// Import the 'User' type from the appropriate module
 import { type User } from '../types'
 
 passport.use(

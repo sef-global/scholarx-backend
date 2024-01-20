@@ -4,19 +4,17 @@ import passport from 'passport'
 import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
-import type { ApiResponse } from '../types'
+import type { ApiResponse, User } from '../types'
 
-// Google Authencation  Redirect code ----
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const googleRedirect = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   passport.authenticate(
     'google',
     { failureRedirect: '/login' },
-    (err: any, user: any, info: any) => {
+    (err: Error, user: User, info: Profile) => {
       if (err) {
         next(err)
         return
@@ -37,7 +35,6 @@ export const googleRedirect = async (
   )(req, res, next)
 }
 
-// -----
 export const register = async (
   req: Request,
   res: Response
@@ -60,7 +57,6 @@ export const register = async (
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
-
     throw err
   }
 }
