@@ -24,7 +24,7 @@ passport.use(
       passReqToCallback: true // Add this line
     },
     async function (
-      req: Request, // Add this line
+      req: Request,
       accessToken: string, // Remove this line if not used
       refreshToken: string, // Remove this line if not used
       profile: passport.Profile, // Update this line
