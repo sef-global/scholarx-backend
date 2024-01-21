@@ -4,7 +4,35 @@ import passport from 'passport'
 import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
-import type { ApiResponse } from '../types'
+import type { ApiResponse, User } from '../types'
+
+export const googleRedirect = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  passport.authenticate(
+    'google',
+    { failureRedirect: '/login' },
+    (err: Error, user: User, info: Profile) => {
+      if (err) {
+        next(err)
+        return
+      }
+      if (!user) {
+        res.redirect('/login')
+        return
+      }
+      req.logIn(user, function (err) {
+        if (err) {
+          next(err)
+          return
+        }
+        res.redirect('/')
+      })
+    }
+  )(req, res, next)
+}
 
 export const register = async (
   req: Request,
@@ -28,7 +56,6 @@ export const register = async (
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
-
     throw err
   }
 }

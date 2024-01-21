@@ -11,6 +11,7 @@ import categoryRouter from './routes/category/category.route'
 import passport from 'passport'
 import './configs/passport'
 import cookieParser from 'cookie-parser'
+import session from 'express-session'
 
 const app = express()
 
@@ -28,6 +29,18 @@ app.use(
 app.get('/', (req, res) => {
   res.send('ScholarX Backend')
 })
+
+//  Session configuration for passport
+app.use(
+  session({
+    secret: 'SECRET',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 60 * 60 * 1000
+    }
+  })
+)
 
 app.use('/api/auth', authRouter)
 app.use('/api/me', profileRouter)
