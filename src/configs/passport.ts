@@ -21,14 +21,14 @@ passport.use(
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: GOOGLE_REDIRECT_URL,
       scope: ['profile', 'email'],
-      passReqToCallback: true // Add this line
+      passReqToCallback: true
     },
     async function (
       req: Request,
-      accessToken: string, // Remove this line if not used
-      refreshToken: string, // Remove this line if not used
-      profile: passport.Profile, // Update this line
-      done: (err: Error | null, user?: Profile) => void // Update this line
+      accessToken: string,
+      refreshToken: string,
+      profile: passport.Profile,
+      done: (err: Error | null, user?: Profile) => void
     ) {
       try {
         const user = await findOrCreateUser(profile)
