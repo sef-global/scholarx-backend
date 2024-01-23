@@ -171,4 +171,83 @@ scholarx-backend/
 - `package.json`: Contains information about the project and its dependencies.
 - `tsconfig.json`: Configuration file for the TypeScript compiler.
 
+## Setting up Google Authentication
+1. Open Google Cloud Console:
+
+Visit https://console.cloud.google.com
+
+2. Sign In:
+
+Sign in with your Google account. If you don't have one, you'll need to create one.
+
+3. Navigate to the Project Selection Page:
+
+Once signed in, you'll be directed to the Google Cloud Console. At the top left of the page, you'll see a drop-down menu with text "Select a Project". Click on this menu.
+
+4. Create a New Project:
+
+If you have existing projects, you can select one or click on the "New Project" button.
+
+5. Enter Project Details:
+
+In the "Project Name" field, give your project a unique name. Then select a location (region) for your project's resources.
+
+6. Click "Create":
+
+Once the details are filled, click the "Create" button at the bottom.
+
+7. Wait for Project Creation:
+
+Google Cloud Platform will now create your project. This might take a few moments.
+
+
+## Enabling Google+ API for the Project
+1. Navigate to the Google Cloud Console.
+Select your project using the project selector at the top.
+In the left navigation pane, click on "APIs & Services" and then click on "Library."
+
+2. Search for "Google+ API" in the library.
+
+3. Click on the Google+ API and then click the "Enable" button.
+
+## Create OAuth Consent Screen
+1. Navigate to the API & Services Dashboard:
+Open the Google Cloud Console.
+Select your project.
+
+3. Open the API & Services Dashboard:
+
+In the left navigation pane, click on "APIs & Services" and then click on "Credentials."
+
+4. Configure Consent Screen:
+
+Click on "Create Credentials" and choose "OAuth consent screen."
+Fill in the required details for your OAuth consent screen, such as product name, user support email, and developer contact information.
+
+5. Save and Continue:
+Save the consent screen configuration.
+
+
+## Create OAuth Client ID Credentials
+1. Navigate to the API & Services Dashboard:
+In the "Credentials" page, click on "Create Credentials" and choose "OAuth client ID."
+Configure OAuth Client ID:
+Select the application type and
+Enter a name for your client ID.
+Configure the authorized redirect URIs.
+
+2. Save Credentials:
+
+Click "Create" to generate your OAuth client ID and client secret.
+
+## Set Environment Variables
+After obtaining the OAuth client ID and client secret,set the environment variables in your application to use these credentials.
+
+Ex:
+
+process.env.GOOGLE_CLIENT_ID = 'your-client-id';
+process.env.GOOGLE_CLIENT_SECRET = 'your-client-secret';
+process.env.GOOGLE_REDIRECT_URL = 'your-redirect-uri';
+
+
 We appreciate your interest in ScholarX. Happy contributing! If you have any questions or need assistance, please don't hesitate to reach out to us.
