@@ -28,7 +28,7 @@ export const googleRedirect = async (
           next(err)
           return
         }
-        res.redirect('/')
+        res.redirect('http://localhost:5173/')
       })
     }
   )(req, res, next)
