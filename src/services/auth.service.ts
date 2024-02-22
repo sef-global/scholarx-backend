@@ -150,7 +150,6 @@ export const resetPassword = async (
 ): Promise<{ statusCode: number; message: string }> => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
-    console.log('decoded', decoded)
     const profileRepository = dataSource.getRepository(Profile)
     const profile = await profileRepository.findOne({
       where: { uuid: decoded.userId }
