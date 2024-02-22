@@ -144,7 +144,7 @@ const saveProfile = async (
   await dataSource.getRepository(Profile).save(profile)
 }
 
-// TO-DO 
+// TO-DO
 export const resetPassword = async (
   token: string,
   newPassword: string
