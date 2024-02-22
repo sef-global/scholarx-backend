@@ -108,3 +108,65 @@ export const findOrCreateUser = async (
 
   return user
 }
+
+export const generateResetToken = async (
+  email: string
+): Promise<{ statusCode: number; message: string; token?: string }> => {
+  try {
+    const profileRepository = dataSource.getRepository(Profile)
+    const profile = await profileRepository.findOne({
+      where: { primary_email: email },
+      select: ['password', 'uuid']
+    })
+
+    if (!profile) {
+      return { statusCode: 401, message: 'Invalid email or password' }
+    }
+    const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET ?? '', {
+      expiresIn: '10h'
+    })
+    return { statusCode: 200, message: 'Token generated', token }
+  } catch (error) {
+    console.error('Error executing Reset Password', error)
+    return { statusCode: 500, message: 'Internal server error' }
+  }
+}
+
+const hashPassword = async (password: string): Promise<string> => {
+  return await bcrypt.hash(password, 10)
+}
+
+const saveProfile = async (
+  profile: Profile,
+  hashedPassword: string
+): Promise<void> => {
+  profile.password = hashedPassword
+  await dataSource.getRepository(Profile).save(profile)
+}
+
+// TO-DO 
+export const resetPassword = async (
+  token: string,
+  newPassword: string
+): Promise<{ statusCode: number; message: string }> => {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
+    console.log('decoded', decoded)
+    const profileRepository = dataSource.getRepository(Profile)
+    const profile = await profileRepository.findOne({
+      where: { uuid: decoded.userId }
+    })
+
+    if (!profile) {
+      return { statusCode: 401, message: 'Invalid token' }
+    }
+
+    const hashedPassword = await hashPassword(newPassword)
+    await saveProfile(profile, hashedPassword)
+
+    return { statusCode: 200, message: 'Password reset successful' }
+  } catch (error) {
+    console.error('Error executing Reset Password', error)
+    return { statusCode: 500, message: 'Internal server error' }
+  }
+}
