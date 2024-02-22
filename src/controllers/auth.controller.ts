@@ -190,13 +190,10 @@ export const passwordReset = async (
       return
     }
 
-    const success = await resetPassword(token, newPassword)
+    const result = await resetPassword(token, newPassword)
+    console.log('result', result)
 
-    if (success) {
-      res.status(200).json({ message: 'Password reset successful' })
-    } else {
-      res.status(400).json({ message: 'Password reset failed' })
-    }
+    res.status(result.statusCode).json({ message: result.message })
   } catch (err) {
     console.error('Error executing query', err)
     res

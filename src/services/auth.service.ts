@@ -144,7 +144,6 @@ const saveProfile = async (
   await dataSource.getRepository(Profile).save(profile)
 }
 
-// TO-DO
 export const resetPassword = async (
   token: string,
   newPassword: string
@@ -156,6 +155,7 @@ export const resetPassword = async (
     const profile = await profileRepository.findOne({
       where: { uuid: decoded.userId }
     })
+    console.log('user id', profile)
 
     if (!profile) {
       return { statusCode: 401, message: 'Invalid token' }
@@ -163,6 +163,7 @@ export const resetPassword = async (
 
     const hashedPassword = await hashPassword(newPassword)
     await saveProfile(profile, hashedPassword)
+    console.log(hashedPassword)
 
     return { statusCode: 200, message: 'Password reset successful' }
   } catch (error) {
