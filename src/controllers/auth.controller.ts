@@ -191,7 +191,6 @@ export const passwordReset = async (
     }
 
     const result = await resetPassword(token, newPassword)
-    console.log('result', result)
 
     res.status(result.statusCode).json({ message: result.message })
   } catch (err) {
