@@ -10,20 +10,19 @@ import mentorRouter from './routes/mentor/mentor.route'
 import categoryRouter from './routes/category/category.route'
 import passport from 'passport'
 import './configs/passport'
+import { CLIENT_URL } from './configs/envConfig'
 import cookieParser from 'cookie-parser'
-import session from 'express-session'
 
 const app = express()
 
 app.use(cookieParser())
 app.use(bodyParser.json())
-app.use(cors())
 app.use(passport.initialize())
 app.use(
   cors({
-    origin: 'http://localhost:5173', // allow to server to accept request from different origin
-    methods: 'GET, HEAD, PUT, PATCH, DELETE', // allow to perform http methods
-    credentials: true // allow session cookie from browser to pass through
+    origin: CLIENT_URL,
+    methods: 'GET, HEAD, PUT, PATCH, DELETE',
+    credentials: true
   })
 )
 

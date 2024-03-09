@@ -1,8 +1,6 @@
 import { dataSource } from '../configs/dbConfig'
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 import Profile from '../entities/profile.entity'
-import { JWT_SECRET } from '../configs/envConfig'
 import type passport from 'passport'
 
 export const registerUser = async (
@@ -55,7 +53,7 @@ export const registerUser = async (
 export const loginUser = async (
   email: string,
   password: string
-): Promise<{ statusCode: number; message: string; token?: string }> => {
+): Promise<{ statusCode: number; message: string; uuid?: string }> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
     const profile = await profileRepository
@@ -74,11 +72,7 @@ export const loginUser = async (
       return { statusCode: 401, message: 'Invalid email or password' }
     }
 
-    const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET ?? '', {
-      expiresIn: '10h' // To-Do: Change value in production
-    })
-
-    return { statusCode: 200, message: 'Login successful', token }
+    return { statusCode: 200, message: 'Login successful', uuid: profile.uuid }
   } catch (error) {
     console.error('Error executing login', error)
     return { statusCode: 500, message: 'Internal server error' }

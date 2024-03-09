@@ -43,6 +43,7 @@ passport.use(
 passport.serializeUser((user: Express.User, done) => {
   done(null, (user as User).primary_email)
 })
+
 passport.deserializeUser(async (primary_email: string, done) => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
