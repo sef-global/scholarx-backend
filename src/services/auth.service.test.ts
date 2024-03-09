@@ -88,7 +88,7 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(401)
     expect(result.message).toBe('Invalid email or password')
-    expect(result.token).toBeUndefined()
+    expect(result.uuid).toBeUndefined()
   })
 
   it('should return unauthorized status code for an incorrect password', async () => {
@@ -110,7 +110,7 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(401)
     expect(result.message).toBe('Invalid email or password')
-    expect(result.token).toBeUndefined()
+    expect(result.uuid).toBeUndefined()
   })
 
   it('should handle an internal server error during login', async () => {
@@ -122,7 +122,7 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(500)
     expect(result.message).toBe('Internal server error')
-    expect(result.token).toBeUndefined()
+    expect(result.uuid).toBeUndefined()
   })
 
   it('should return unauthorized status code for an invalid email or password', async () => {
@@ -142,6 +142,6 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(500)
     expect(result.message).toBe('Internal server error')
-    expect(result.token).toBeUndefined()
+    expect(result.uuid).toBeUndefined()
   })
 })

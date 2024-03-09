@@ -5,6 +5,7 @@ import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
 import type { ApiResponse, User } from '../types'
+import { signAndSetCookie } from '../utils'
 
 export const googleRedirect = async (
   req: Request,
@@ -14,7 +15,7 @@ export const googleRedirect = async (
   passport.authenticate(
     'google',
     { failureRedirect: '/login' },
-    (err: Error, user: User, info: Profile) => {
+    (err: Error, user: User, profile: Profile) => {
       if (err) {
         next(err)
         return
@@ -23,13 +24,10 @@ export const googleRedirect = async (
         res.redirect('/login')
         return
       }
-      req.logIn(user, function (err) {
-        if (err) {
-          next(err)
-          return
-        }
-        res.redirect('/')
-      })
+
+      signAndSetCookie(res, profile.uuid)
+
+      res.redirect(process.env.CLIENT_URL ?? '/')
     }
   )(req, res, next)
 }
@@ -73,13 +71,11 @@ export const login = async (
         .json({ error: 'Email and password are required fields' })
     }
 
-    const { statusCode, message, token } = await loginUser(email, password)
+    const { statusCode, message, uuid } = await loginUser(email, password)
 
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      secure: false // TODO: Set to true when using HTTPS
-    })
+    if (uuid) {
+      signAndSetCookie(res, uuid)
+    }
 
     return res.status(statusCode).json({ message })
   } catch (err) {
@@ -133,16 +129,16 @@ export const requireAuth = (
         return res.status(401).json({ error: 'No token provided' })
       }
 
-      const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
-
-      if (decoded.exp && Date.now() > decoded.exp * 1000) {
+      try {
+        jwt.verify(token, JWT_SECRET)
+      } catch (err) {
         return res
           .status(401)
-          .json({ error: 'Token expired, please log in again' })
+          .json({ error: 'Invalid token, please log in again' })
       }
 
       if (!user) {
-        return res.status(401).json({ message: 'Unauthorised' })
+        return res.status(401).json({ message: 'Unauthorized' })
       } else {
         req.user = user
         next()
