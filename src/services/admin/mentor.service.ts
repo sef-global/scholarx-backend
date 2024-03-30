@@ -2,6 +2,11 @@ import { dataSource } from '../../configs/dbConfig'
 import Mentor from '../../entities/mentor.entity'
 import type { ApplicationStatus } from '../../enums'
 
+interface WhereClauseType {
+  state?: ApplicationStatus
+  category?: { uuid: string }
+}
+
 export const updateMentorStatus = async (
   mentorId: string,
   status: ApplicationStatus
@@ -38,7 +43,8 @@ export const updateMentorStatus = async (
 }
 
 export const getAllMentors = async (
-  status: ApplicationStatus | undefined
+  status: ApplicationStatus | undefined,
+  categoryId?: string
 ): Promise<{
   statusCode: number
   mentors?: Mentor[]
@@ -47,9 +53,15 @@ export const getAllMentors = async (
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
 
+    let whereClause: WhereClauseType = status ? { state: status } : {}
+    if (categoryId) {
+      whereClause = { ...whereClause, category: { uuid: categoryId } }
+    }
+
     const mentors: Mentor[] = await mentorRepository.find({
-      where: status ? { state: status } : {},
+      where: whereClause,
       select: [
+        'uuid',
         'application',
         'availability',
         'state',

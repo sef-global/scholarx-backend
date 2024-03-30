@@ -57,6 +57,10 @@ export const getAllMentorsByStatus = async (
       | ApplicationStatus
       | undefined
 
+    const categoryId: string | undefined = req.query.categoryId as
+      | string
+      | undefined
+
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
@@ -65,7 +69,10 @@ export const getAllMentorsByStatus = async (
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
-    const { mentors, statusCode, message } = await getAllMentors(status)
+    const { mentors, statusCode, message } = await getAllMentors(
+      status,
+      categoryId
+    )
     return res.status(statusCode).json({ mentors, message })
   } catch (err) {
     if (err instanceof Error) {
