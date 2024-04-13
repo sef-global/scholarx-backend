@@ -96,7 +96,7 @@ export const addMentee = async (
       message: 'All mentees found'
     }
   } catch (err) {
-    throw new Error('Error getting mentees')
+    throw new Error('Error adding mentee')
   }
 }
 
