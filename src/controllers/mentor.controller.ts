@@ -116,7 +116,7 @@ export const getAllMentorsHandler = async (
       }))
       return res.status(statusCode).json({ mentors: mentorDetails })
     } else {
-      return res.status(404).json({ error: 'Mentors not found' })
+      return res.status(200).json({ mentors: [] })
     }
   } catch (err) {
     if (err instanceof Error) {
@@ -140,7 +140,7 @@ export const getMenteesByMentor = async (
       | ApplicationStatus
       | undefined
 
-    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in ApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
