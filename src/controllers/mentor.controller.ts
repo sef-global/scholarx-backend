@@ -8,6 +8,9 @@ import {
 import type Profile from '../entities/profile.entity'
 import type Mentor from '../entities/mentor.entity'
 import type { ApiResponse } from '../types'
+import type Mentee from '../entities/mentee.entity'
+import { ApplicationStatus } from '../enums'
+import { getAllMenteesByMentor } from '../services/admin/mentee.service'
 
 export const mentorApplicationHandler = async (
   req: Request,
@@ -113,8 +116,39 @@ export const getAllMentorsHandler = async (
       }))
       return res.status(statusCode).json({ mentors: mentorDetails })
     } else {
-      return res.status(404).json({ error: 'Mentors not found' })
+      return res.status(200).json({ mentors: [] })
     }
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+
+    throw err
+  }
+}
+
+export const getMenteesByMentor = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentee[]>> => {
+  try {
+    const user = req.user as Profile
+    const status: ApplicationStatus | undefined = req.query.status as
+      | ApplicationStatus
+      | undefined
+
+    if (status && !(status.toUpperCase() in ApplicationStatus)) {
+      return res.status(400).json({ message: 'Please provide a valid status' })
+    }
+
+    const { mentees, statusCode, message } = await getAllMenteesByMentor(
+      status,
+      user.uuid
+    )
+    return res.status(statusCode).json({ mentees, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

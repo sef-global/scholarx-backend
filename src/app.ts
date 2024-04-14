@@ -12,6 +12,7 @@ import passport from 'passport'
 import './configs/passport'
 import { CLIENT_URL } from './configs/envConfig'
 import cookieParser from 'cookie-parser'
+import menteeRouter from './routes/mentee/mentee.route'
 
 const app = express()
 
@@ -33,6 +34,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/me', profileRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/mentors', mentorRouter)
+app.use('/api/mentees', menteeRouter)
 app.use('/api/categories', categoryRouter)
 
 export const startServer = async (port: number): Promise<Express> => {
