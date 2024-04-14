@@ -12,6 +12,13 @@ import type Mentee from '../entities/mentee.entity'
 import { ApplicationStatus } from '../enums'
 import { getAllMenteesByMentor } from '../services/admin/mentee.service'
 
+interface MentorApplication {
+  firstName: string
+  lastName: string
+  email: string
+  linkedin: string
+}
+
 export const mentorApplicationHandler = async (
   req: Request,
   res: Response
@@ -100,20 +107,24 @@ export const getAllMentorsHandler = async (
   res: Response
 ): Promise<ApiResponse<Mentor>> => {
   try {
-    const category: string = req.query.category as string
-    const { mentors, statusCode } = await getAllMentors(category)
+    const categoryId: string = req.query.categoryId as string
+    const { mentors, statusCode } = await getAllMentors(categoryId)
     if (mentors !== null && mentors !== undefined) {
-      const mentorDetails = mentors.map((mentor) => ({
-        mentorId: mentor.uuid,
-        category: mentor.category.category,
-        profile: {
-          contact_email: mentor.profile.contact_email,
-          first_name: mentor.profile.first_name,
-          last_name: mentor.profile.last_name,
-          image_url: mentor.profile.image_url,
-          linkedin_url: mentor.profile.linkedin_url
+      const mentorDetails = mentors.map((mentor) => {
+        const application: MentorApplication =
+          mentor.application as unknown as MentorApplication
+        return {
+          mentorId: mentor.uuid,
+          category: mentor.category.category,
+          profile: {
+            contact_email: application.email,
+            first_name: application.firstName,
+            last_name: application.lastName,
+            image_url: mentor.profile.image_url,
+            linkedin_url: application.linkedin
+          }
         }
-      }))
+      })
       return res.status(statusCode).json({ mentors: mentorDetails })
     } else {
       return res.status(200).json({ mentors: [] })

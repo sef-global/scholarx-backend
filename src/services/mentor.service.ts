@@ -184,7 +184,7 @@ export const searchMentorsByQuery = async (
 }
 
 export const getAllMentors = async (
-  category?: string | null
+  categoryId?: string | null
 ): Promise<{
   statusCode: number
   mentors?: Mentor[] | null
@@ -193,12 +193,13 @@ export const getAllMentors = async (
   try {
     let mentors: Mentor[] = []
     const mentorRepository = dataSource.getRepository(Mentor)
-    if (category == null) {
+    if (!categoryId) {
       mentors = await mentorRepository
         .createQueryBuilder('mentor')
         .leftJoinAndSelect('mentor.profile', 'profile')
         .leftJoinAndSelect('mentor.category', 'category')
         .where('mentor.state = :state', { state: 'approved' })
+        .select(['mentor', 'profile', 'category', 'mentor.application'])
         .getMany()
     } else {
       mentors = await mentorRepository
@@ -206,15 +207,9 @@ export const getAllMentors = async (
         .leftJoinAndSelect('mentor.profile', 'profile')
         .leftJoinAndSelect('mentor.category', 'category')
         .where('mentor.state = :state', { state: 'approved' })
-        .andWhere('category.category = :category', { category })
+        .andWhere('category.uuid = :categoryId', { categoryId })
+        .select(['mentor', 'profile', 'category', 'mentor.application'])
         .getMany()
-    }
-
-    if (!mentors || mentors.length === 0) {
-      return {
-        statusCode: 404,
-        message: 'No mentors found'
-      }
     }
 
     return {
