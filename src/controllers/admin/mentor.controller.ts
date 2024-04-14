@@ -65,7 +65,7 @@ export const getAllMentorsByStatus = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in ApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
@@ -100,7 +100,7 @@ export const getAllMentorEmails = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in ApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
