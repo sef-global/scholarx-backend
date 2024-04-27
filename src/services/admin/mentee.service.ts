@@ -152,15 +152,22 @@ export const updateStatus = async (
 }> => {
   try {
     const menteeRepository = dataSource.getRepository(Mentee)
-    const mentee = await menteeRepository.find({
+    const mentee = await menteeRepository.findOne({
       where: {
         uuid: menteeId
       }
     })
 
-    const profileUuid = mentee[0].profile.uuid
+    if (!mentee) {
+      return {
+        statusCode: 404,
+        message: 'Mentee not found'
+      }
+    }
 
-    const approvedApplications = await menteeRepository.find({
+    const profileUuid = mentee.profile.uuid
+
+    const approvedApplications = await menteeRepository.findOne({
       where: {
         state: ApplicationStatus.APPROVED,
         profile: {
@@ -172,11 +179,11 @@ export const updateStatus = async (
     // Handle Approve status
     if (approvedApplications && state === 'approved') {
       //   reject current approved applications
-      approvedApplications[0].state = ApplicationStatus.REJECTED
-      await menteeRepository.save(approvedApplications[0])
+      approvedApplications.state = ApplicationStatus.REJECTED
+      await menteeRepository.save(approvedApplications)
       //   approve the application
-      mentee[0].state = ApplicationStatus.APPROVED
-      const updatedMenteeApplication = await menteeRepository.save(mentee[0])
+      mentee.state = ApplicationStatus.APPROVED
+      const updatedMenteeApplication = await menteeRepository.save(mentee)
       return {
         statusCode: 200,
         updatedMenteeApplication,
@@ -185,18 +192,18 @@ export const updateStatus = async (
     } else {
       switch (state) {
         case 'approved':
-          mentee[0].state = ApplicationStatus.APPROVED
+          mentee.state = ApplicationStatus.APPROVED
           break
         case 'rejected':
-          mentee[0].state = ApplicationStatus.REJECTED
+          mentee.state = ApplicationStatus.REJECTED
           break
         case 'pending':
-          mentee[0].state = ApplicationStatus.PENDING
+          mentee.state = ApplicationStatus.PENDING
           break
         default:
           break
       }
-      const updatedMenteeApplication = await menteeRepository.save(mentee[0])
+      const updatedMenteeApplication = await menteeRepository.save(mentee)
       return {
         statusCode: 200,
         updatedMenteeApplication,
