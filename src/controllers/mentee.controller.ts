@@ -2,9 +2,8 @@ import type { Request, Response } from 'express'
 import { type ApiResponse } from '../types'
 import type Mentee from '../entities/mentee.entity'
 import type Profile from '../entities/profile.entity'
-import { addMentee } from '../services/admin/mentee.service'
+import { addMentee, updateStatus } from '../services/admin/mentee.service'
 import { ProfileTypes } from '../enums'
-import { updateStatus } from '../services/mentee.service'
 
 export const menteeApplicationHandler = async (
   req: Request,

@@ -178,16 +178,9 @@ export const updateStatus = async (
 
     // Handle Approve status
     if (approvedApplications && state === 'approved') {
-      //   reject current approved applications
-      approvedApplications.state = ApplicationStatus.REJECTED
-      await menteeRepository.save(approvedApplications)
-      //   approve the application
-      mentee.state = ApplicationStatus.APPROVED
-      const updatedMenteeApplication = await menteeRepository.save(mentee)
       return {
-        statusCode: 200,
-        updatedMenteeApplication,
-        message: 'Mentee application state successfully updated'
+        statusCode: 400,
+        message: 'Mentee is already approved'
       }
     } else {
       switch (state) {
