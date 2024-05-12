@@ -2,7 +2,7 @@ import { type Request, type Response } from 'express'
 import {
   updateProfile,
   deleteProfile,
-  getAllMentorApplications
+  getAllApplications
 } from '../services/profile.service'
 import type Profile from '../entities/profile.entity'
 import type { ApiResponse } from '../types'
@@ -88,16 +88,18 @@ export const getApplicationsHandler = async (
   try {
     const user = req.user as Profile
     const applicationType = req.query.type
-    if (applicationType === 'mentor') {
-      const { mentorApplications, statusCode, message } =
-        await getAllMentorApplications(user)
+    if (applicationType === 'mentor' || applicationType === 'mentee') {
+      const { applications, statusCode, message } = await getAllApplications(
+        user.uuid,
+        applicationType
+      )
 
       return res.status(statusCode).json({
-        'mentor applications': mentorApplications,
+        applications,
         message
       })
     } else {
-      return res.status(404).json({ message: 'Invalid application type' })
+      return res.status(400).json({ message: 'Invalid application type' })
     }
   } catch (error) {
     if (error instanceof Error) {
