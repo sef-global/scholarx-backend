@@ -3,7 +3,7 @@ import { type ApiResponse } from '../types'
 import type Mentee from '../entities/mentee.entity'
 import type Profile from '../entities/profile.entity'
 import { addMentee, updateStatus } from '../services/admin/mentee.service'
-import { ProfileTypes } from '../enums'
+import { ApplicationStatus } from '../enums'
 
 export const menteeApplicationHandler = async (
   req: Request,
@@ -39,8 +39,12 @@ export const updateMenteeStatus = async (
     const { state } = req.body
     const { menteeId } = req.params
 
-    if (user.type !== ProfileTypes.ADMIN) {
-      return res.status(403).json({ message: 'Only Admins are allowed' })
+    if (
+      !user.mentor?.filter(
+        (mentor) => mentor.state === ApplicationStatus.APPROVED
+      )
+    ) {
+      return res.status(403).json({ message: 'Only mentors are allowed' })
     }
 
     const { statusCode, message } = await updateStatus(menteeId, state)

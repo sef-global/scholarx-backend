@@ -93,7 +93,7 @@ export const addMentee = async (
     return {
       statusCode: 200,
       mentee: newMentee,
-      message: 'All mentees found'
+      message: 'New mentee created'
     }
   } catch (err) {
     throw new Error('Error adding mentee')
@@ -113,7 +113,7 @@ export const getAllMenteesByMentor = async (
     const mentorRepository = dataSource.getRepository(Mentor)
 
     const mentor: Mentor | null = await mentorRepository.findOne({
-      where: { profile: { uuid: userId } },
+      where: { profile: { uuid: userId }, state: ApplicationStatus.APPROVED },
       relations: ['profile']
     })
 
@@ -155,7 +155,8 @@ export const updateStatus = async (
     const mentee = await menteeRepository.findOne({
       where: {
         uuid: menteeId
-      }
+      },
+      relations: ['profile', 'mentor']
     })
 
     if (!mentee) {

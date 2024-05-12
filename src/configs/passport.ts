@@ -47,7 +47,10 @@ passport.serializeUser((user: Express.User, done) => {
 passport.deserializeUser(async (primary_email: string, done) => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
-    const user = await profileRepository.findOne({ where: { primary_email } })
+    const user = await profileRepository.findOne({
+      where: { primary_email },
+      relations: ['mentor', 'mentee']
+    })
     done(null, user)
   } catch (err) {
     done(err)
@@ -72,7 +75,8 @@ passport.use(
     try {
       const profileRepository = dataSource.getRepository(Profile)
       const profile = await profileRepository.findOne({
-        where: { uuid: jwtPayload.userId }
+        where: { uuid: jwtPayload.userId },
+        relations: ['mentor', 'mentee']
       })
 
       if (!profile) {
