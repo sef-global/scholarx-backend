@@ -190,7 +190,7 @@ export const searchMentorsByQuery = async (
 }
 
 export const getAllMentors = async (
-  category?: string | null
+  categoryId?: string | null
 ): Promise<{
   statusCode: number
   mentors?: Mentor[] | null
@@ -199,8 +199,8 @@ export const getAllMentors = async (
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
     const mentors = await mentorRepository.find({
-      where: category
-        ? { category: { category }, state: ApplicationStatus.APPROVED }
+      where: categoryId
+        ? { category: { uuid: categoryId }, state: ApplicationStatus.APPROVED }
         : { state: ApplicationStatus.APPROVED },
       relations: ['profile', 'category'],
       select: ['application', 'uuid', 'availability']
@@ -217,7 +217,7 @@ export const getAllMentors = async (
 
     if (!mentors || mentors.length === 0) {
       return {
-        statusCode: 404,
+        statusCode: 200,
         mentors: [],
         message: 'No mentors found'
       }

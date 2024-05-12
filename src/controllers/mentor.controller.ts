@@ -90,8 +90,8 @@ export const getAllMentorsHandler = async (
   res: Response
 ): Promise<ApiResponse<Mentor>> => {
   try {
-    const category: string = req.query.category as string
-    const { mentors, statusCode, message } = await getAllMentors(category)
+    const categoryId: string = req.query.categoryId as string
+    const { mentors, statusCode, message } = await getAllMentors(categoryId)
 
     return res.status(statusCode).json({ mentors, message })
   } catch (err) {
