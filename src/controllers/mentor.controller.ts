@@ -19,6 +19,7 @@ export const mentorApplicationHandler = async (
   try {
     const user = req.user as Profile
     const { application, categoryId } = req.body
+
     const { mentor, statusCode, message } = await createMentor(
       user,
       application,
@@ -71,18 +72,7 @@ export const mentorDetailsHandler = async (
       return res.status(statusCode).json({ error: message })
     }
 
-    const mentorDetails = {
-      mentorId: mentor.uuid,
-      category: mentor.category.category,
-      profile: {
-        contact_email: mentor.profile.contact_email,
-        first_name: mentor.profile.first_name,
-        last_name: mentor.profile.last_name,
-        image_url: mentor.profile.image_url,
-        linkedin_url: mentor.profile.linkedin_url
-      }
-    }
-    return res.status(statusCode).json({ ...mentorDetails })
+    return res.status(statusCode).json({ mentor, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
@@ -100,24 +90,10 @@ export const getAllMentorsHandler = async (
   res: Response
 ): Promise<ApiResponse<Mentor>> => {
   try {
-    const category: string = req.query.category as string
-    const { mentors, statusCode } = await getAllMentors(category)
-    if (mentors !== null && mentors !== undefined) {
-      const mentorDetails = mentors.map((mentor) => ({
-        mentorId: mentor.uuid,
-        category: mentor.category.category,
-        profile: {
-          contact_email: mentor.profile.contact_email,
-          first_name: mentor.profile.first_name,
-          last_name: mentor.profile.last_name,
-          image_url: mentor.profile.image_url,
-          linkedin_url: mentor.profile.linkedin_url
-        }
-      }))
-      return res.status(statusCode).json({ mentors: mentorDetails })
-    } else {
-      return res.status(200).json({ mentors: [] })
-    }
+    const categoryId: string = req.query.categoryId as string
+    const { mentors, statusCode, message } = await getAllMentors(categoryId)
+
+    return res.status(statusCode).json({ mentors, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

@@ -26,11 +26,9 @@ export const registerUser = async (
     const newProfile = profileRepository.create({
       primary_email: email,
       password: hashedPassword,
-      contact_email: '',
       first_name: '',
       last_name: '',
-      image_url: '',
-      linkedin_url: ''
+      image_url: ''
     })
 
     await profileRepository.save(newProfile)
@@ -84,18 +82,17 @@ export const findOrCreateUser = async (
 ): Promise<Profile> => {
   const profileRepository = dataSource.getRepository(Profile)
   let user = await profileRepository.findOne({
-    where: { primary_email: profile.emails?.[0]?.value ?? '' }
+    where: { primary_email: profile.emails?.[0]?.value ?? '' },
+    relations: ['mentor', 'mentee']
   })
   if (!user) {
     const hashedPassword = await bcrypt.hash(profile.id, 10) // Use Google ID as password
     user = profileRepository.create({
       primary_email: profile.emails?.[0]?.value ?? '',
       password: hashedPassword,
-      contact_email: '',
       first_name: profile.name?.givenName,
       last_name: profile.name?.familyName,
-      image_url: profile.photos?.[0]?.value ?? '',
-      linkedin_url: ''
+      image_url: profile.photos?.[0]?.value ?? ''
     })
     await profileRepository.save(user)
   }

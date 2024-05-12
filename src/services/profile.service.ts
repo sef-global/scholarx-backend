@@ -4,14 +4,7 @@ import Profile from '../entities/profile.entity'
 
 export const updateProfile = async (
   user: Profile,
-  {
-    primary_email,
-    contact_email,
-    first_name,
-    last_name,
-    image_url,
-    linkedin_url
-  }: Partial<Profile>
+  { primary_email, first_name, last_name, image_url }: Partial<Profile>
 ): Promise<{
   statusCode: number
   profile?: Profile | null
@@ -24,11 +17,9 @@ export const updateProfile = async (
       { uuid: user.uuid },
       {
         primary_email,
-        contact_email,
         first_name,
         last_name,
-        image_url,
-        linkedin_url
+        image_url
       }
     )
 
