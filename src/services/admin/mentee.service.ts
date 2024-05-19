@@ -16,7 +16,7 @@ export const getAllMentees = async (
 
     const mentees: Mentee[] = await menteeRepository.find({
       where: status ? { state: status } : {},
-      relations: ['profile']
+      relations: ['profile', 'mentor']
     })
 
     if (!mentees) {
@@ -121,8 +121,7 @@ export const getAllMenteesByMentor = async (
       where: status
         ? { state: status, mentor: { uuid: mentor?.uuid } }
         : { mentor: { uuid: mentor?.uuid } },
-      relations: ['profile', 'mentor'],
-      loadRelationIds: true
+      relations: ['profile', 'mentor']
     })
 
     if (!mentees) {

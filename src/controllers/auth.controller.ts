@@ -71,13 +71,13 @@ export const login = async (
         .json({ error: 'Email and password are required fields' })
     }
 
-    const { statusCode, message, uuid } = await loginUser(email, password)
+    const { statusCode, message, user } = await loginUser(email, password)
 
-    if (uuid) {
-      signAndSetCookie(res, uuid)
+    if (user?.uuid) {
+      signAndSetCookie(res, user.uuid)
     }
 
-    return res.status(statusCode).json({ message })
+    return res.status(statusCode).json({ user, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

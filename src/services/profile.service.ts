@@ -2,6 +2,7 @@ import { dataSource } from '../configs/dbConfig'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import Profile from '../entities/profile.entity'
+import { getMentorPublicData } from '../utils'
 
 export const updateProfile = async (
   user: Profile,
@@ -74,13 +75,20 @@ export const getAllApplications = async (
 
       const menteeApplications = await menteeRepository.find({
         where: { profile: { uuid: userId } },
-        relations: ['profile', 'mentor']
+        relations: ['profile', 'mentor', 'mentor.profile']
       })
 
-      applications = menteeApplications
+      applications = menteeApplications.map((application) => {
+        const mentee = {
+          ...application,
+          mentor: getMentorPublicData(application.mentor)
+        }
+
+        return mentee as Mentee
+      })
     }
 
-    if (applications.length === 0) {
+    if (applications?.length === 0) {
       return {
         statusCode: 200,
         applications,
