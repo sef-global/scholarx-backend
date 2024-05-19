@@ -3,6 +3,7 @@ import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { ApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
+import { getMentorPublicData } from '../utils'
 
 export const createMentor = async (
   user: Profile,
@@ -206,14 +207,7 @@ export const getAllMentors = async (
       select: ['application', 'uuid', 'availability']
     })
 
-    const publicMentors = mentors.map((mentor) => {
-      const { application } = mentor
-      delete application.cv
-      delete application.contactNo
-      delete application.email
-
-      return mentor
-    })
+    const publicMentors = mentors.map((mentor) => getMentorPublicData(mentor))
 
     if (!mentors || mentors.length === 0) {
       return {

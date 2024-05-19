@@ -1,6 +1,8 @@
 import { dataSource } from '../configs/dbConfig'
+import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import Profile from '../entities/profile.entity'
+import { getMentorPublicData } from '../utils'
 
 export const updateProfile = async (
   user: Profile,
@@ -49,36 +51,55 @@ export const deleteProfile = async (userId: string): Promise<void> => {
     .execute()
 }
 
-export const getAllMentorApplications = async (
-  user: Profile
+export const getAllApplications = async (
+  userId: string,
+  type: 'mentor' | 'mentee'
 ): Promise<{
   statusCode: number
-  mentorApplications?: Mentor[] | null | undefined
+  applications?: Mentor[] | Mentee[] | null | undefined
   message: string
 }> => {
   try {
-    const mentorRepository = dataSource.getRepository(Mentor)
+    let applications = []
+    if (type === 'mentor') {
+      const mentorRepository = dataSource.getRepository(Mentor)
 
-    const existingMentorApplications = await mentorRepository
-      .createQueryBuilder('mentor')
-      .innerJoinAndSelect('mentor.profile', 'profile')
-      .innerJoinAndSelect('mentor.category', 'category')
-      .addSelect('mentor.application')
-      .where('mentor.profile.uuid = :uuid', { uuid: user.uuid })
-      .getMany()
+      const mentorApplications = await mentorRepository.find({
+        where: { profile: { uuid: userId } },
+        relations: ['category', 'profile']
+      })
 
-    console.log(existingMentorApplications)
-    if (existingMentorApplications.length === 0) {
+      applications = mentorApplications
+    } else {
+      const menteeRepository = dataSource.getRepository(Mentee)
+
+      const menteeApplications = await menteeRepository.find({
+        where: { profile: { uuid: userId } },
+        relations: ['profile', 'mentor', 'mentor.profile']
+      })
+
+      applications = menteeApplications.map((application) => {
+        const mentee = {
+          ...application,
+          mentor: getMentorPublicData(application.mentor)
+        }
+
+        return mentee as Mentee
+      })
+    }
+
+    if (applications?.length === 0) {
       return {
         statusCode: 200,
-        message: 'No mentor applications found for the user'
+        applications,
+        message: `No ${type} applications found for the user`
       }
     }
 
     return {
       statusCode: 200,
-      mentorApplications: existingMentorApplications,
-      message: 'Mentor applications found'
+      applications,
+      message: `${type} applications found`
     }
   } catch (error) {
     console.error('Error executing query', error)

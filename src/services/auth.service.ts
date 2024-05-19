@@ -51,7 +51,7 @@ export const registerUser = async (
 export const loginUser = async (
   email: string,
   password: string
-): Promise<{ statusCode: number; message: string; uuid?: string }> => {
+): Promise<{ statusCode: number; message: string; user?: Profile }> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
     const profile = await profileRepository
@@ -70,7 +70,7 @@ export const loginUser = async (
       return { statusCode: 401, message: 'Invalid email or password' }
     }
 
-    return { statusCode: 200, message: 'Login successful', uuid: profile.uuid }
+    return { statusCode: 200, message: 'Login successful', user: profile }
   } catch (error) {
     console.error('Error executing login', error)
     return { statusCode: 500, message: 'Internal server error' }

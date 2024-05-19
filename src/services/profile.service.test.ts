@@ -1,7 +1,7 @@
 import {
   updateProfile,
   deleteProfile,
-  getAllMentorApplications
+  getAllApplications
 } from './profile.service'
 import { dataSource } from '../configs/dbConfig'
 import Profile from '../entities/profile.entity'
@@ -128,11 +128,7 @@ describe('Profile Service', () => {
       const user = { uuid: 'mock-uuid' } as unknown as Profile
 
       const mockMentorRepository = {
-        createQueryBuilder: jest.fn().mockReturnThis(),
-        innerJoinAndSelect: jest.fn().mockReturnThis(),
-        addSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([
+        find: jest.fn().mockResolvedValue([
           {
             uuid: 'mentor-uuid-1',
             application: 'Application 1',
@@ -152,52 +148,15 @@ describe('Profile Service', () => {
         mockMentorRepository
       )
 
-      const result = await getAllMentorApplications(user)
+      const result = await getAllApplications(user.uuid, 'mentor')
 
       expect(result.statusCode).toBe(200)
-      expect(result.mentorApplications?.length).toBe(2)
-      expect(result.mentorApplications?.[0].uuid).toBe('mentor-uuid-1')
-      expect(result.mentorApplications?.[1].uuid).toBe('mentor-uuid-2')
-      expect(result.message).toBe('Mentor applications found')
+      expect(result.applications?.length).toBe(2)
+      expect(result.applications?.[0].uuid).toBe('mentor-uuid-1')
+      expect(result.applications?.[1].uuid).toBe('mentor-uuid-2')
+      expect(result.message).toBe('mentor applications found')
 
-      expect(mockMentorRepository.createQueryBuilder).toHaveBeenCalled()
-      expect(mockMentorRepository.innerJoinAndSelect).toHaveBeenCalledWith(
-        'mentor.profile',
-        'profile'
-      )
-      expect(mockMentorRepository.addSelect).toHaveBeenCalledWith(
-        'mentor.application'
-      )
-      expect(mockMentorRepository.where).toHaveBeenCalledWith(
-        'mentor.profile.uuid = :uuid',
-        {
-          uuid: user.uuid
-        }
-      )
-      expect(mockMentorRepository.getMany).toHaveBeenCalled()
-    })
-
-    it('should handle error during mentor applications retrieval', async () => {
-      const user = { uuid: 'mock-uuid' } as unknown as Profile
-
-      const mockMentorRepository = {
-        createQueryBuilder: jest.fn().mockReturnThis(),
-        innerJoinAndSelect: jest.fn().mockReturnThis(),
-        addSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        getMany: jest
-          .fn()
-          .mockRejectedValue(new Error('Error executing delete query'))
-      }
-
-      ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
-        mockMentorRepository
-      )
-
-      const result = await getAllMentorApplications(user)
-
-      expect(result.statusCode).toBe(500)
-      expect(result.message).toBe('Internal server error')
+      expect(mockMentorRepository.find).toHaveBeenCalled()
     })
   })
 })

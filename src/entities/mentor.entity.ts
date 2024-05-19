@@ -17,7 +17,7 @@ class Mentor extends BaseEntity {
   @ManyToOne(() => Category, (category) => category.mentors)
   category: Category
 
-  @Column({ type: 'json', select: false })
+  @Column({ type: 'json' })
   application: Record<string, unknown>
 
   @Column({ type: 'boolean' })
