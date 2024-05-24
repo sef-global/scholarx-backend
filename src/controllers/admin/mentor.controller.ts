@@ -20,20 +20,20 @@ export const mentorStatusHandler = async (
 ): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
-    const { status } = req.body
+    const { state } = req.body
     const { mentorId } = req.params
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (!(status.toUpperCase() in ApplicationStatus)) {
+    if (!(state.toUpperCase() in ApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
     const { mentor, statusCode, message } = await updateMentorStatus(
       mentorId,
-      status
+      state
     )
     return res.status(statusCode).json({ mentor, message })
   } catch (err) {

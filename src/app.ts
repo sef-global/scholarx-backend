@@ -13,11 +13,14 @@ import './configs/passport'
 import { CLIENT_URL } from './configs/envConfig'
 import cookieParser from 'cookie-parser'
 import menteeRouter from './routes/mentee/mentee.route'
+import fs from 'fs'
 
 const app = express()
+const staticFolder = 'uploads'
 
 app.use(cookieParser())
 app.use(bodyParser.json())
+app.use(express.static(staticFolder))
 app.use(passport.initialize())
 app.use(
   cors({
@@ -36,6 +39,13 @@ app.use('/api/admin', adminRouter)
 app.use('/api/mentors', mentorRouter)
 app.use('/api/mentees', menteeRouter)
 app.use('/api/categories', categoryRouter)
+
+if (!fs.existsSync(staticFolder)) {
+  fs.mkdirSync(staticFolder, { recursive: true })
+  console.log('Directory created successfully!')
+} else {
+  console.log('Directory already exists.')
+}
 
 export const startServer = async (port: number): Promise<Express> => {
   try {

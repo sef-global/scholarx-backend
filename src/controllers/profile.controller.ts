@@ -7,6 +7,7 @@ import {
 import type Profile from '../entities/profile.entity'
 import type { ApiResponse } from '../types'
 import type Mentor from '../entities/mentor.entity'
+import { upload } from '../utils'
 
 export const getProfileHandler = async (
   req: Request,
@@ -41,21 +42,49 @@ export const updateProfileHandler = async (
       return res.status(404).json({ message: 'Profile not found' })
     }
 
-    const { statusCode, message, profile } = await updateProfile(user, req.body)
+    return await new Promise<ApiResponse<Profile>>((resolve, reject) => {
+      upload(req, res, async (err) => {
+        if (err) {
+          reject(err)
+        } else {
+          try {
+            if (req.file) {
+              const image_url =
+                req.protocol +
+                '://' +
+                req.get('host') +
+                '/' +
+                req.file?.filename
+              const { statusCode, profile, message } = await updateProfile(
+                user,
+                {
+                  ...req.body,
+                  image_url
+                }
+              )
+              return res.status(statusCode).json({ profile, message })
+            }
 
-    return res.status(statusCode).json({ message, profile })
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error('Error executing query', err)
+            const { statusCode, profile, message } = await updateProfile(user, {
+              ...req.body
+            })
+            return res.status(statusCode).json({ profile, message })
+          } catch (error) {
+            reject(error)
+          }
+        }
+      })
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error executing query', error)
       return res
         .status(500)
-        .json({ error: 'Internal server error', message: err.message })
+        .json({ error: 'Internal server error', message: error.message })
     }
-
-    throw err
+    throw error
   }
 }
-
 export const deleteProfileHandler = async (
   req: Request,
   res: Response

@@ -11,7 +11,7 @@ import {
 
 const mentorRouter = express.Router()
 
-mentorRouter.put('/:mentorId/status', requireAuth, mentorStatusHandler)
+mentorRouter.put('/:mentorId/state', requireAuth, mentorStatusHandler)
 mentorRouter.get('/:mentorId', requireAuth, mentorDetailsHandler)
 mentorRouter.get('/', requireAuth, getAllMentorsByStatus)
 mentorRouter.get('/emails', requireAuth, getAllMentorEmails)
