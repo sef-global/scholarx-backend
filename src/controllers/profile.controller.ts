@@ -41,8 +41,7 @@ export const updateProfileHandler = async (
       return res.status(404).json({ message: 'Profile not found' })
     }
 
-    const { statusCode, message, profile } =
-      user && (await updateProfile(user, req.body))
+    const { statusCode, message, profile } = await updateProfile(user, req.body)
 
     return res.status(statusCode).json({ message, profile })
   } catch (err) {

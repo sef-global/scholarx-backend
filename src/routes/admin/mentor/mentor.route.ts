@@ -3,6 +3,7 @@ import { requireAuth } from '../../../controllers/auth.controller'
 import {
   getAllMentorEmails,
   getAllMentorsByStatus,
+  mentorDetailsHandler,
   mentorStatusHandler,
   searchMentors,
   updateMentorAvailability
@@ -11,6 +12,7 @@ import {
 const mentorRouter = express.Router()
 
 mentorRouter.put('/:mentorId/status', requireAuth, mentorStatusHandler)
+mentorRouter.get('/:mentorId', requireAuth, mentorDetailsHandler)
 mentorRouter.get('/', requireAuth, getAllMentorsByStatus)
 mentorRouter.get('/emails', requireAuth, getAllMentorEmails)
 mentorRouter.put(
