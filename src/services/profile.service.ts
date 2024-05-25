@@ -14,7 +14,6 @@ export const updateProfile = async (
 }> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
-
     await profileRepository.update(
       { uuid: user.uuid },
       {

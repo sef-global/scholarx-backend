@@ -18,6 +18,7 @@
   "rules": {
     "@typescript-eslint/naming-convention": 0,
     "@typescript-eslint/no-misused-promises": 0,
+    "@typescript-eslint/restrict-plus-operands": 0,
     "@typescript-eslint/strict-boolean-expressions": 0,
     "unused-imports/no-unused-imports": "error"
   }

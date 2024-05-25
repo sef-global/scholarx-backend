@@ -44,10 +44,15 @@ export const mentorAvailabilityHandler = async (
   res: Response
 ): Promise<ApiResponse<Mentor>> => {
   try {
-    const user = req.user as Profile
     const { availability } = req.body
-    const result = await updateAvailability(user.uuid, availability)
-    return res.status(result.statusCode).json(result.updatedMentorApplication)
+    const { mentorId } = req.params
+
+    const { statusCode, message } = await updateAvailability(
+      mentorId,
+      availability
+    )
+
+    return res.status(statusCode).json({ message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
