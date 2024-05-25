@@ -4,7 +4,7 @@ import passport from 'passport'
 import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
-import type { ApiResponse, User } from '../types'
+import type { ApiResponse } from '../types'
 import { signAndSetCookie } from '../utils'
 
 export const googleRedirect = async (
@@ -15,7 +15,7 @@ export const googleRedirect = async (
   passport.authenticate(
     'google',
     { failureRedirect: '/login' },
-    (err: Error, user: User, profile: Profile) => {
+    (err: Error, user: Profile) => {
       if (err) {
         next(err)
         return
@@ -24,8 +24,7 @@ export const googleRedirect = async (
         res.redirect('/login')
         return
       }
-
-      signAndSetCookie(res, profile.uuid)
+      signAndSetCookie(res, user.uuid)
 
       res.redirect(process.env.CLIENT_URL ?? '/')
     }
