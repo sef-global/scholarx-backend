@@ -195,8 +195,12 @@ export const getAllMentors = async (
     const mentorRepository = dataSource.getRepository(Mentor)
     const mentors = await mentorRepository.find({
       where: categoryId
-        ? { category: { uuid: categoryId }, state: ApplicationStatus.APPROVED }
-        : { state: ApplicationStatus.APPROVED },
+        ? {
+            category: { uuid: categoryId },
+            state: ApplicationStatus.APPROVED,
+            availability: true
+          }
+        : { state: ApplicationStatus.APPROVED, availability: true },
       relations: ['profile', 'category'],
       select: ['application', 'uuid', 'availability']
     })

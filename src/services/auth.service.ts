@@ -5,7 +5,9 @@ import type passport from 'passport'
 
 export const registerUser = async (
   email: string,
-  password: string
+  password: string,
+  first_name: string,
+  last_name: string
 ): Promise<{
   statusCode: number
   message: string
@@ -26,8 +28,8 @@ export const registerUser = async (
     const newProfile = profileRepository.create({
       primary_email: email,
       password: hashedPassword,
-      first_name: '',
-      last_name: '',
+      first_name,
+      last_name,
       image_url: ''
     })
 

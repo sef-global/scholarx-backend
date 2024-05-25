@@ -37,7 +37,7 @@ export const register = async (
   res: Response
 ): Promise<ApiResponse<Profile>> => {
   try {
-    const { email, password } = req.body
+    const { email, password, first_name, last_name } = req.body
 
     if (!email || !password) {
       return res
@@ -45,7 +45,12 @@ export const register = async (
         .json({ error: 'Email and password are required fields' })
     }
 
-    const { statusCode, message, profile } = await registerUser(email, password)
+    const { statusCode, message, profile } = await registerUser(
+      email,
+      password,
+      first_name,
+      last_name
+    )
     return res.status(statusCode).json({ message, profile })
   } catch (err) {
     if (err instanceof Error) {
