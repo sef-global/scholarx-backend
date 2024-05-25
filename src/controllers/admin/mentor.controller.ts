@@ -124,9 +124,12 @@ export const updateMentorAvailability = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    const { statusCode, updatedMentorApplication, message } =
-      await updateAvailability(mentorId, availability)
-    return res.status(statusCode).json({ updatedMentorApplication, message })
+    const { statusCode, message } = await updateAvailability(
+      mentorId,
+      availability
+    )
+
+    return res.status(statusCode).json({ message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

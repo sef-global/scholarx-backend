@@ -12,7 +12,11 @@ const mentorRouter = express.Router()
 
 mentorRouter.post('/', requireAuth, mentorApplicationHandler)
 mentorRouter.get('/mentees', requireAuth, getMenteesByMentor)
-mentorRouter.put('/me/availability', requireAuth, mentorAvailabilityHandler)
+mentorRouter.put(
+  '/:mentorId/availability',
+  requireAuth,
+  mentorAvailabilityHandler
+)
 mentorRouter.get('/:mentorId', mentorDetailsHandler)
 mentorRouter.get('/', getAllMentorsHandler)
 

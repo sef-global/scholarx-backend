@@ -79,32 +79,26 @@ export const updateAvailability = async (
   availability: boolean
 ): Promise<{
   statusCode: number
-  updatedMentorApplication?: Mentor
   message: string
 }> => {
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
-    const existingMentorApplications = await mentorRepository.find({
-      where: { profile: { uuid: mentorId } }
+    const mentor = await mentorRepository.findOne({
+      where: { uuid: mentorId }
     })
 
-    const mentorApplication = existingMentorApplications[0]
-
-    if (mentorApplication) {
-      mentorApplication.availability = availability
-      const updatedMentorApplication = await mentorRepository.save(
-        mentorApplication
-      )
-      return {
-        statusCode: 200,
-        updatedMentorApplication,
-        message: 'Mentor availability updated successfully'
-      }
-    } else {
+    if (!mentor) {
       return {
         statusCode: 404,
         message: 'Mentor not found'
       }
+    }
+
+    await mentorRepository.update({ uuid: mentorId }, { availability })
+
+    return {
+      statusCode: 200,
+      message: 'Mentor availability updated successfully'
     }
   } catch (err) {
     console.error('Error creating mentor', err)
