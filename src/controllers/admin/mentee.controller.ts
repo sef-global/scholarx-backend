@@ -5,6 +5,7 @@ import type Mentee from '../../entities/mentee.entity'
 import type { ApiResponse } from '../../types'
 import {
   getAllMentees,
+  getMentee,
   updateStatus
 } from '../../services/admin/mentee.service'
 
@@ -54,6 +55,31 @@ export const updateMenteeStatus = async (
 
     const { statusCode, message } = await updateStatus(menteeId, state)
     return res.status(statusCode).json({ message })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+    throw err
+  }
+}
+
+export const getMenteeDetails = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentee>> => {
+  try {
+    const user = req.user as Profile
+    const { menteeId } = req.params
+
+    if (user.type !== ProfileTypes.ADMIN) {
+      return res.status(403).json({ message: 'Only Admins are allowed' })
+    }
+
+    const { statusCode, message, mentee } = await getMentee(menteeId)
+    return res.status(statusCode).json({ mentee, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
