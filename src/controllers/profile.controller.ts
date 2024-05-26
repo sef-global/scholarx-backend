@@ -8,6 +8,7 @@ import type Profile from '../entities/profile.entity'
 import type { ApiResponse } from '../types'
 import type Mentor from '../entities/mentor.entity'
 import { upload } from '../utils'
+import { IMG_HOST } from '../configs/envConfig'
 
 export const getProfileHandler = async (
   req: Request,
@@ -49,12 +50,7 @@ export const updateProfileHandler = async (
         } else {
           try {
             if (req.file) {
-              const image_url =
-                req.protocol +
-                '://' +
-                req.get('host') +
-                '/' +
-                req.file?.filename
+              const image_url = IMG_HOST + '/' + req.file?.filename
               const { statusCode, profile, message } = await updateProfile(
                 user,
                 {
