@@ -208,3 +208,36 @@ export const updateStatus = async (
     throw new Error('Error updating mentee status')
   }
 }
+
+export const getMentee = async (
+  menteeId: string
+): Promise<{
+  statusCode: number
+  mentee: Mentee | null
+  message: string
+}> => {
+  try {
+    const menteeRepository = dataSource.getRepository(Mentee)
+
+    const mentee = await menteeRepository.findOne({
+      where: { uuid: menteeId },
+      relations: ['profile', 'mentor', 'mentor.profile']
+    })
+
+    if (!mentee) {
+      return {
+        statusCode: 404,
+        mentee: null,
+        message: 'Mentee not found'
+      }
+    }
+
+    return {
+      statusCode: 200,
+      mentee,
+      message: 'Mentees found'
+    }
+  } catch (err) {
+    throw new Error('Error getting mentees')
+  }
+}
