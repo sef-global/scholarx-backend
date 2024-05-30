@@ -4,6 +4,7 @@ import type Profile from '../../entities/profile.entity'
 import type Mentee from '../../entities/mentee.entity'
 import type { ApiResponse } from '../../types'
 import {
+  getAllMenteeEmailsService,
   getAllMentees,
   getMentee,
   updateStatus
@@ -88,5 +89,29 @@ export const getMenteeDetails = async (
         .json({ error: 'Internal server error', message: err.message })
     }
     throw err
+  }
+}
+
+export const getAllMenteeEmails = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<string[]>> => {
+  try {
+    const status = req.query.status
+    if (
+      status === ApplicationStatus.APPROVED ||
+      status === ApplicationStatus.REJECTED ||
+      status === ApplicationStatus.PENDING
+    ) {
+      const { emails, statusCode, message } = await getAllMenteeEmailsService(
+        status
+      )
+      return res.status(statusCode).json({ emails, message })
+    } else {
+      return res.status(400).json({ message: 'Invalid Status' })
+    }
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: err || 'Internal Server Error' })
   }
 }

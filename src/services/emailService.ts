@@ -1,8 +1,8 @@
-import { dataSource } from '../../configs/dbConfig'
-import { EmailStatusTypes } from '../../enums'
 import nodemailer from 'nodemailer'
-import Email from '../../entities/email.entity'
-import { SMTP_MAIL, SMTP_PASS } from '../../configs/envConfig'
+import Email from '../entities/email.entity'
+import { dataSource } from '../configs/dbConfig'
+import { EmailStatusTypes } from '../enums'
+import { SMTP_MAIL, SMTP_PASS } from '../configs/envConfig'
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
