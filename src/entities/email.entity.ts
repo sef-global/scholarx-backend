@@ -10,7 +10,7 @@ class Email extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   subject: string
 
-  @Column({ type: 'varchar', length: 655 })
+  @Column('varchar')
   content: string
 
   @Column({ type: 'enum', enum: EmailStatusTypes })

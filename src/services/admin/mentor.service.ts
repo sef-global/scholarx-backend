@@ -1,6 +1,8 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentor from '../../entities/mentor.entity'
 import type { ApplicationStatus } from '../../enums'
+import { getEmailContent } from '../../utils'
+import { sendEmail } from './email.service'
 
 export const updateMentorStatus = async (
   mentorId: string,
@@ -25,6 +27,20 @@ export const updateMentorStatus = async (
     }
 
     await mentorRepository.update({ uuid: mentorId }, { state: status })
+
+    const content = getEmailContent(
+      'mentor',
+      status,
+      mentor.application.firstName as string
+    )
+
+    if (content) {
+      await sendEmail(
+        mentor.application.email as string,
+        content.subject,
+        content.message
+      )
+    }
 
     return {
       statusCode: 200,

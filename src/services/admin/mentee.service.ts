@@ -1,8 +1,9 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentee from '../../entities/mentee.entity'
 import Mentor from '../../entities/mentor.entity'
-import type Profile from '../../entities/profile.entity'
 import { ApplicationStatus } from '../../enums'
+import { getEmailContent } from '../../utils'
+import { sendEmail } from './email.service'
 
 export const getAllMentees = async (
   status: ApplicationStatus | undefined
@@ -33,70 +34,6 @@ export const getAllMentees = async (
     }
   } catch (err) {
     throw new Error('Error getting mentees')
-  }
-}
-
-export const addMentee = async (
-  user: Profile,
-  application: JSON,
-  mentorId: string
-): Promise<{
-  statusCode: number
-  mentee?: Mentee
-  message: string
-}> => {
-  try {
-    const menteeRepository = dataSource.getRepository(Mentee)
-    const mentorRepository = dataSource.getRepository(Mentor)
-
-    const mentor = await mentorRepository.findOne({
-      where: { uuid: mentorId }
-    })
-
-    if (mentor === null || mentor === undefined) {
-      return {
-        statusCode: 404,
-        message: 'Mentor not found'
-      }
-    }
-
-    const existingMentees: Mentee[] = await menteeRepository.find({
-      where: { profile: { uuid: user.uuid } }
-    })
-
-    for (const mentee of existingMentees) {
-      switch (mentee.state) {
-        case ApplicationStatus.PENDING:
-          return {
-            statusCode: 409,
-            message: 'The mentee application is pending'
-          }
-        case ApplicationStatus.APPROVED:
-          return {
-            statusCode: 409,
-            message: 'The user is already a mentee'
-          }
-        default:
-          break
-      }
-    }
-
-    const newMentee = new Mentee(
-      ApplicationStatus.PENDING,
-      application,
-      user,
-      mentor
-    )
-
-    await menteeRepository.save(newMentee)
-
-    return {
-      statusCode: 200,
-      mentee: newMentee,
-      message: 'New mentee created'
-    }
-  } catch (err) {
-    throw new Error('Error adding mentee')
   }
 }
 
@@ -143,7 +80,7 @@ export const getAllMenteesByMentor = async (
 
 export const updateStatus = async (
   menteeId: string,
-  state: string
+  state: ApplicationStatus
 ): Promise<{
   statusCode: number
   updatedMenteeApplication?: Mentee
@@ -183,23 +120,22 @@ export const updateStatus = async (
         message: 'Mentee is already approved'
       }
     } else {
-      switch (state) {
-        case 'approved':
-          mentee.state = ApplicationStatus.APPROVED
-          break
-        case 'rejected':
-          mentee.state = ApplicationStatus.REJECTED
-          break
-        case 'pending':
-          mentee.state = ApplicationStatus.PENDING
-          break
-        default:
-          break
+      await menteeRepository.update({ uuid: menteeId }, { state })
+      const content = getEmailContent(
+        'mentee',
+        state,
+        mentee.application.firstName as string
+      )
+
+      if (content) {
+        await sendEmail(
+          mentee.application.email as string,
+          content.subject,
+          content.message
+        )
       }
-      const updatedMenteeApplication = await menteeRepository.save(mentee)
       return {
         statusCode: 200,
-        updatedMenteeApplication,
         message: 'Mentee application state successfully updated'
       }
     }

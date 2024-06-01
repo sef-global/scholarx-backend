@@ -3,6 +3,7 @@ import { EmailStatusTypes } from '../../enums'
 import nodemailer from 'nodemailer'
 import Email from '../../entities/email.entity'
 import { SMTP_MAIL, SMTP_PASS } from '../../configs/envConfig'
+import { loadTemplate } from '../../utils'
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -17,7 +18,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (
   to: string,
   subject: string,
-  content: string
+  message: string
 ): Promise<{
   statusCode: number
   message: string
@@ -25,16 +26,19 @@ export const sendEmail = async (
   const emailRepository = dataSource.getRepository(Email)
 
   try {
-    // Send email
-    await transporter.sendMail({
-      from: '"Your Name" <your_email@example.com>', // sender address
-      to,
+    const html = await loadTemplate('emailTemplate', {
       subject,
-      text: content
+      message
     })
 
-    // Save email to the database
-    const email = new Email(to, subject, content, EmailStatusTypes.SENT)
+    await transporter.sendMail({
+      from: `"Sustainable Education Foundation" <${SMTP_MAIL}>`,
+      to,
+      subject,
+      html
+    })
+
+    const email = new Email(to, subject, message, EmailStatusTypes.SENT)
 
     await emailRepository.save(email)
 

@@ -3,7 +3,8 @@ import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { ApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
-import { getMentorPublicData } from '../utils'
+import { getEmailContent, getMentorPublicData } from '../utils'
+import { sendEmail } from './admin/email.service'
 
 export const createMentor = async (
   user: Profile,
@@ -62,6 +63,20 @@ export const createMentor = async (
     )
 
     await mentorRepository.save(newMentor)
+
+    const content = getEmailContent(
+      'mentor',
+      ApplicationStatus.PENDING,
+      application.firstName as string
+    )
+
+    if (content) {
+      await sendEmail(
+        application.email as string,
+        content.subject,
+        content.message
+      )
+    }
 
     return {
       statusCode: 201,

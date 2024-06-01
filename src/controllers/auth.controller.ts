@@ -50,6 +50,13 @@ export const register = async (
       first_name,
       last_name
     )
+
+    const { user } = await loginUser(email, password)
+
+    if (user?.uuid) {
+      signAndSetCookie(res, user.uuid)
+    }
+
     return res.status(statusCode).json({ message, profile })
   } catch (err) {
     if (err instanceof Error) {
