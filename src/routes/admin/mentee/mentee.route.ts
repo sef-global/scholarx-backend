@@ -1,9 +1,9 @@
 import express from 'express'
 import { requireAuth } from '../../../controllers/auth.controller'
-import { getAllMenteeEmails } from '../../../controllers/admin/email.controller'
 import {
   getMentees,
   updateMenteeStatus,
+  getAllMenteeEmails,
   getMenteeDetails
 } from '../../../controllers/admin/mentee.controller'
 

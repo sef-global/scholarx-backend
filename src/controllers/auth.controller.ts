@@ -50,6 +50,13 @@ export const register = async (
       first_name,
       last_name
     )
+
+    const { user } = await loginUser(email, password)
+
+    if (user?.uuid) {
+      signAndSetCookie(res, user.uuid)
+    }
+
     return res.status(statusCode).json({ message, profile })
   } catch (err) {
     if (err instanceof Error) {
@@ -130,7 +137,7 @@ export const requireAuth = (
       const token = req.cookies.jwt
 
       if (!token) {
-        return res.status(401).json({ error: 'No token provided' })
+        return res.status(401).json({ error: 'Use is not authenticated' })
       }
 
       try {

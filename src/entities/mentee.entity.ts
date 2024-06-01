@@ -14,7 +14,7 @@ class Mentee extends BaseEntity {
   state: ApplicationStatus
 
   @Column({ type: 'json' })
-  application: JSON
+  application: Record<string, unknown>
 
   @Column({ type: 'bigint', nullable: true, default: null })
   certificate_id!: bigint
@@ -31,7 +31,7 @@ class Mentee extends BaseEntity {
 
   constructor(
     state: ApplicationStatus,
-    application: JSON,
+    application: Record<string, unknown>,
     profile: profileEntity,
     mentor: Mentor
   ) {
