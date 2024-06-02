@@ -3,10 +3,12 @@ import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { ApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
+import { getEmailContent, getMentorPublicData } from '../utils'
+import { sendEmail } from './admin/email.service'
 
 export const createMentor = async (
   user: Profile,
-  application: JSON,
+  application: Record<string, unknown>,
   categoryId: string
 ): Promise<{
   statusCode: number
@@ -62,6 +64,20 @@ export const createMentor = async (
 
     await mentorRepository.save(newMentor)
 
+    const content = getEmailContent(
+      'mentor',
+      ApplicationStatus.PENDING,
+      application.firstName as string
+    )
+
+    if (content) {
+      await sendEmail(
+        application.email as string,
+        content.subject,
+        content.message
+      )
+    }
+
     return {
       statusCode: 201,
       mentor: newMentor,
@@ -78,32 +94,26 @@ export const updateAvailability = async (
   availability: boolean
 ): Promise<{
   statusCode: number
-  updatedMentorApplication?: Mentor
   message: string
 }> => {
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
-    const existingMentorApplications = await mentorRepository.find({
-      where: { profile: { uuid: mentorId } }
+    const mentor = await mentorRepository.findOne({
+      where: { uuid: mentorId }
     })
 
-    const mentorApplication = existingMentorApplications[0]
-
-    if (mentorApplication) {
-      mentorApplication.availability = availability
-      const updatedMentorApplication = await mentorRepository.save(
-        mentorApplication
-      )
-      return {
-        statusCode: 200,
-        updatedMentorApplication,
-        message: 'Mentor availability updated sucessfully'
-      }
-    } else {
+    if (!mentor) {
       return {
         statusCode: 404,
         message: 'Mentor not found'
       }
+    }
+
+    await mentorRepository.update({ uuid: mentorId }, { availability })
+
+    return {
+      statusCode: 200,
+      message: 'Mentor availability updated successfully'
     }
   } catch (err) {
     console.error('Error creating mentor', err)
@@ -122,7 +132,8 @@ export const getMentor = async (
     const mentorRepository = dataSource.getRepository(Mentor)
     const mentor = await mentorRepository.findOne({
       where: { uuid: mentorId },
-      relations: ['profile', 'category', 'mentees']
+      relations: ['profile', 'category', 'mentees'],
+      select: ['application', 'uuid', 'availability']
     })
 
     if (!mentor) {
@@ -131,6 +142,11 @@ export const getMentor = async (
         message: 'Mentor not found'
       }
     }
+
+    const { application } = mentor
+    delete application.cv
+    delete application.contactNo
+    delete application.email
 
     return {
       statusCode: 200,
@@ -184,42 +200,39 @@ export const searchMentorsByQuery = async (
 }
 
 export const getAllMentors = async (
-  category?: string | null
+  categoryId?: string | null
 ): Promise<{
   statusCode: number
   mentors?: Mentor[] | null
   message: string
 }> => {
   try {
-    let mentors: Mentor[] = []
     const mentorRepository = dataSource.getRepository(Mentor)
-    if (category == null) {
-      mentors = await mentorRepository
-        .createQueryBuilder('mentor')
-        .leftJoinAndSelect('mentor.profile', 'profile')
-        .leftJoinAndSelect('mentor.category', 'category')
-        .where('mentor.state = :state', { state: 'approved' })
-        .getMany()
-    } else {
-      mentors = await mentorRepository
-        .createQueryBuilder('mentor')
-        .leftJoinAndSelect('mentor.profile', 'profile')
-        .leftJoinAndSelect('mentor.category', 'category')
-        .where('mentor.state = :state', { state: 'approved' })
-        .andWhere('category.category = :category', { category })
-        .getMany()
-    }
+    const mentors = await mentorRepository.find({
+      where: categoryId
+        ? {
+            category: { uuid: categoryId },
+            state: ApplicationStatus.APPROVED,
+            availability: true
+          }
+        : { state: ApplicationStatus.APPROVED, availability: true },
+      relations: ['profile', 'category'],
+      select: ['application', 'uuid', 'availability']
+    })
+
+    const publicMentors = mentors.map((mentor) => getMentorPublicData(mentor))
 
     if (!mentors || mentors.length === 0) {
       return {
-        statusCode: 404,
+        statusCode: 200,
+        mentors: [],
         message: 'No mentors found'
       }
     }
 
     return {
       statusCode: 200,
-      mentors,
+      mentors: publicMentors,
       message: 'Mentors found'
     }
   } catch (err) {

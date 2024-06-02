@@ -2,7 +2,8 @@ import type { Request, Response } from 'express'
 import {
   findAllMentorEmails,
   getAllMentors,
-  updateMentorStatus
+  updateMentorStatus,
+  getMentor
 } from '../../services/admin/mentor.service'
 import { ApplicationStatus, ProfileTypes } from '../../enums'
 import type Profile from '../../entities/profile.entity'
@@ -19,20 +20,20 @@ export const mentorStatusHandler = async (
 ): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
-    const { status } = req.body
+    const { state } = req.body
     const { mentorId } = req.params
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (!(status.toUpperCase() in ApplicationStatus)) {
+    if (!(state.toUpperCase() in ApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
     const { mentor, statusCode, message } = await updateMentorStatus(
       mentorId,
-      status
+      state
     )
     return res.status(statusCode).json({ mentor, message })
   } catch (err) {
@@ -61,7 +62,7 @@ export const getAllMentorsByStatus = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in ApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
@@ -93,7 +94,7 @@ export const getAllMentorEmails = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status?.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in ApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
@@ -123,9 +124,12 @@ export const updateMentorAvailability = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    const { statusCode, updatedMentorApplication, message } =
-      await updateAvailability(mentorId, availability)
-    return res.status(statusCode).json({ updatedMentorApplication, message })
+    const { statusCode, message } = await updateAvailability(
+      mentorId,
+      availability
+    )
+
+    return res.status(statusCode).json({ message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
@@ -152,6 +156,33 @@ export const searchMentors = async (
 
     const { statusCode, mentors, message } = await searchMentorsByQuery(q)
     return res.status(statusCode).json({ mentors, message })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+
+    throw err
+  }
+}
+
+export const mentorDetailsHandler = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentor>> => {
+  try {
+    const user = req.user as Profile
+    const { mentorId } = req.params
+
+    if (user.type !== ProfileTypes.ADMIN) {
+      return res.status(403).json({ message: 'Only Admins are allowed' })
+    }
+
+    const { mentor, statusCode, message } = await getMentor(mentorId)
+
+    return res.status(statusCode).json({ mentor, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

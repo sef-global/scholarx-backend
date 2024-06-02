@@ -5,7 +5,9 @@ import type passport from 'passport'
 
 export const registerUser = async (
   email: string,
-  password: string
+  password: string,
+  first_name: string,
+  last_name: string
 ): Promise<{
   statusCode: number
   message: string
@@ -26,11 +28,9 @@ export const registerUser = async (
     const newProfile = profileRepository.create({
       primary_email: email,
       password: hashedPassword,
-      contact_email: '',
-      first_name: '',
-      last_name: '',
-      image_url: '',
-      linkedin_url: ''
+      first_name,
+      last_name,
+      image_url: ''
     })
 
     await profileRepository.save(newProfile)
@@ -53,7 +53,7 @@ export const registerUser = async (
 export const loginUser = async (
   email: string,
   password: string
-): Promise<{ statusCode: number; message: string; uuid?: string }> => {
+): Promise<{ statusCode: number; message: string; user?: Profile }> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
     const profile = await profileRepository
@@ -72,7 +72,7 @@ export const loginUser = async (
       return { statusCode: 401, message: 'Invalid email or password' }
     }
 
-    return { statusCode: 200, message: 'Login successful', uuid: profile.uuid }
+    return { statusCode: 200, message: 'Login successful', user: profile }
   } catch (error) {
     console.error('Error executing login', error)
     return { statusCode: 500, message: 'Internal server error' }
@@ -84,18 +84,17 @@ export const findOrCreateUser = async (
 ): Promise<Profile> => {
   const profileRepository = dataSource.getRepository(Profile)
   let user = await profileRepository.findOne({
-    where: { primary_email: profile.emails?.[0]?.value ?? '' }
+    where: { primary_email: profile.emails?.[0]?.value ?? '' },
+    relations: ['mentor', 'mentee']
   })
   if (!user) {
     const hashedPassword = await bcrypt.hash(profile.id, 10) // Use Google ID as password
     user = profileRepository.create({
       primary_email: profile.emails?.[0]?.value ?? '',
       password: hashedPassword,
-      contact_email: '',
       first_name: profile.name?.givenName,
       last_name: profile.name?.familyName,
-      image_url: profile.photos?.[0]?.value ?? '',
-      linkedin_url: ''
+      image_url: profile.photos?.[0]?.value ?? ''
     })
     await profileRepository.save(user)
   }

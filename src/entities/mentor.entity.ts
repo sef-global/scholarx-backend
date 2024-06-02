@@ -17,8 +17,8 @@ class Mentor extends BaseEntity {
   @ManyToOne(() => Category, (category) => category.mentors)
   category: Category
 
-  @Column({ type: 'json', select: false })
-  application: JSON
+  @Column({ type: 'json' })
+  application: Record<string, unknown>
 
   @Column({ type: 'boolean' })
   availability: boolean
@@ -33,7 +33,7 @@ class Mentor extends BaseEntity {
   constructor(
     state: ApplicationStatus,
     category: Category,
-    application: JSON,
+    application: Record<string, unknown>,
     availability: boolean,
     profile: profileEntity,
     mentees: Mentee[]

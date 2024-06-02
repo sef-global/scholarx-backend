@@ -1,28 +1,32 @@
-import type { Request, Response } from 'express'
-import type { ApiResponse } from '../../types'
-import { getAllMenteeEmailsService } from '../../services/admin/email.service'
-import { ApplicationStatus } from '../../enums'
+import { type Request, type Response } from 'express'
+import type Profile from '../../entities/profile.entity'
+import { type ApiResponse } from '../../types'
+import type Email from '../../entities/email.entity'
+import { ProfileTypes } from '../../enums'
+import { sendEmail } from '../../services/admin/email.service'
 
-export const getAllMenteeEmails = async (
+export const sendEmailController = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<string[]>> => {
+): Promise<ApiResponse<Email>> => {
+  const { to, subject, text } = req.body
+
   try {
-    const status = req.query.status
-    if (
-      status === ApplicationStatus.APPROVED ||
-      status === ApplicationStatus.REJECTED ||
-      status === ApplicationStatus.PENDING
-    ) {
-      const { emails, statusCode, message } = await getAllMenteeEmailsService(
-        status
-      )
-      return res.status(statusCode).json({ emails, message })
-    } else {
-      return res.status(400).json({ message: 'Invalid Status' })
+    const user = req.user as Profile
+
+    if (user.type !== ProfileTypes.ADMIN) {
+      return res.status(403).json({ message: 'Only Admins are allowed' })
     }
+
+    const { statusCode, message } = await sendEmail(to, subject, text)
+    return res.status(statusCode).json({ message })
   } catch (err) {
-    console.error(err)
-    return res.status(500).json({ error: err || 'Internal Server Error' })
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+    throw err
   }
 }

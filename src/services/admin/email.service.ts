@@ -1,33 +1,50 @@
 import { dataSource } from '../../configs/dbConfig'
-import Mentee from '../../entities/mentee.entity'
-import type { ApplicationStatus } from '../../enums'
+import { EmailStatusTypes } from '../../enums'
+import nodemailer from 'nodemailer'
+import Email from '../../entities/email.entity'
+import { SMTP_MAIL, SMTP_PASS } from '../../configs/envConfig'
+import { loadTemplate } from '../../utils'
 
-export const getAllMenteeEmailsService = async (
-  status: ApplicationStatus | undefined
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: SMTP_MAIL,
+    pass: SMTP_PASS
+  }
+})
+
+export const sendEmail = async (
+  to: string,
+  subject: string,
+  message: string
 ): Promise<{
   statusCode: number
-  emails?: string[]
   message: string
 }> => {
+  const emailRepository = dataSource.getRepository(Email)
+
   try {
-    const menteeRepositroy = dataSource.getRepository(Mentee)
-    const allMentees: Mentee[] = await menteeRepositroy.find({
-      where: status ? { state: status } : {},
-      relations: ['profile']
+    const html = await loadTemplate('emailTemplate', {
+      subject,
+      message
     })
-    const emails = allMentees.map((mentee) => mentee?.profile?.primary_email)
-    if (!emails) {
-      return {
-        statusCode: 404,
-        message: 'Mentees Emails not found'
-      }
-    }
-    return {
-      statusCode: 200,
-      emails,
-      message: 'All mentee emails with status ' + (status ?? 'undefined')
-    }
-  } catch (err) {
-    throw new Error('Error getting mentee emails')
+
+    await transporter.sendMail({
+      from: `"Sustainable Education Foundation" <${SMTP_MAIL}>`,
+      to,
+      subject,
+      html
+    })
+
+    const email = new Email(to, subject, message, EmailStatusTypes.SENT)
+
+    await emailRepository.save(email)
+
+    return { statusCode: 200, message: 'Email sent and saved successfully' }
+  } catch (error) {
+    console.error('Error sending email:', error)
+    throw new Error('Error sending email')
   }
 }

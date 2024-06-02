@@ -37,8 +37,12 @@ describe('registerUser', () => {
       mockProfileRepository
     )
 
-    const result = await registerUser('newuser@example.com', 'password123')
-    console.log(result.profile)
+    const result = await registerUser(
+      'newuser@example.com',
+      'password123',
+      'John',
+      'Doe'
+    )
     expect(result.message).toBe('Registration successful')
   })
 
@@ -51,7 +55,12 @@ describe('registerUser', () => {
       mockProfileRepository
     )
 
-    const result = await registerUser('existinguser@example.com', 'password123')
+    const result = await registerUser(
+      'existinguser@example.com',
+      'password123',
+      'John',
+      'Doe'
+    )
 
     expect(result.statusCode).toBe(409)
     expect(result.message).toBe('Email already exists')
@@ -63,7 +72,12 @@ describe('registerUser', () => {
       throw new Error('Test repository error')
     })
 
-    const result = await registerUser('testuser@example.com', 'password123')
+    const result = await registerUser(
+      'testuser@example.com',
+      'password123',
+      'John',
+      'Doe'
+    )
 
     expect(result.statusCode).toBe(500)
     expect(result.message).toBe('Internal server error')
@@ -88,7 +102,7 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(401)
     expect(result.message).toBe('Invalid email or password')
-    expect(result.uuid).toBeUndefined()
+    expect(result.user).toBeUndefined()
   })
 
   it('should return unauthorized status code for an incorrect password', async () => {
@@ -110,7 +124,7 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(401)
     expect(result.message).toBe('Invalid email or password')
-    expect(result.uuid).toBeUndefined()
+    expect(result.user).toBeUndefined()
   })
 
   it('should handle an internal server error during login', async () => {
@@ -122,7 +136,7 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(500)
     expect(result.message).toBe('Internal server error')
-    expect(result.uuid).toBeUndefined()
+    expect(result.user).toBeUndefined()
   })
 
   it('should return unauthorized status code for an invalid email or password', async () => {
@@ -142,6 +156,6 @@ describe('loginUser', () => {
 
     expect(result.statusCode).toBe(500)
     expect(result.message).toBe('Internal server error')
-    expect(result.uuid).toBeUndefined()
+    expect(result.user).toBeUndefined()
   })
 })

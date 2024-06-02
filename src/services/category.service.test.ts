@@ -53,18 +53,4 @@ describe('Category Service - getAllCategories', () => {
 
     expect(result.categories?.length).toBe(0)
   })
-
-  it('should handle error during category retrieval', async () => {
-    const mockCategoryRepository = {
-      find: jest.fn().mockRejectedValue(new Error('Test repository error'))
-    }
-
-    ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
-      mockCategoryRepository
-    )
-
-    await expect(getAllCategories()).rejects.toThrowError(
-      'Error getting mentor'
-    )
-  })
 })

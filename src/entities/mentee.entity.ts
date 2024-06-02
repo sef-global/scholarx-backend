@@ -1,5 +1,4 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm'
-import { MenteeApplication } from '../types'
 import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
 import { ApplicationStatus } from '../enums'
@@ -15,13 +14,13 @@ class Mentee extends BaseEntity {
   state: ApplicationStatus
 
   @Column({ type: 'json' })
-  answers: MenteeApplication
+  application: Record<string, unknown>
 
-  @Column({ type: 'bigint' })
-  certificate_id: bigint
+  @Column({ type: 'bigint', nullable: true, default: null })
+  certificate_id!: bigint
 
-  @Column()
-  journal: string
+  @Column({ default: null, nullable: true })
+  journal!: string
 
   @OneToOne(() => profileEntity)
   @JoinColumn()
@@ -32,17 +31,13 @@ class Mentee extends BaseEntity {
 
   constructor(
     state: ApplicationStatus,
-    answers: MenteeApplication,
-    certificate_id: bigint,
-    journal: string,
+    application: Record<string, unknown>,
     profile: profileEntity,
     mentor: Mentor
   ) {
     super()
-    this.state = state
-    this.answers = answers
-    this.certificate_id = certificate_id
-    this.journal = journal
+    this.state = state || ApplicationStatus.PENDING
+    this.application = application
     this.profile = profile
     this.mentor = mentor
   }

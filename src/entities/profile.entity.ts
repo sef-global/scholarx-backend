@@ -1,15 +1,14 @@
 import bcrypt from 'bcrypt'
-import { Entity, Column } from 'typeorm'
+import { Entity, Column, OneToMany } from 'typeorm'
 import { ProfileTypes } from '../enums'
 import BaseEntity from './baseEntity'
+import Mentor from './mentor.entity'
+import Mentee from './mentee.entity'
 
 @Entity({ name: 'profile' })
 class Profile extends BaseEntity {
   @Column({ type: 'varchar', length: 255, unique: true })
   primary_email: string
-
-  @Column({ type: 'varchar', length: 255 })
-  contact_email: string
 
   @Column({ type: 'varchar', length: 255 })
   first_name: string
@@ -20,14 +19,17 @@ class Profile extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   image_url: string
 
-  @Column({ type: 'varchar', length: 255 })
-  linkedin_url: string
-
   @Column({ type: 'enum', enum: ProfileTypes, default: ProfileTypes.DEFAULT })
   type: ProfileTypes
 
   @Column({ type: 'varchar', length: 255, select: false })
   password: string
+
+  @OneToMany(() => Mentor, (mentor) => mentor.profile)
+  mentor?: Mentor[]
+
+  @OneToMany(() => Mentee, (mentee) => mentee.profile)
+  mentee?: Mentee[]
 
   constructor(
     primary_email: string,
@@ -41,11 +43,9 @@ class Profile extends BaseEntity {
   ) {
     super()
     this.primary_email = primary_email
-    this.contact_email = contact_email
     this.first_name = first_name
     this.last_name = last_name
     this.image_url = image_uri
-    this.linkedin_url = linkedin_uri
     this.type = type || ProfileTypes.DEFAULT
     this.password = password
   }
