@@ -2,6 +2,8 @@ import { dataSource } from '../configs/dbConfig'
 import bcrypt from 'bcrypt'
 import Profile from '../entities/profile.entity'
 import type passport from 'passport'
+import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from '../configs/envConfig'
 
 export const registerUser = async (
   email: string,
@@ -104,7 +106,7 @@ export const findOrCreateUser = async (
 
 export const generateResetToken = async (
   email: string
-): Promise<{ statusCode: number; message: string; token?: string }> => {
+): Promise<{ statusCode: number; message: string; token: string }> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
     const profile = await profileRepository.findOne({
@@ -113,15 +115,19 @@ export const generateResetToken = async (
     })
 
     if (!profile) {
-      return { statusCode: 401, message: 'Invalid email or password' }
+      return {
+        statusCode: 401,
+        message: 'Invalid email or password',
+        token: ''
+      }
     }
-    const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET ?? '', {
-      expiresIn: '10h'
+    const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET, {
+      expiresIn: '1h'
     })
     return { statusCode: 200, message: 'Token generated', token }
   } catch (error) {
     console.error('Error executing Reset Password', error)
-    return { statusCode: 500, message: 'Internal server error' }
+    return { statusCode: 500, message: 'Internal server error', token: '' }
   }
 }
 
@@ -141,23 +147,39 @@ export const resetPassword = async (
   token: string,
   newPassword: string
 ): Promise<{ statusCode: number; message: string }> => {
+  if (!token || !newPassword) {
+    console.error('Error executing Reset Password: Missing parameters')
+    return { statusCode: 400, message: 'Missing parameters' }
+  }
+
+  let decoded
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
-    const profileRepository = dataSource.getRepository(Profile)
-    const profile = await profileRepository.findOne({
-      where: { uuid: decoded.userId }
-    })
+    decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
+  } catch (error) {
+    console.error('Error executing Reset Password: Invalid token', error)
+    return { statusCode: 401, message: 'Invalid token' }
+  }
 
-    if (!profile) {
-      return { statusCode: 401, message: 'Invalid token' }
-    }
+  const profileRepository = dataSource.getRepository(Profile)
+  const profile = await profileRepository.findOne({
+    where: { uuid: decoded.userId }
+  })
 
+  if (!profile) {
+    console.error('Error executing Reset Password: No profile found')
+    return { statusCode: 404, message: 'No profile found' }
+  }
+
+  try {
     const hashedPassword = await hashPassword(newPassword)
     await saveProfile(profile, hashedPassword)
-
-    return { statusCode: 200, message: 'Password reset successful' }
   } catch (error) {
-    console.error('Error executing Reset Password', error)
-    return { statusCode: 500, message: 'Internal server error' }
+    console.error(
+      'Error executing Reset Password: Error updating profile',
+      error
+    )
+    return { statusCode: 500, message: 'Error updating profile' }
   }
+
+  return { statusCode: 200, message: 'Password reset successful' }
 }

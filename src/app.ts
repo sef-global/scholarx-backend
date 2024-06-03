@@ -31,20 +31,6 @@ app.use(
   })
 )
 
-//  Session configuration for passport
-app.use(
-  session({
-    secret: 'SECRET',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 60 * 60 * 1000,
-      secure: false,
-      sameSite: 'none'
-    }
-  })
-)
-
 app.get('/', (req, res) => {
   res.send('ScholarX Backend')
 })

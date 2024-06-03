@@ -36,7 +36,6 @@ export const googleRedirect = async (
         }
         res.redirect('http://localhost:5173/')
       })
-      signAndSetCookie(res, profile.uuid)
       signAndSetCookie(res, user.uuid)
 
       res.redirect(process.env.CLIENT_URL ?? '/')
@@ -204,14 +203,13 @@ export const passwordReset = async (
         .json({ error: 'Token and new password are required fields' })
       return
     }
-
     const result = await resetPassword(token, newPassword)
-
     res.status(result.statusCode).json({ message: result.message })
   } catch (err) {
     console.error('Error executing query', err)
-    res
-      .status(500)
-      .json({ error: 'Internal server error', message: (err as Error).message })
+    res.status(500).json({
+      error: 'Internal server error',
+      message: (err as Error).message
+    })
   }
 }

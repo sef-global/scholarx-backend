@@ -1,4 +1,9 @@
-import { registerUser, loginUser } from './auth.service'
+import {
+  registerUser,
+  loginUser,
+  resetPassword,
+  generateResetToken
+} from './auth.service'
 import { dataSource } from '../configs/dbConfig'
 
 jest.mock('bcrypt', () => ({
@@ -157,5 +162,56 @@ describe('loginUser', () => {
     expect(result.statusCode).toBe(500)
     expect(result.message).toBe('Internal server error')
     expect(result.user).toBeUndefined()
+  })
+})
+
+describe('Auth Service', () => {
+  let token: any
+  const validEmail = 's22010178@ousl.lk'
+  const invalidEmail = 'invalid@ousl.lk'
+  const newPassword = 'newpassword123'
+
+  beforeAll(async () => {
+    token = await generateResetToken(validEmail)
+    console.log(token)
+  })
+
+  it('should generate a password reset token', async () => {
+    expect(token).toBeDefined()
+  })
+
+  it('should not generate a password reset token for invalid email', async () => {
+    const result = await generateResetToken(invalidEmail)
+
+    expect(result.statusCode).toBe(500)
+  })
+
+  it('should reset a user password successfully', async () => {
+    const t = await generateResetToken(validEmail)
+
+    if (!t.token) {
+      throw new Error('Token not generated')
+    }
+
+    const token: string = t.token
+    console.log(token)
+
+    const result = await resetPassword(token, newPassword)
+
+    expect(result.statusCode).toBe(200)
+  })
+
+  it('should return error when parameters are missing', async () => {
+    const result = await resetPassword('', newPassword)
+
+    expect(result.statusCode).toBe(400)
+    expect(result.message).toBe('Missing parameters')
+  })
+
+  it('should return error when token is invalid', async () => {
+    const result = await resetPassword('invalidtoken', newPassword)
+
+    expect(result.statusCode).toBe(401)
+    expect(result.message).toBe('Invalid token')
   })
 })
