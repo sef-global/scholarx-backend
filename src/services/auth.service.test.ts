@@ -167,7 +167,7 @@ describe('loginUser', () => {
 
 describe('Auth Service', () => {
   let token: any
-  const validEmail = 's22010178@ousl.lk'
+  const validEmail = 'test@gmail.com'
   const invalidEmail = 'invalid@ousl.lk'
   const newPassword = 'newpassword123'
 
