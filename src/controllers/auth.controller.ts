@@ -29,13 +29,6 @@ export const googleRedirect = async (
         res.redirect('/login')
         return
       }
-      req.logIn(user, function (err) {
-        if (err) {
-          next(err)
-          return
-        }
-        res.redirect('http://localhost:5173/')
-      })
       signAndSetCookie(res, user.uuid)
 
       res.redirect(process.env.CLIENT_URL ?? '/')
