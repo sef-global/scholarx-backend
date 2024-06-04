@@ -8,13 +8,11 @@ import ejs from 'ejs'
 import { ApplicationStatus } from './enums'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
-  const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '', {
-    expiresIn: '10h' // To-Do: Change value in production
-  })
+  const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
 
   res.cookie('jwt', token, {
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 5 * 24 * 60 * 60 * 1000,
     secure: false // TODO: Set to true when using HTTPS
   })
 }

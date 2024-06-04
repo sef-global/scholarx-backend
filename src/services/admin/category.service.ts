@@ -11,7 +11,7 @@ export const createCategory = async (
   try {
     const categoryRepository = dataSource.getRepository(Category)
 
-    const newCategory = new Category(categoryName, [])
+    const newCategory = new Category(categoryName)
 
     const saveCategory = await categoryRepository.save(newCategory)
 

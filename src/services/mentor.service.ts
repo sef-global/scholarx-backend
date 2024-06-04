@@ -5,6 +5,7 @@ import { ApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
 import { getEmailContent, getMentorPublicData } from '../utils'
 import { sendEmail } from './admin/email.service'
+import Mentee from '../entities/mentee.entity'
 
 export const createMentor = async (
   user: Profile,
@@ -18,6 +19,23 @@ export const createMentor = async (
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
     const categoryRepository = dataSource.getRepository(Category)
+    const menteeRepository = dataSource.getRepository(Mentee)
+
+    const mentee = await menteeRepository.findOne({
+      where: {
+        profile: {
+          uuid: user.uuid
+        }
+      }
+    })
+
+    if (mentee) {
+      return {
+        statusCode: 409,
+        message:
+          'A mentee cannot become a mentor, Please contact sustainableeducationfoundation@gmail.com'
+      }
+    }
 
     const existingMentorApplications = await mentorRepository.find({
       where: { profile: { uuid: user.uuid } }
@@ -58,11 +76,10 @@ export const createMentor = async (
       category,
       application,
       true,
-      user,
-      []
+      user
     )
 
-    await mentorRepository.save(newMentor)
+    const savedMentor = await mentorRepository.save(newMentor)
 
     const content = getEmailContent(
       'mentor',
@@ -80,7 +97,7 @@ export const createMentor = async (
 
     return {
       statusCode: 201,
-      mentor: newMentor,
+      mentor: savedMentor,
       message: 'Mentor application is successful'
     }
   } catch (err) {
@@ -116,8 +133,8 @@ export const updateAvailability = async (
       message: 'Mentor availability updated successfully'
     }
   } catch (err) {
-    console.error('Error creating mentor', err)
-    throw new Error('Error creating mentor')
+    console.error('Error updating mentor availability', err)
+    throw new Error('Error updating mentor availability')
   }
 }
 
