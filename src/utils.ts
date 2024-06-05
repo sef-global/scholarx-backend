@@ -153,3 +153,19 @@ export const getEmailContent = (
     }
   }
 }
+
+export const getPasswordResetEmailContent = (
+  name: string,
+  token: string
+): { subject: string; message: string } => {
+  return {
+    subject: 'Password Reset Request',
+    message: `Dear ${name},<br /><br />
+    We received a request to reset your password. If you did not make this request, you can ignore this email.<br /><br />
+    To reset your password, click the following link or paste it into your browser:<br /><br />
+    <a href="http://localhost:3000/api/auth/passwordreset/${token}">http://localhost:3000/api/auth/passwordreset/${token}</a><br /><br />
+    This link will expire in one hour. If you need to reset your password again, please submit a new request.<br /><br />
+    If you have any questions, please contact our support team.<br /><br />
+    `
+  }
+}

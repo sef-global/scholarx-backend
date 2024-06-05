@@ -4,6 +4,8 @@ import Profile from '../entities/profile.entity'
 import type passport from 'passport'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
+import { getPasswordResetEmailContent } from '../utils'
+import { sendEmail } from './admin/email.service'
 
 export const registerUser = async (
   email: string,
@@ -124,9 +126,22 @@ export const generateResetToken = async (
     const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET, {
       expiresIn: '1h'
     })
-    return { statusCode: 200, message: 'Token generated', token }
+    // Getting the email content
+    const content = getPasswordResetEmailContent(email, token)
+    // Sending the email with token
+    if (content) {
+      await sendEmail(email, content.subject, content.message)
+    }
+    return {
+      statusCode: 200,
+      message: 'Password reset link successfully sent to email',
+      token
+    }
   } catch (error) {
-    console.error('Error executing Reset Password', error)
+    console.error(
+      'Error executing Reset Password && Error sending password reset link',
+      error
+    )
     return { statusCode: 500, message: 'Internal server error', token: '' }
   }
 }
