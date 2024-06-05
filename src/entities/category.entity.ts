@@ -7,12 +7,11 @@ class Category extends BaseEntity {
   category: string
 
   @OneToMany(() => Mentor, (mentor) => mentor.category)
-  mentors: Mentor[]
+  mentors?: Mentor[]
 
-  constructor(category: string, mentors: Mentor[]) {
+  constructor(category: string) {
     super()
     this.category = category
-    this.mentors = mentors
   }
 }
 
