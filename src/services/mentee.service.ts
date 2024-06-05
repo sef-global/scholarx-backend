@@ -30,6 +30,22 @@ export const addMentee = async (
       }
     }
 
+    const userMentorProfile = await mentorRepository.findOne({
+      where: {
+        profile: {
+          uuid: user.uuid
+        }
+      }
+    })
+
+    if (userMentorProfile) {
+      return {
+        statusCode: 409,
+        message:
+          'A mentor cannot become a mentee, Please contact sustainableeducationfoundation@gmail.com'
+      }
+    }
+
     const existingMentees: Mentee[] = await menteeRepository.find({
       where: { profile: { uuid: user.uuid } }
     })
