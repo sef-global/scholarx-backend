@@ -4,8 +4,11 @@ import Profile from '../entities/profile.entity'
 import type passport from 'passport'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../configs/envConfig'
-import { getPasswordResetEmailContent } from '../utils'
-import { sendEmail } from './admin/email.service'
+import {
+  getPasswordResetEmailContent,
+  getPasswordChangedEmailContent
+} from '../utils'
+import { sendResetPasswordEmail } from './admin/email.service'
 
 export const registerUser = async (
   email: string,
@@ -130,7 +133,7 @@ export const generateResetToken = async (
     const content = getPasswordResetEmailContent(email, token)
     // Sending the email with token
     if (content) {
-      await sendEmail(email, content.subject, content.message)
+      await sendResetPasswordEmail(email, content.subject, content.message)
     }
     return {
       statusCode: 200,
@@ -188,6 +191,14 @@ export const resetPassword = async (
   try {
     const hashedPassword = await hashPassword(newPassword)
     await saveProfile(profile, hashedPassword)
+    const content = getPasswordChangedEmailContent(profile.primary_email)
+    if (content) {
+      await sendResetPasswordEmail(
+        profile.primary_email,
+        content.subject,
+        content.message
+      )
+    }
   } catch (error) {
     console.error(
       'Error executing Reset Password: Error updating profile',
