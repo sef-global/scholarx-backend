@@ -160,7 +160,7 @@ export const getPasswordResetEmailContent = (
     message: `Dear ${name},<br /><br />
     We received a request to reset your password. If you did not make this request, you can ignore this email.<br /><br />
     To reset your password, click the following link or paste it into your browser:<br /><br />
-    <a href="${CLIENT_URL}/resetpassword?token=${token}">${CLIENT_URL}/resetpassword?token=${token}</a><br /><br />
+    <a href="${CLIENT_URL}/resetpassword?token=${token}">Password Reset Link</a><br /><br />
     This link will expire in one hour. If you need to reset your password again, please submit a new request.<br /><br />
     If you have any questions, please contact our support team.<br /><br />
     `
