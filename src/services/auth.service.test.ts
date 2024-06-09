@@ -173,7 +173,6 @@ describe('Auth Service', () => {
 
   beforeAll(async () => {
     token = await generateResetToken(validEmail)
-    console.log(token)
   })
 
   it('should generate a password reset token', async () => {
@@ -194,7 +193,6 @@ describe('Auth Service', () => {
     }
 
     const token: string = t.token
-    console.log(token)
 
     const result = await resetPassword(token, newPassword)
 

@@ -9,6 +9,7 @@ import {
   getPasswordChangedEmailContent
 } from '../utils'
 import { sendResetPasswordEmail } from './admin/email.service'
+import { type ResetPassword, type ResetToken } from '../types'
 
 export const registerUser = async (
   email: string,
@@ -111,7 +112,7 @@ export const findOrCreateUser = async (
 
 export const generateResetToken = async (
   email: string
-): Promise<{ statusCode: number; message: string; token: string }> => {
+): Promise<ResetToken> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
     const profile = await profileRepository.findOne({
@@ -129,9 +130,7 @@ export const generateResetToken = async (
     const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET, {
       expiresIn: '1h'
     })
-    // Getting the email content
     const content = getPasswordResetEmailContent(email, token)
-    // Sending the email with token
     if (content) {
       await sendResetPasswordEmail(email, content.subject, content.message)
     }
@@ -145,7 +144,7 @@ export const generateResetToken = async (
       'Error executing Reset Password && Error sending password reset link',
       error
     )
-    return { statusCode: 500, message: 'Internal server error', token: '' }
+    return { statusCode: 500, message: 'Internal server error' }
   }
 }
 
@@ -164,9 +163,8 @@ const saveProfile = async (
 export const resetPassword = async (
   token: string,
   newPassword: string
-): Promise<{ statusCode: number; message: string }> => {
+): Promise<ResetPassword> => {
   if (!token || !newPassword) {
-    console.error('Error executing Reset Password: Missing parameters')
     return { statusCode: 400, message: 'Missing parameters' }
   }
 
@@ -174,8 +172,7 @@ export const resetPassword = async (
   try {
     decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
   } catch (error) {
-    console.error('Error executing Reset Password: Invalid token', error)
-    return { statusCode: 401, message: 'Invalid token' }
+    throw new Error('Invalid token')
   }
 
   const profileRepository = dataSource.getRepository(Profile)
@@ -185,7 +182,7 @@ export const resetPassword = async (
 
   if (!profile) {
     console.error('Error executing Reset Password: No profile found')
-    return { statusCode: 404, message: 'No profile found' }
+    return { statusCode: 409, message: 'No profile found' }
   }
 
   try {
