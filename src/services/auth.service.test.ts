@@ -166,14 +166,11 @@ describe('loginUser', () => {
 })
 
 describe('Auth Service', () => {
-  let token: string | any
   const validEmail = 'valid@gmail.com'
   const invalidEmail = 'invalid@ousl.lk'
   const newPassword = 'newpassword123'
 
-  beforeAll(async () => {
-    token = await generateResetToken(validEmail)
-  })
+  const token = generateResetToken(validEmail)
 
   it('should generate a password reset token', async () => {
     expect(token).toBeDefined()
