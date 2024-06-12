@@ -1,4 +1,9 @@
-import { registerUser, loginUser } from './auth.service'
+import {
+  registerUser,
+  loginUser,
+  resetPassword,
+  generateResetToken
+} from './auth.service'
 import { dataSource } from '../configs/dbConfig'
 
 jest.mock('bcrypt', () => ({
@@ -157,5 +162,30 @@ describe('loginUser', () => {
     expect(result.statusCode).toBe(500)
     expect(result.message).toBe('Internal server error')
     expect(result.user).toBeUndefined()
+  })
+})
+
+describe('Auth Service', () => {
+  const validEmail = 'valid@gmail.com'
+  const invalidEmail = 'invalid@ousl.lk'
+  const newPassword = 'newpassword123'
+
+  const token = generateResetToken(validEmail)
+
+  it('should generate a password reset token', async () => {
+    expect(token).toBeDefined()
+  })
+
+  it('should not generate a password reset token for invalid email', async () => {
+    const result = await generateResetToken(invalidEmail)
+
+    expect(result.statusCode).toBe(500)
+  })
+
+  it('should return error when parameters are missing', async () => {
+    const result = await resetPassword('', newPassword)
+
+    expect(result.statusCode).toBe(400)
+    expect(result.message).toBe('Missing parameters')
   })
 })

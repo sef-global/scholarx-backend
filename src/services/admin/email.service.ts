@@ -48,3 +48,37 @@ export const sendEmail = async (
     throw new Error('Error sending email')
   }
 }
+
+export const sendResetPasswordEmail = async (
+  to: string,
+  subject: string,
+  message: string
+): Promise<{
+  statusCode: number
+  message: string
+}> => {
+  const emailRepository = dataSource.getRepository(Email)
+
+  try {
+    const html = await loadTemplate('passwordresetEmailTemplate', {
+      subject,
+      message
+    })
+
+    await transporter.sendMail({
+      from: `"Sustainable Education Foundation" <${SMTP_MAIL}>`,
+      to,
+      subject,
+      html
+    })
+
+    const email = new Email(to, subject, message, EmailStatusTypes.SENT)
+
+    await emailRepository.save(email)
+
+    return { statusCode: 200, message: 'Email sent and saved successfully' }
+  } catch (error) {
+    console.error('Error sending email:', error)
+    throw new Error('Error sending email')
+  }
+}

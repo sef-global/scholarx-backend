@@ -1,4 +1,4 @@
-import { JWT_SECRET } from './configs/envConfig'
+import { JWT_SECRET, CLIENT_URL } from './configs/envConfig'
 import jwt from 'jsonwebtoken'
 import type { Response } from 'express'
 import type Mentor from './entities/mentor.entity'
@@ -148,5 +148,33 @@ export const getEmailContent = (
       default:
         return undefined
     }
+  }
+}
+
+export const getPasswordResetEmailContent = (
+  name: string,
+  token: string
+): { subject: string; message: string } => {
+  return {
+    subject: 'Password Reset Request',
+    message: `Dear ${name},<br /><br />
+    We received a request to reset your password. If you did not make this request, you can ignore this email.<br /><br />
+    To reset your password, click the following link or paste it into your browser:<br /><br />
+    <a href="${CLIENT_URL}/resetpassword?token=${token}">Password Reset Link</a><br /><br />
+    This link will expire in one hour. If you need to reset your password again, please submit a new request.<br /><br />
+    If you have any questions, please contact our support team.<br /><br />
+    `
+  }
+}
+
+export const getPasswordChangedEmailContent = (
+  name: string
+): { subject: string; message: string } => {
+  return {
+    subject: 'Password Successfully Changed',
+    message: `Dear ${name},<br /><br />
+    Your password has been successfully changed. If you did not make this change, please contact our support team immediately.<br /><br />
+    If you have any questions, please contact our support team.<br /><br />
+    `
   }
 }

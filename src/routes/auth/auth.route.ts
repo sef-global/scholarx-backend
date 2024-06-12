@@ -3,7 +3,9 @@ import {
   register,
   login,
   logout,
-  googleRedirect
+  googleRedirect,
+  passwordResetRequest,
+  passwordReset
 } from '../../controllers/auth.controller'
 import passport from 'passport'
 
@@ -21,4 +23,6 @@ authRouter.get(
 )
 
 authRouter.get('/google/callback', googleRedirect)
+authRouter.post('/password-reset-request', passwordResetRequest)
+authRouter.put('/passwordreset', passwordReset)
 export default authRouter

@@ -1,5 +1,10 @@
 import type { Request, Response, NextFunction } from 'express'
-import { registerUser, loginUser } from '../services/auth.service'
+import {
+  registerUser,
+  loginUser,
+  resetPassword,
+  generateResetToken
+} from '../services/auth.service'
 import passport from 'passport'
 import type Profile from '../entities/profile.entity'
 import jwt from 'jsonwebtoken'
@@ -156,4 +161,48 @@ export const requireAuth = (
       }
     }
   )(req, res, next)
+}
+
+export const passwordResetRequest = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Profile>> => {
+  const { email } = req.body
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is a required field' })
+  }
+
+  try {
+    const { statusCode, message, data: token } = await generateResetToken(email)
+    return res.status(statusCode).json({ message, token })
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ error: 'Internal server error', message: (err as Error).message })
+  }
+}
+
+export const passwordReset = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { token, newPassword } = req.body
+
+    if (!token || !newPassword) {
+      res
+        .status(400)
+        .json({ error: 'Token and new password are required fields' })
+      return
+    }
+    const { statusCode, message } = await resetPassword(token, newPassword)
+    res.status(statusCode).json({ message })
+  } catch (err) {
+    console.error('Error executing query', err)
+    res.status(500).json({
+      error: 'Internal server error',
+      message: (err as Error).message
+    })
+  }
 }

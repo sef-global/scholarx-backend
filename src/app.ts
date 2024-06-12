@@ -30,6 +30,7 @@ app.use(
     credentials: true
   })
 )
+
 app.get('/', (req, res) => {
   res.send('ScholarX Backend')
 })

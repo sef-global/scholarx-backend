@@ -2,6 +2,14 @@ import { dataSource } from '../configs/dbConfig'
 import bcrypt from 'bcrypt'
 import Profile from '../entities/profile.entity'
 import type passport from 'passport'
+import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from '../configs/envConfig'
+import {
+  getPasswordResetEmailContent,
+  getPasswordChangedEmailContent
+} from '../utils'
+import { sendResetPasswordEmail } from './admin/email.service'
+import { type ApiResponse } from '../types'
 
 export const registerUser = async (
   email: string,
@@ -100,4 +108,90 @@ export const findOrCreateUser = async (
   }
 
   return user
+}
+
+export const generateResetToken = async (
+  email: string
+): Promise<ApiResponse<string>> => {
+  try {
+    const profileRepository = dataSource.getRepository(Profile)
+    const profile = await profileRepository.findOne({
+      where: { primary_email: email },
+      select: ['password', 'uuid']
+    })
+
+    if (!profile) {
+      return {
+        statusCode: 401,
+        message: 'Invalid email or password'
+      }
+    }
+    const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET, {
+      expiresIn: '1h'
+    })
+    const content = getPasswordResetEmailContent(email, token)
+    if (content) {
+      await sendResetPasswordEmail(email, content.subject, content.message)
+    }
+    return {
+      statusCode: 200,
+      message: 'Password reset link successfully sent to email'
+    }
+  } catch (error) {
+    console.error(
+      'Error executing Reset Password && Error sending password reset link',
+      error
+    )
+    return { statusCode: 500, message: 'Internal server error' }
+  }
+}
+
+const hashPassword = async (password: string): Promise<string> => {
+  return await bcrypt.hash(password, 10)
+}
+
+const saveProfile = async (
+  profile: Profile,
+  hashedPassword: string
+): Promise<void> => {
+  profile.password = hashedPassword
+  await dataSource.getRepository(Profile).save(profile)
+}
+
+export const resetPassword = async (
+  token: string,
+  newPassword: string
+): Promise<ApiResponse<string>> => {
+  if (!token || !newPassword) {
+    return { statusCode: 400, message: 'Missing parameters' }
+  }
+
+  let decoded
+  try {
+    decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
+  } catch (error) {
+    throw new Error('Invalid token')
+  }
+
+  const profileRepository = dataSource.getRepository(Profile)
+  const profile = await profileRepository.findOne({
+    where: { uuid: decoded.userId }
+  })
+
+  if (!profile) {
+    console.error('Error executing Reset Password: No profile found')
+    return { statusCode: 409, message: 'No profile found' }
+  }
+
+  const hashedPassword = await hashPassword(newPassword)
+  await saveProfile(profile, hashedPassword)
+  const content = getPasswordChangedEmailContent(profile.primary_email)
+  if (content) {
+    await sendResetPasswordEmail(
+      profile.primary_email,
+      content.subject,
+      content.message
+    )
+  }
+  return { statusCode: 200, message: 'Password reset successful' }
 }
