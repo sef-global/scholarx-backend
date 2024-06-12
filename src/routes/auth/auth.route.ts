@@ -23,7 +23,6 @@ authRouter.get(
 )
 
 authRouter.get('/google/callback', googleRedirect)
-
 authRouter.post('/password-reset-request', passwordResetRequest)
 authRouter.put('/passwordreset', passwordReset)
 export default authRouter
