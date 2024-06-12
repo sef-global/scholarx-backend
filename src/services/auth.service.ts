@@ -9,7 +9,7 @@ import {
   getPasswordChangedEmailContent
 } from '../utils'
 import { sendResetPasswordEmail } from './admin/email.service'
-import { type ResetPassword, type ResetToken } from '../types'
+import { type ApiResponse } from '../types'
 
 export const registerUser = async (
   email: string,
@@ -112,7 +112,7 @@ export const findOrCreateUser = async (
 
 export const generateResetToken = async (
   email: string
-): Promise<ResetToken> => {
+): Promise<ApiResponse<string>> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
     const profile = await profileRepository.findOne({
@@ -123,8 +123,7 @@ export const generateResetToken = async (
     if (!profile) {
       return {
         statusCode: 401,
-        message: 'Invalid email or password',
-        token: ''
+        message: 'Invalid email or password'
       }
     }
     const token = jwt.sign({ userId: profile.uuid }, JWT_SECRET, {
@@ -136,8 +135,7 @@ export const generateResetToken = async (
     }
     return {
       statusCode: 200,
-      message: 'Password reset link successfully sent to email',
-      token
+      message: 'Password reset link successfully sent to email'
     }
   } catch (error) {
     console.error(
@@ -163,7 +161,7 @@ const saveProfile = async (
 export const resetPassword = async (
   token: string,
   newPassword: string
-): Promise<ResetPassword> => {
+): Promise<ApiResponse<string>> => {
   if (!token || !newPassword) {
     return { statusCode: 400, message: 'Missing parameters' }
   }
@@ -185,24 +183,15 @@ export const resetPassword = async (
     return { statusCode: 409, message: 'No profile found' }
   }
 
-  try {
-    const hashedPassword = await hashPassword(newPassword)
-    await saveProfile(profile, hashedPassword)
-    const content = getPasswordChangedEmailContent(profile.primary_email)
-    if (content) {
-      await sendResetPasswordEmail(
-        profile.primary_email,
-        content.subject,
-        content.message
-      )
-    }
-  } catch (error) {
-    console.error(
-      'Error executing Reset Password: Error updating profile',
-      error
+  const hashedPassword = await hashPassword(newPassword)
+  await saveProfile(profile, hashedPassword)
+  const content = getPasswordChangedEmailContent(profile.primary_email)
+  if (content) {
+    await sendResetPasswordEmail(
+      profile.primary_email,
+      content.subject,
+      content.message
     )
-    return { statusCode: 500, message: 'Error updating profile' }
   }
-
   return { statusCode: 200, message: 'Password reset successful' }
 }

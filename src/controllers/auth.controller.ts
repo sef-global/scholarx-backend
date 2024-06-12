@@ -174,7 +174,7 @@ export const passwordResetRequest = async (
   }
 
   try {
-    const { statusCode, message, token } = await generateResetToken(email)
+    const { statusCode, message, data: token } = await generateResetToken(email)
     return res.status(statusCode).json({ message, token })
   } catch (err) {
     return res
@@ -196,8 +196,8 @@ export const passwordReset = async (
         .json({ error: 'Token and new password are required fields' })
       return
     }
-    const result = await resetPassword(token, newPassword)
-    res.status(result.statusCode).json({ message: result.message })
+    const { statusCode, message } = await resetPassword(token, newPassword)
+    res.status(statusCode).json({ message })
   } catch (err) {
     console.error('Error executing query', err)
     res.status(500).json({

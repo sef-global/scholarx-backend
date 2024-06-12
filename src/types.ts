@@ -26,14 +26,3 @@ export interface ApiResponse<T> {
 export interface User extends Express.User {
   primary_email: string
 }
-
-export interface ResetToken {
-  statusCode: number
-  message: string
-  token?: string
-}
-
-export interface ResetPassword {
-  statusCode: number
-  message: string
-}
