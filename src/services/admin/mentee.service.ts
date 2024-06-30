@@ -1,7 +1,7 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentee from '../../entities/mentee.entity'
 import Mentor from '../../entities/mentor.entity'
-import { ApplicationStatus, StatusUpdatedBy } from '../../enums'
+import { ApplicationStatus, type StatusUpdatedBy } from '../../enums'
 import { getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
