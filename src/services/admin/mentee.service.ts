@@ -1,7 +1,7 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentee from '../../entities/mentee.entity'
 import Mentor from '../../entities/mentor.entity'
-import { ApplicationStatus } from '../../enums'
+import { ApplicationStatus, type StatusUpdatedBy } from '../../enums'
 import { getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
@@ -80,7 +80,8 @@ export const getAllMenteesByMentor = async (
 
 export const updateStatus = async (
   menteeId: string,
-  state: ApplicationStatus
+  state: ApplicationStatus,
+  statusUpdatedBy: StatusUpdatedBy
 ): Promise<{
   statusCode: number
   updatedMenteeApplication?: Mentee
@@ -120,7 +121,14 @@ export const updateStatus = async (
         message: 'Mentee is already approved'
       }
     } else {
-      await menteeRepository.update({ uuid: menteeId }, { state })
+      await menteeRepository.update(
+        { uuid: menteeId },
+        {
+          state,
+          status_updated_by: statusUpdatedBy,
+          status_updated_date: new Date()
+        }
+      )
       const content = getEmailContent(
         'mentee',
         state,

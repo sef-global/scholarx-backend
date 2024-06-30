@@ -3,7 +3,7 @@ import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { ApplicationStatus } from '../enums'
-import { getEmailContent } from '../utils'
+import { getEmailContent, getMentorNotifyEmailContent } from '../utils'
 import { sendEmail } from './admin/email.service'
 
 export const addMentee = async (
@@ -82,11 +82,21 @@ export const addMentee = async (
       application.firstName as string
     )
 
+    const mentorContent = getMentorNotifyEmailContent(
+      mentor.application.firstName as string
+    )
+
     if (content) {
       await sendEmail(
         application.email as string,
         content.subject,
         content.message
+      )
+
+      await sendEmail(
+        mentor.application.email as string,
+        mentorContent.subject,
+        mentorContent.message
       )
     }
 

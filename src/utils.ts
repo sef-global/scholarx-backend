@@ -30,7 +30,7 @@ export const checkProfilePictureFileType = (
   file: Express.Multer.File,
   cb: multer.FileFilterCallback
 ): void => {
-  const filetypes = /jpeg|jpg|png|gif/
+  const filetypes = /jpeg|jpg|webp|png|gif/
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
   const mimetype = filetypes.test(file.mimetype)
 
@@ -88,7 +88,7 @@ export const getEmailContent = (
     switch (status) {
       case ApplicationStatus.PENDING:
         return {
-          subject: 'Your ScholarX Mentor Application Status',
+          subject: 'Thank you very much for applying to ScholarX',
           message: `Dear ${name},<br /><br />
           Thank you very much for applying to ScholarX. Your application has been received. Our team will soon review your application, and we will keep you posted on the progress via email. 
           Please reach out to us via <a href="mailto:sustainableedufoundation@gmail.com">sustainableedufoundation@gmail.com</a> for any clarifications.`
@@ -106,7 +106,7 @@ export const getEmailContent = (
         }
       case ApplicationStatus.REJECTED:
         return {
-          subject: 'ScholarX Mentor Application Status Update',
+          subject: 'Thank You for Your Interest in the ScholarX Program',
           message: `Dear ${name},<br /><br />
           I hope this email finds you well. I wanted to take a moment to thank you for your interest in joining ScholarX as a mentor and for submitting your application. We appreciate the time and effort you put into it.<br /><br />
           After careful review of your application and considering all of the candidates, we regret to inform you that we are unable to make you part of the mentor base at this time. We received a large number of qualified applicants, and unfortunately, we could only accept a limited number of mentors.<br /><br />
@@ -121,7 +121,7 @@ export const getEmailContent = (
     switch (status) {
       case ApplicationStatus.PENDING:
         return {
-          subject: 'Your ScholarX Mentee Application Status',
+          subject: 'Thank you very much for applying to ScholarX',
           message: `Dear ${name},<br /><br />
           Thank you very much for applying to ScholarX. Your application has been received. Mentor will soon review your application and we will keep you posted on the progress via email. Until then, read more about student experience <a href="https://medium.com/search?q=scholarx">here</a> and reach out to us via <a href="mailto:sustainableedufoundation@gmail.com">sustainableedufoundation@gmail.com</a> for any clarifications. `
         }
@@ -137,13 +137,13 @@ export const getEmailContent = (
         }
       case ApplicationStatus.REJECTED:
         return {
-          subject: 'ScholarX Mentee Application Status Update',
+          subject: 'Thank You for Your Interest in the ScholarX Program',
           message: `Dear ${name},<br /><br />
           We wanted to take a moment to thank you for your interest in the ScholarX program and for submitting your application. We appreciate the time and effort you put into it.<br /><br />
           After a careful review of your application and considering all of the candidates, we regret to inform you that we are unable to offer you admission at this time. We received a large number of qualified applicants, and unfortunately, we could only accept a limited number of students.<br /><br />
           However, we want to encourage you not to be discouraged by this decision. We recognize that the admissions process can be competitive, and we understand that this news may be disappointing. Please know that this does not reflect on your abilities, potential, or value as an individual.<br /><br />
           We do offer the possibility for you to apply again next time if you meet the eligibility criteria. We invite you to stay engaged with us by attending our events, reaching out to our admissions team, and taking advantage of any opportunities to connect with our current students and alumni.<br /><br />
-          Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours. `
+          Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours.`
         }
       default:
         return undefined
@@ -163,6 +163,20 @@ export const getPasswordResetEmailContent = (
     <a href="${CLIENT_URL}/resetpassword?token=${token}">Password Reset Link</a><br /><br />
     This link will expire in one hour. If you need to reset your password again, please submit a new request.<br /><br />
     If you have any questions, please contact our support team.<br /><br />
+    `
+  }
+}
+
+export const getMentorNotifyEmailContent = (
+  name: string
+): { subject: string; message: string } => {
+  return {
+    subject: 'New Mentee Application Received',
+    message: `Dear ${name},<br /><br />
+    We wanted to let you know that a new mentee has applied to be mentored by you through the ScholarX program. Please visit your dashboard to review their application at your earliest convenience.<br /><br />
+    If you have any questions or need assistance, feel free to reach out to us at sustainableedufoundation@gmail.com.
+    <br /><br />
+    Thank you for your continued support and commitment to the ScholarX program.<br /><br />
     `
   }
 }
