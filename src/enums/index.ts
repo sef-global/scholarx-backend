@@ -14,3 +14,8 @@ export enum ApplicationStatus {
   REJECTED = 'rejected',
   APPROVED = 'approved'
 }
+
+export enum StatusUpdatedBy {
+  ADMIN = 'admin',
+  MENTOR = 'mentor'
+}

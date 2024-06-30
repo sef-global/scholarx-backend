@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import { ApplicationStatus, ProfileTypes } from '../../enums'
+import { ApplicationStatus, ProfileTypes, StatusUpdatedBy } from '../../enums'
 import type Profile from '../../entities/profile.entity'
 import type Mentee from '../../entities/mentee.entity'
 import type { ApiResponse } from '../../types'
@@ -54,7 +54,11 @@ export const updateMenteeStatus = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    const { statusCode, message } = await updateStatus(menteeId, state)
+    const { statusCode, message } = await updateStatus(
+      menteeId,
+      state,
+      StatusUpdatedBy.ADMIN
+    )
     return res.status(statusCode).json({ message })
   } catch (err) {
     if (err instanceof Error) {

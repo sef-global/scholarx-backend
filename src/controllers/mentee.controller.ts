@@ -3,7 +3,7 @@ import { type ApiResponse } from '../types'
 import type Mentee from '../entities/mentee.entity'
 import type Profile from '../entities/profile.entity'
 import { getMentee, updateStatus } from '../services/admin/mentee.service'
-import { ApplicationStatus } from '../enums'
+import { ApplicationStatus, StatusUpdatedBy } from '../enums'
 import { addMentee } from '../services/mentee.service'
 
 export const menteeApplicationHandler = async (
@@ -48,7 +48,11 @@ export const updateMenteeStatus = async (
       return res.status(403).json({ message: 'Only mentors are allowed' })
     }
 
-    const { statusCode, message } = await updateStatus(menteeId, state)
+    const { statusCode, message } = await updateStatus(
+      menteeId,
+      state,
+      StatusUpdatedBy.MENTOR
+    )
     return res.status(statusCode).json({ message })
   } catch (err) {
     if (err instanceof Error) {
