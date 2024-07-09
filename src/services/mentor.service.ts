@@ -233,7 +233,10 @@ export const getAllMentors = async (
           }
         : { state: ApplicationStatus.APPROVED },
       relations: ['profile', 'category'],
-      select: ['application', 'uuid', 'availability']
+      select: ['application', 'uuid', 'availability'],
+      order: {
+        availability: 'DESC'
+      }
     })
 
     const publicMentors = mentors.map((mentor) => getMentorPublicData(mentor))
