@@ -229,10 +229,9 @@ export const getAllMentors = async (
       where: categoryId
         ? {
             category: { uuid: categoryId },
-            state: ApplicationStatus.APPROVED,
-            availability: true
+            state: ApplicationStatus.APPROVED
           }
-        : { state: ApplicationStatus.APPROVED, availability: true },
+        : { state: ApplicationStatus.APPROVED },
       relations: ['profile', 'category'],
       select: ['application', 'uuid', 'availability']
     })
