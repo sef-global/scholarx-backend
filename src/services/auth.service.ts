@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import { dataSource } from '../configs/dbConfig'
 import { JWT_SECRET } from '../configs/envConfig'
 import Profile from '../entities/profile.entity'
-import { CreateProfile, type ApiResponse } from '../types'
+import { type CreateProfile, type ApiResponse } from '../types'
 import {
   getPasswordChangedEmailContent,
   getPasswordResetEmailContent

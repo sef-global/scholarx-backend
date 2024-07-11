@@ -12,7 +12,7 @@ import {
 
 import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2'
 import { findOrCreateUser } from '../services/auth.service'
-import { CreateProfile, type User } from '../types'
+import { type CreateProfile, type User } from '../types'
 
 passport.use(
   new LinkedInStrategy(

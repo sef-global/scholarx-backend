@@ -12,7 +12,7 @@ import {
 
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { findOrCreateUser } from '../services/auth.service'
-import { CreateProfile, type User } from '../types'
+import { type CreateProfile, type User } from '../types'
 
 passport.use(
   new GoogleStrategy(
