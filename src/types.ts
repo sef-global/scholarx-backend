@@ -34,3 +34,11 @@ export interface CreateProfile {
   last_name: string
   image_url: string
 }
+
+export interface LinkedInProfile {
+  id: string
+  givenName: string
+  familyName: string
+  picture: string
+  email: string
+}

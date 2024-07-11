@@ -12,7 +12,7 @@ import {
 
 import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2'
 import { findOrCreateUser } from '../services/auth.service'
-import { type CreateProfile, type User } from '../types'
+import { type CreateProfile, type LinkedInProfile, type User } from '../types'
 
 passport.use(
   new LinkedInStrategy(
@@ -27,16 +27,17 @@ passport.use(
       req: Request,
       accessToken: string,
       refreshToken: string,
-      profile: any,
+      profile: passport.Profile,
       done: (err: Error | null, user?: Profile) => void
     ) {
       try {
+        const data = profile as unknown as LinkedInProfile
         const createProfile: CreateProfile = {
-          id: profile.id,
-          primary_email: profile?.email ?? '',
-          first_name: profile?.givenName ?? '',
-          last_name: profile?.familyName ?? '',
-          image_url: profile?.picture ?? ''
+          id: data.id,
+          primary_email: data?.email ?? '',
+          first_name: data?.givenName ?? '',
+          last_name: data?.familyName ?? '',
+          image_url: data?.picture ?? ''
         }
         const user = await findOrCreateUser(createProfile)
         done(null, user)
