@@ -81,7 +81,7 @@ export const createMentor = async (
 
     const savedMentor = await mentorRepository.save(newMentor)
 
-    const content = getEmailContent(
+    const content = await getEmailContent(
       'mentor',
       ApplicationStatus.PENDING,
       application.firstName as string

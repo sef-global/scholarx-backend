@@ -28,7 +28,7 @@ export const updateMentorStatus = async (
 
     await mentorRepository.update({ uuid: mentorId }, { state: status })
 
-    const content = getEmailContent(
+    const content = await getEmailContent(
       'mentor',
       status,
       mentor.application.firstName as string

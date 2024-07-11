@@ -111,7 +111,8 @@ export const updateStatus = async (
         profile: {
           uuid: profileUuid
         }
-      }
+      },
+      relations: ['mentor']
     })
 
     // Handle Approve status
@@ -129,17 +130,18 @@ export const updateStatus = async (
           status_updated_date: new Date()
         }
       )
-      const content = getEmailContent(
-        'mentee',
-        state,
-        mentee.application.firstName as string
-      )
+
+      const menteeName =
+        mentee.application.firstName + ' ' + mentee.application.lastName
+
+      const content = await getEmailContent('mentee', state, menteeName)
 
       if (content) {
         await sendEmail(
           mentee.application.email as string,
           content.subject,
-          content.message
+          content.message,
+          content.attachment
         )
       }
       return {
