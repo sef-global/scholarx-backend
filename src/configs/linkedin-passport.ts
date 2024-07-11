@@ -1,37 +1,44 @@
+import type { Request } from 'express'
 import passport from 'passport'
 import { Strategy as JwtStrategy } from 'passport-jwt'
-import { dataSource } from './dbConfig'
 import Profile from '../entities/profile.entity'
+import { dataSource } from './dbConfig'
 import {
   JWT_SECRET,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_REDIRECT_URL,
-  GOOGLE_CLIENT_SECRET
+  LINKEDIN_CLIENT_ID,
+  LINKEDIN_CLIENT_SECRET,
+  LINKEDIN_REDIRECT_URL
 } from './envConfig'
-import type { Request } from 'express'
 
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2'
 import { findOrCreateUser } from '../services/auth.service'
-import { type User } from '../types'
+import { CreateProfile, type User } from '../types'
 
 passport.use(
-  new GoogleStrategy(
+  new LinkedInStrategy(
     {
-      clientID: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: GOOGLE_REDIRECT_URL,
-      scope: ['profile', 'email'],
+      clientID: LINKEDIN_CLIENT_ID,
+      clientSecret: LINKEDIN_CLIENT_SECRET,
+      callbackURL: LINKEDIN_REDIRECT_URL,
+      scope: ['openid', 'email', 'profile'],
       passReqToCallback: true
     },
     async function (
       req: Request,
       accessToken: string,
       refreshToken: string,
-      profile: passport.Profile,
+      profile: any,
       done: (err: Error | null, user?: Profile) => void
     ) {
       try {
-        const user = await findOrCreateUser(profile)
+        const createProfile: CreateProfile = {
+          id: profile.id,
+          primary_email: profile?.email ?? '',
+          first_name: profile?.givenName ?? '',
+          last_name: profile?.familyName ?? '',
+          image_url: profile?.picture ?? ''
+        }
+        const user = await findOrCreateUser(createProfile)
         done(null, user)
       } catch (err) {
         done(err as Error)

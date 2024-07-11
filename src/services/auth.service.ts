@@ -1,15 +1,14 @@
-import { dataSource } from '../configs/dbConfig'
 import bcrypt from 'bcrypt'
-import Profile from '../entities/profile.entity'
-import type passport from 'passport'
 import jwt from 'jsonwebtoken'
+import { dataSource } from '../configs/dbConfig'
 import { JWT_SECRET } from '../configs/envConfig'
+import Profile from '../entities/profile.entity'
+import { CreateProfile, type ApiResponse } from '../types'
 import {
-  getPasswordResetEmailContent,
-  getPasswordChangedEmailContent
+  getPasswordChangedEmailContent,
+  getPasswordResetEmailContent
 } from '../utils'
 import { sendResetPasswordEmail } from './admin/email.service'
-import { type ApiResponse } from '../types'
 
 export const registerUser = async (
   email: string,
@@ -88,21 +87,22 @@ export const loginUser = async (
 }
 
 export const findOrCreateUser = async (
-  profile: passport.Profile
+  createProfileDto: CreateProfile
 ): Promise<Profile> => {
   const profileRepository = dataSource.getRepository(Profile)
+
   let user = await profileRepository.findOne({
-    where: { primary_email: profile.emails?.[0]?.value ?? '' },
-    relations: ['mentor', 'mentee']
+    where: { primary_email: createProfileDto.primary_email }
   })
+
   if (!user) {
-    const hashedPassword = await bcrypt.hash(profile.id, 10) // Use Google ID as password
+    const hashedPassword = await bcrypt.hash(createProfileDto.id, 10)
     user = profileRepository.create({
-      primary_email: profile.emails?.[0]?.value ?? '',
+      primary_email: createProfileDto.primary_email,
       password: hashedPassword,
-      first_name: profile.name?.givenName,
-      last_name: profile.name?.familyName,
-      image_url: profile.photos?.[0]?.value ?? ''
+      first_name: createProfileDto.first_name,
+      last_name: createProfileDto.last_name,
+      image_url: createProfileDto.image_url
     })
     await profileRepository.save(user)
   }
