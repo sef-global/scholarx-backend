@@ -8,9 +8,13 @@
     "start": "ts-node src/server.ts",
     "build": "tsc",
     "test": "jest",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --ignore-pattern /src/migrations",
     "lint:fix": "eslint . --ext .ts --fix",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "debug": "nodemon --watch 'src/**/*.ts' --exec ts-node-dev  --inspect --respawn src/server.ts",
+    "typeorm:db": "npm run build && npx typeorm -d dist/src/configs/dbConfig.js",
+    "migration:generate": "npm run typeorm:db -- migration:generate",
+    "migration:run": "npm run typeorm:db -- migration:run"
   },
   "author": "",
   "license": "ISC",
