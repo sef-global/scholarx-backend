@@ -12,5 +12,5 @@ export const dataSource = new DataSource({
   entities: [path.join(__dirname, '..', '**', '*.entity{.ts,.js}')],
   migrations: ['dist/src/migrations/*.js'],
   logging: false,
-  synchronize: true
+  synchronize: false
 })
