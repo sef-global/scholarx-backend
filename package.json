@@ -33,7 +33,8 @@
     "pg": "^8.10.0",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.9.1",
-    "typeorm": "^0.3.16"
+    "typeorm": "^0.3.16",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

@@ -10,5 +10,6 @@ export const dataSource = new DataSource({
   database: DB_NAME,
   entities: ['src/entities/*.ts'],
   logging: false,
-  synchronize: true
+  synchronize: true,
+  ssl: true
 })

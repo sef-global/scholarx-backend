@@ -7,6 +7,7 @@ import multer from 'multer'
 import ejs from 'ejs'
 import { ApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
+import { v4 as uuidv4 } from 'uuid'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
@@ -157,7 +158,7 @@ export const getEmailContent = async (
         const pdfFileName = await generateCertificate(
           name,
           './src/certificates/certificate_template.pdf',
-          `./src/certificates/${name}_certificate.pdf`
+          `./src/certificates/${uuidv4()}_certificate.pdf`
         )
         return {
           subject: 'Congratulations! You have completed ScholarX',
