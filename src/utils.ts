@@ -90,6 +90,7 @@ export const getEmailContent = async (
       subject: string
       message: string
       attachment?: Array<{ filename: string; path: string }>
+      uniqueId?: string
     }
   | undefined
 > => {
@@ -155,10 +156,11 @@ export const getEmailContent = async (
           Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours.`
         }
       case ApplicationStatus.COMPLETED: {
+        const uniqueId = uuidv4()
         const pdfFileName = await generateCertificate(
           name,
           './src/certificates/certificate_template.pdf',
-          `./src/certificates/${uuidv4()}_certificate.pdf`
+          `./src/certificates/mentee/${uniqueId}_certificate.pdf`
         )
         return {
           subject: 'Congratulations! You have completed ScholarX',
@@ -173,7 +175,8 @@ export const getEmailContent = async (
               filename: `${name}_certificate.pdf`,
               path: pdfFileName
             }
-          ]
+          ],
+          uniqueId
         }
       }
       default:

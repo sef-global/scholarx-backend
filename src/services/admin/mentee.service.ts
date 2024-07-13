@@ -115,6 +115,19 @@ export const updateStatus = async (
       relations: ['mentor']
     })
 
+    const menteeName =
+      mentee.application.firstName + ' ' + mentee.application.lastName
+
+    const content = await getEmailContent('mentee', state, menteeName)
+
+    if (content) {
+      await sendEmail(
+        mentee.application.email as string,
+        content.subject,
+        content.message,
+        content.attachment
+      )
+    }
     // Handle Approve status
     if (approvedApplications && state === 'approved') {
       return {
@@ -127,23 +140,10 @@ export const updateStatus = async (
         {
           state,
           status_updated_by: statusUpdatedBy,
-          status_updated_date: new Date()
+          status_updated_date: new Date(),
+          certificate_id: content?.uniqueId
         }
       )
-
-      const menteeName =
-        mentee.application.firstName + ' ' + mentee.application.lastName
-
-      const content = await getEmailContent('mentee', state, menteeName)
-
-      if (content) {
-        await sendEmail(
-          mentee.application.email as string,
-          content.subject,
-          content.message,
-          content.attachment
-        )
-      }
       return {
         statusCode: 200,
         message: 'Mentee application state successfully updated'
