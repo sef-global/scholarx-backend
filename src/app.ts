@@ -1,21 +1,22 @@
-import express from 'express'
-import type { Express } from 'express'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import { dataSource } from './configs/dbConfig'
-import authRouter from './routes/auth/auth.route'
-import profileRouter from './routes/profile/profile.route'
-import adminRouter from './routes/admin/admin.route'
-import mentorRouter from './routes/mentor/mentor.route'
-import categoryRouter from './routes/category/category.route'
+import type { Express } from 'express'
+import express from 'express'
+import fs from 'fs'
 import passport from 'passport'
+import { dataSource } from './configs/dbConfig'
+import { CLIENT_URL } from './configs/envConfig'
 import './configs/google-passport'
 import './configs/linkedin-passport'
-import { CLIENT_URL } from './configs/envConfig'
-import cookieParser from 'cookie-parser'
-import menteeRouter from './routes/mentee/mentee.route'
-import fs from 'fs'
+import adminRouter from './routes/admin/admin.route'
+import authRouter from './routes/auth/auth.route'
+import categoryRouter from './routes/category/category.route'
 import emailRouter from './routes/emails/emails.route'
+import menteeRouter from './routes/mentee/mentee.route'
+import mentorRouter from './routes/mentor/mentor.route'
+import profileRouter from './routes/profile/profile.route'
+import seedRouter from './routes/seeds/seeds.route'
 
 const app = express()
 const staticFolder = 'uploads'
@@ -43,6 +44,7 @@ app.use('/api/mentors', mentorRouter)
 app.use('/api/mentees', menteeRouter)
 app.use('/api/categories', categoryRouter)
 app.use('/api/emails', emailRouter)
+app.use('/api/seeds', seedRouter)
 
 if (!fs.existsSync(staticFolder)) {
   fs.mkdirSync(staticFolder, { recursive: true })
