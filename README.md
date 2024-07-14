@@ -251,3 +251,25 @@ process.env.GOOGLE_REDIRECT_URL = 'your-redirect-uri';
 
 
 We appreciate your interest in ScholarX. Happy contributing! If you have any questions or need assistance, please don't hesitate to reach out to us.
+
+## Setting up LinkedIn Authentication
+
+1. Create LinkedIn page with the mandatory information.
+
+2. Navigate to https://developer.linkedin.com/
+
+3. Select "Create App":
+   - Add App name.
+   - Search for the LinkedIn page that was previously created.
+   - Upload an image as a Logo.
+   - Create the App.
+
+4. In Products section select `Share on LinkedIn` and `Sign In with LinkedIn using OpenID Connect` request access.
+
+5. In Auth section edit the `Authorized redirect URLs for your app` and add the redirect url. `http://localhost:3000/api/auth/linkedin/callback`
+
+6. Copy Client Id and Client Secret from the Auth Section.
+
+6. In setting section verify the LinkedIn Page and generate URL.
+
+7. Verify it from your account.

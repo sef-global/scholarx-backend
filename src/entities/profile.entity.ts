@@ -13,7 +13,7 @@ class Profile extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   first_name: string
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   last_name: string
 
   @Column({ type: 'varchar', length: 255 })

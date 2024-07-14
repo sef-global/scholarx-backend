@@ -37,9 +37,9 @@ export const getEmailTemplateById = async (
   message: string
 }> => {
   try {
-    const emailRepositroy = dataSource.getRepository(EmailTemplate)
+    const emailRepository = dataSource.getRepository(EmailTemplate)
 
-    const emailTemplate = await emailRepositroy.findOne({
+    const emailTemplate = await emailRepository.findOne({
       where: { uuid: templateId },
       select: ['uuid', 'content', 'subject']
     })
@@ -59,5 +59,37 @@ export const getEmailTemplateById = async (
   } catch (err) {
     console.error('Error getting email template', err)
     throw new Error('Error getting email template')
+  }
+}
+
+export const deleteEmailTemplateById = async (
+  templateId: string
+): Promise<{
+  statusCode: number
+  message: string
+}> => {
+  try {
+    const emailRepository = dataSource.getRepository(EmailTemplate)
+
+    const emailTemplate = await emailRepository.findOne({
+      where: { uuid: templateId }
+    })
+
+    if (!emailTemplate) {
+      return {
+        statusCode: 404,
+        message: 'Email template not found'
+      }
+    }
+
+    await emailRepository.remove(emailTemplate)
+
+    return {
+      statusCode: 200,
+      message: 'Email template deleted successfully'
+    }
+  } catch (err) {
+    console.error('Error deleting email template', err)
+    throw new Error('Error deleting email template')
   }
 }
