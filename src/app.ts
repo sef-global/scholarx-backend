@@ -16,7 +16,6 @@ import emailRouter from './routes/emails/emails.route'
 import menteeRouter from './routes/mentee/mentee.route'
 import mentorRouter from './routes/mentor/mentor.route'
 import profileRouter from './routes/profile/profile.route'
-import seedRouter from './routes/seeds/seeds.route'
 
 const app = express()
 const staticFolder = 'uploads'
@@ -44,7 +43,6 @@ app.use('/api/mentors', mentorRouter)
 app.use('/api/mentees', menteeRouter)
 app.use('/api/categories', categoryRouter)
 app.use('/api/emails', emailRouter)
-app.use('/api/seeds', seedRouter)
 
 if (!fs.existsSync(staticFolder)) {
   fs.mkdirSync(staticFolder, { recursive: true })
