@@ -158,7 +158,7 @@ export const seedDatabaseService = async (): Promise<{
   }
 }
 
-const createRandomProfile = () => {
+const createRandomProfile = (): Profile => {
   const profile = {
     primary_email: faker.internet.email(),
     first_name: faker.person.firstName(),
