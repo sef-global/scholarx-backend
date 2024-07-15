@@ -7,7 +7,7 @@ import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import Platform from '../entities/platform.entity'
 import Profile from '../entities/profile.entity'
-import { EmailStatusTypes, ProfileTypes } from '../enums'
+import { ApplicationStatus, EmailStatusTypes, ProfileTypes } from '../enums'
 
 export const seedDatabaseService = async (): Promise<{
   statusCode: number
@@ -40,7 +40,7 @@ export const seedDatabaseService = async (): Promise<{
       count: 100
     })
 
-    profileRepository.save(genProfiles)
+    const profiles = await profileRepository.save(genProfiles)
 
     const genEmails = faker.helpers.multiple(
       () => {
@@ -82,7 +82,7 @@ export const seedDatabaseService = async (): Promise<{
         count: 100
       }
     )
-    categoryRepository.save(genCategories)
+    const categories = await categoryRepository.save(genCategories)
 
     const genPlatforms = faker.helpers.multiple(
       () => {
@@ -103,6 +103,42 @@ export const seedDatabaseService = async (): Promise<{
     )
 
     platformRepository.save(genPlatforms)
+
+    const genMentors = (
+      categories: Category[],
+      profiles: Profile[]
+    ): Mentor[] => {
+      const firstTenProfiles = profiles.slice(0, 10)
+
+      return firstTenProfiles.map((profile, index) => {
+        const category = categories[index]
+        return createMentor(category, profile)
+      })
+    }
+    const mentorsEntities = genMentors(categories, profiles)
+    const mentors = await mentorRepository.save(mentorsEntities)
+
+    const genMentees = (mentors: Mentor[], profiles: Profile[]): Mentee[] => {
+      const lastProfilesWithoutFirstTen = profiles.slice(10, profiles.length)
+
+      return lastProfilesWithoutFirstTen.map((profile, index) => {
+        const mentor =
+          mentors[faker.number.int({ min: 0, max: mentors.length - 1 })]
+        return new Mentee(
+          faker.helpers.enumValue(ApplicationStatus),
+          {
+            name: faker.lorem.word(),
+            email: faker.internet.email()
+          },
+          profile,
+          mentor
+        )
+      })
+    }
+
+    const menteesEntities = genMentees(mentors, profiles)
+
+    await menteeRepository.save(menteesEntities)
 
     await queryRunner.commitTransaction()
 
@@ -133,4 +169,17 @@ const createRandomProfile = () => {
   }
 
   return profile
+}
+
+const createMentor = (category: Category, profile: Profile): Mentor => {
+  return {
+    state: faker.helpers.enumValue(ApplicationStatus),
+    category: category,
+    application: {
+      name: faker.lorem.word(),
+      email: faker.internet.email()
+    },
+    availability: faker.datatype.boolean(),
+    profile: profile
+  } as unknown as Mentor
 }
