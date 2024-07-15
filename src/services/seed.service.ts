@@ -9,25 +9,16 @@ import Platform from '../entities/platform.entity'
 import Profile from '../entities/profile.entity'
 import { ApplicationStatus, EmailStatusTypes, ProfileTypes } from '../enums'
 
-export const seedDatabaseService = async (): Promise<{
-  statusCode: number
-  message: string
-}> => {
-  const queryRunner = dataSource.createQueryRunner()
-  await queryRunner.connect()
-  await queryRunner.startTransaction()
-
+export const seedDatabaseService = async () => {
   try {
-    const profileRepository = queryRunner.manager.getRepository(Profile)
-    const categoryRepository = queryRunner.manager.getRepository(Category)
-    const emailRepository = queryRunner.manager.getRepository(Email)
-    const emailTemplateRepository =
-      queryRunner.manager.getRepository(EmailTemplate)
-    const menteeRepository = queryRunner.manager.getRepository(Mentee)
-    const mentorRepository = queryRunner.manager.getRepository(Mentor)
-    const platformRepository = queryRunner.manager.getRepository(Platform)
+    const profileRepository = dataSource.getRepository(Profile)
+    const categoryRepository = dataSource.getRepository(Category)
+    const emailRepository = dataSource.getRepository(Email)
+    const emailTemplateRepository = dataSource.getRepository(EmailTemplate)
+    const menteeRepository = dataSource.getRepository(Mentee)
+    const mentorRepository = dataSource.getRepository(Mentor)
+    const platformRepository = dataSource.getRepository(Platform)
 
-    // Find and remove existing data
     await menteeRepository.remove(await menteeRepository.find())
     await mentorRepository.remove(await mentorRepository.find())
     await profileRepository.remove(await profileRepository.find())
@@ -139,22 +130,8 @@ export const seedDatabaseService = async (): Promise<{
     const menteesEntities = genMentees(mentors, profiles)
 
     await menteeRepository.save(menteesEntities)
-
-    await queryRunner.commitTransaction()
-
-    return {
-      statusCode: 200,
-      message: 'Successfully seeded the database'
-    }
   } catch (err) {
     console.log(err)
-    await queryRunner.rollbackTransaction()
-    return {
-      statusCode: 500,
-      message: 'Internal server error'
-    }
-  } finally {
-    await queryRunner.release()
   }
 }
 
@@ -183,3 +160,5 @@ const createMentor = (category: Category, profile: Profile): Mentor => {
     profile: profile
   } as unknown as Mentor
 }
+
+seedDatabaseService()
