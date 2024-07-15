@@ -56,7 +56,7 @@ export const seedDatabaseService = async (): Promise<{
       }
     )
 
-    emailRepository.save(genEmails)
+    await emailRepository.save(genEmails)
 
     const genEmailTemplates = faker.helpers.multiple(
       () => {
@@ -70,7 +70,7 @@ export const seedDatabaseService = async (): Promise<{
       }
     )
 
-    emailTemplateRepository.save(genEmailTemplates)
+    await emailTemplateRepository.save(genEmailTemplates)
 
     const genCategories = faker.helpers.multiple(
       () => {
@@ -102,7 +102,7 @@ export const seedDatabaseService = async (): Promise<{
       }
     )
 
-    platformRepository.save(genPlatforms)
+    await platformRepository.save(genPlatforms)
 
     const genMentors = (
       categories: Category[],
