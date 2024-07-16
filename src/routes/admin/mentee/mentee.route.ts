@@ -11,8 +11,6 @@ const menteeRouter = express.Router()
 
 menteeRouter.get('/', requireAuth, getMentees)
 menteeRouter.get('/emails', requireAuth, getAllMenteeEmails)
-// TODO: Remove this route
-// menteeRouter.get('/applications', requireAuth, getMentees)
 menteeRouter.get('/:menteeId', requireAuth, getMenteeDetails)
 menteeRouter.put('/:menteeId/state', requireAuth, updateMenteeStatus)
 
