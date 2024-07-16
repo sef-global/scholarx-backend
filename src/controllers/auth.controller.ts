@@ -36,6 +36,30 @@ export const googleRedirect = async (
   )(req, res, next)
 }
 
+export const linkedinRedirect = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  passport.authenticate(
+    'linkedin',
+    { failureRedirect: '/login' },
+    (err: Error, user: Profile) => {
+      if (err) {
+        next(err)
+        return
+      }
+      if (!user) {
+        res.redirect('/login')
+        return
+      }
+      signAndSetCookie(res, user.uuid)
+
+      res.redirect(process.env.CLIENT_URL ?? '/')
+    }
+  )(req, res, next)
+}
+
 export const register = async (
   req: Request,
   res: Response

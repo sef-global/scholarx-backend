@@ -1,13 +1,14 @@
 import express from 'express'
+import passport from 'passport'
 import {
-  register,
+  googleRedirect,
+  linkedinRedirect,
   login,
   logout,
-  googleRedirect,
+  passwordReset,
   passwordResetRequest,
-  passwordReset
+  register
 } from '../../controllers/auth.controller'
-import passport from 'passport'
 
 const authRouter = express.Router()
 
@@ -22,7 +23,15 @@ authRouter.get(
   })
 )
 
+authRouter.get(
+  '/linkedin',
+  passport.authenticate('linkedin', {
+    scope: ['openid', 'email', 'profile']
+  })
+)
+
 authRouter.get('/google/callback', googleRedirect)
+authRouter.get('/linkedin/callback', linkedinRedirect)
 authRouter.post('/password-reset-request', passwordResetRequest)
 authRouter.put('/passwordreset', passwordReset)
 export default authRouter
