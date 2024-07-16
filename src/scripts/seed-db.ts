@@ -11,6 +11,7 @@ import { ApplicationStatus, EmailStatusTypes, ProfileTypes } from '../enums'
 
 export const seedDatabaseService = async (): Promise<string> => {
   try {
+    await dataSource.initialize()
     const profileRepository = dataSource.getRepository(Profile)
     const categoryRepository = dataSource.getRepository(Category)
     const emailRepository = dataSource.getRepository(Email)
@@ -164,14 +165,6 @@ const createMentor = (category: Category, profile: Profile): Mentor => {
   } as unknown as Mentor
 }
 
-dataSource
-  .initialize()
-  .then(() => {
-    console.log('DB connection is successful')
-  })
-  .catch((err) => {
-    console.log('DB connection was not successful', err)
-  })
 seedDatabaseService()
   .then((res) => {
     console.log(res)
