@@ -9,7 +9,7 @@ import Platform from '../entities/platform.entity'
 import Profile from '../entities/profile.entity'
 import { ApplicationStatus, EmailStatusTypes, ProfileTypes } from '../enums'
 
-export const seedDatabaseService = async () => {
+export const seedDatabaseService = async (): Promise<string> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
     const categoryRepository = dataSource.getRepository(Category)
@@ -130,8 +130,11 @@ export const seedDatabaseService = async () => {
     const menteesEntities = genMentees(mentors, profiles)
 
     await menteeRepository.save(menteesEntities)
+
+    return 'Database seeded successfully'
   } catch (err) {
-    console.log(err)
+    console.error(err)
+    throw err
   }
 }
 
@@ -161,4 +164,18 @@ const createMentor = (category: Category, profile: Profile): Mentor => {
   } as unknown as Mentor
 }
 
+dataSource
+  .initialize()
+  .then(() => {
+    console.log('DB connection is successful')
+  })
+  .catch((err) => {
+    console.log('DB connection was not successful', err)
+  })
 seedDatabaseService()
+  .then((res) => {
+    console.log(res)
+  })
+  .catch((err) => {
+    console.error(err)
+  })
