@@ -2,10 +2,8 @@ import { faker } from '@faker-js/faker'
 import { dataSource } from '../configs/dbConfig'
 import Category from '../entities/category.entity'
 import Email from '../entities/email.entity'
-import EmailTemplate from '../entities/emailTemplate.entity'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
-import Platform from '../entities/platform.entity'
 import Profile from '../entities/profile.entity'
 import { ApplicationStatus, EmailStatusTypes, ProfileTypes } from '../enums'
 
@@ -15,18 +13,14 @@ export const seedDatabaseService = async (): Promise<string> => {
     const profileRepository = dataSource.getRepository(Profile)
     const categoryRepository = dataSource.getRepository(Category)
     const emailRepository = dataSource.getRepository(Email)
-    const emailTemplateRepository = dataSource.getRepository(EmailTemplate)
     const menteeRepository = dataSource.getRepository(Mentee)
     const mentorRepository = dataSource.getRepository(Mentor)
-    const platformRepository = dataSource.getRepository(Platform)
 
     await menteeRepository.remove(await menteeRepository.find())
     await mentorRepository.remove(await mentorRepository.find())
     await profileRepository.remove(await profileRepository.find())
-    await platformRepository.remove(await platformRepository.find())
     await categoryRepository.remove(await categoryRepository.find())
     await emailRepository.remove(await emailRepository.find())
-    await emailTemplateRepository.remove(await emailTemplateRepository.find())
 
     const genProfiles = faker.helpers.multiple(createRandomProfile, {
       count: 100
@@ -44,25 +38,11 @@ export const seedDatabaseService = async (): Promise<string> => {
         }
       },
       {
-        count: 100
+        count: 30
       }
     )
 
     await emailRepository.save(genEmails)
-
-    const genEmailTemplates = faker.helpers.multiple(
-      () => {
-        return {
-          subject: faker.lorem.sentence(),
-          content: faker.lorem.paragraph()
-        }
-      },
-      {
-        count: 100
-      }
-    )
-
-    await emailTemplateRepository.save(genEmailTemplates)
 
     const genCategories = faker.helpers.multiple(
       () => {
@@ -71,39 +51,18 @@ export const seedDatabaseService = async (): Promise<string> => {
         }
       },
       {
-        count: 100
+        count: 8
       }
     )
     const categories = await categoryRepository.save(genCategories)
-
-    const genPlatforms = faker.helpers.multiple(
-      () => {
-        return {
-          description: faker.lorem.sentence(),
-          mentor_questions: {
-            name: faker.lorem.word(),
-            email: faker.internet.email()
-          } as unknown as JSON,
-          image_url: faker.image.url(),
-          landing_page_url: faker.internet.url(),
-          title: faker.lorem.word()
-        }
-      },
-      {
-        count: 100
-      }
-    )
-
-    await platformRepository.save(genPlatforms)
 
     const genMentors = (
       categories: Category[],
       profiles: Profile[]
     ): Mentor[] => {
-      const firstTenProfiles = profiles.slice(0, 10)
-
-      return firstTenProfiles.map((profile, index) => {
-        const category = categories[index]
+      return profiles.slice(0, 40).map((profile) => {
+        const category =
+          categories[faker.number.int({ min: 0, max: categories.length - 1 })]
         return createMentor(category, profile)
       })
     }
@@ -111,16 +70,28 @@ export const seedDatabaseService = async (): Promise<string> => {
     const mentors = await mentorRepository.save(mentorsEntities)
 
     const genMentees = (mentors: Mentor[], profiles: Profile[]): Mentee[] => {
-      const lastProfilesWithoutFirstTen = profiles.slice(10, profiles.length)
-
-      return lastProfilesWithoutFirstTen.map((profile, index) => {
+      return profiles.slice(40, profiles.length).map((profile) => {
         const mentor =
           mentors[faker.number.int({ min: 0, max: mentors.length - 1 })]
         return new Mentee(
           faker.helpers.enumValue(ApplicationStatus),
           {
-            name: faker.lorem.word(),
-            email: faker.internet.email()
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
+            email: faker.internet.email(),
+            contactNo: faker.phone.number(),
+            profilePic: faker.image.avatar(),
+            cv: faker.internet.url(),
+            isUndergrad: true,
+            consentGiven: true,
+            graduatedYear: faker.number.int({
+              min: 1980,
+              max: new Date().getFullYear()
+            }),
+            university: faker.company.name() + ' University',
+            yearOfStudy: faker.number.int({ min: 1, max: 4 }),
+            course: faker.person.jobType(),
+            submission: faker.internet.url()
           },
           profile,
           mentor
@@ -145,7 +116,7 @@ const createRandomProfile = (): Partial<Profile> => {
     first_name: faker.person.firstName(),
     last_name: faker.person.lastName(),
     image_url: faker.image.avatar(),
-    type: faker.helpers.enumValue(ProfileTypes),
+    type: ProfileTypes.DEFAULT,
     password: '12345'
   }
 
@@ -157,7 +128,29 @@ const createMentor = (category: Category, profile: Profile): Mentor => {
     state: faker.helpers.enumValue(ApplicationStatus),
     category: category,
     application: {
-      name: faker.lorem.word(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.firstName(),
+      contactNo: faker.phone.number(),
+      country: faker.location.country(),
+      position: faker.person.jobTitle(),
+      expertise: faker.lorem.words({ min: 1, max: 3 }),
+      bio: faker.person.bio(),
+      isPastMentor: true,
+      reasonToMentor: null,
+      motivation: null,
+      cv: null,
+      menteeExpectations: faker.lorem.paragraphs({ min: 1, max: 2 }),
+      mentoringPhilosophy: faker.lorem.paragraphs({ min: 1, max: 2 }),
+      noOfMentees: faker.number.int({ min: 1, max: 10 }),
+      canCommit: true,
+      mentoredYear: faker.number.int({
+        min: 2019,
+        max: new Date().getFullYear()
+      }),
+      category: category.uuid,
+      institution: faker.company.name(),
+      linkedin: faker.internet.url(),
+      website: faker.internet.url(),
       email: faker.internet.email()
     },
     availability: faker.datatype.boolean(),
