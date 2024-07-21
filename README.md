@@ -20,8 +20,8 @@ We welcome contributions to make ScholarX even better! Feel free to send us a pu
 
 Before you can start using this project, make sure you have the following installed on your machine:
 
-- Node.js (version 14 or later)
-- npm (version 6 or later)
+- Node.js (version 18 or later)
+- npm (version 9 or later)
 
 ## Getting Started
 
@@ -69,29 +69,27 @@ If you prefer to use Docker for development, follow these steps:
 
 2. Build the Docker images:
 
-```docker-compose build```
+`docker-compose build`
 
 3. Start the Docker containers:
 
-```docker-compose up```
+`docker-compose up`
 
-4. The application and its services are now running in Docker containers. You can access the application at ```http://localhost:${SERVER_PORT}```, where ```SERVER_PORT``` is the port number specified in your ```.env``` file.
+4. The application and its services are now running in Docker containers. You can access the application at `http://localhost:${SERVER_PORT}`, where `SERVER_PORT` is the port number specified in your `.env` file.
 
 5. To stop the Docker containers, use the following commnd:
 
-```docker-compose down```
+`docker-compose down`
 
-Please note that the Docker Compose setup assumes that you have a ```.env``` file in your project root. You can create one by copying the ```.env.example``` file:
+Please note that the Docker Compose setup assumes that you have a `.env` file in your project root. You can create one by copying the `.env.example` file:
 
-```cp .env.example .env```
+`cp .env.example .env`
 
-Then, replace the environment variables in the newly created ```.env``` file with your configuration.
+Then, replace the environment variables in the newly created `.env` file with your configuration.
 
-The environment directive sets environment variables inside the Docker container. These variables are used to configure the PostgreSQL server. The values for ```${DB_USER}```, ```${DB_PASSWORD}```, and ```${DB_NAME}``` should be specified in your .env file.
+The environment directive sets environment variables inside the Docker container. These variables are used to configure the PostgreSQL server. The values for `${DB_USER}`, `${DB_PASSWORD}`, and `${DB_NAME}` should be specified in your .env file.
 
-
-Remember to replace ```${SERVER_PORT}``` with the actual port number if it's a fixed value. If it's specified in the ```.env``` file, you can leave it as is.
-
+Remember to replace `${SERVER_PORT}` with the actual port number if it's a fixed value. If it's specified in the `.env` file, you can leave it as is.
 
 In the `docker-compose.yml` file, we also have a `db` service for the PostgreSQL database:
 
@@ -106,16 +104,15 @@ db:
     - POSTGRES_DB=${DB_NAME}
 ```
 
-This service uses the official postgres:15 Docker image. The ports directive maps port 5432 inside the Docker container to port 5432 on your host machine, allowing you to connect to the PostgreSQL server at ```localhost:5432```.
+This service uses the official postgres:15 Docker image. The ports directive maps port 5432 inside the Docker container to port 5432 on your host machine, allowing you to connect to the PostgreSQL server at `localhost:5432`.
 
-Now, you can connect to the PostgreSQL server running inside the Docker container using a database client. Use ```localhost:5432``` as the server address, and the ```${DB_USER}```, ```${DB_PASSWORD}```, and ```${DB_NAME}``` values from your ```.env``` file for the username, password, and database name, respectively.
+Now, you can connect to the PostgreSQL server running inside the Docker container using a database client. Use `localhost:5432` as the server address, and the `${DB_USER}`, `${DB_PASSWORD}`, and `${DB_NAME}` values from your `.env` file for the username, password, and database name, respectively.
 
-### Note 
+### Note
 
 If you have a local PostgreSQL server running on port 5432, you will need to stop it before starting the Docker container, or change the port mapping to avoid a conflict.
 
-
-Remember to replace ```${SERVER_PORT}``` with the actual port number if it's a fixed value. If it's specified in the ```.env``` file, you can leave it as is.
+Remember to replace `${SERVER_PORT}` with the actual port number if it's a fixed value. If it's specified in the `.env` file, you can leave it as is.
 
 ---
 
@@ -172,6 +169,7 @@ scholarx-backend/
 - `tsconfig.json`: Configuration file for the TypeScript compiler.
 
 ## Setting up Google Authentication
+
 1. Open Google Cloud Console:
 
 Visit https://console.cloud.google.com
@@ -200,22 +198,23 @@ Once the details are filled, click the "Create" button at the bottom.
 
 Google Cloud Platform will now create your project. This might take a few moments.
 
-
 ## Enabling Google+ API for the Project
+
 1. Navigate to the Google Cloud Console.
-Select your project using the project selector at the top.
-In the left navigation pane, click on "APIs & Services" and then click on "Library."
+   Select your project using the project selector at the top.
+   In the left navigation pane, click on "APIs & Services" and then click on "Library."
 
 2. Search for "Google+ API" in the library.
 
 3. Click on the Google+ API and then click the "Enable" button.
 
 ## Create OAuth Consent Screen
-1. Navigate to the API & Services Dashboard:
-Open the Google Cloud Console.
-Select your project.
 
-3. Open the API & Services Dashboard:
+1. Navigate to the API & Services Dashboard:
+   Open the Google Cloud Console.
+   Select your project.
+
+2. Open the API & Services Dashboard:
 
 In the left navigation pane, click on "APIs & Services" and then click on "Credentials."
 
@@ -225,22 +224,23 @@ Click on "Create Credentials" and choose "OAuth consent screen."
 Fill in the required details for your OAuth consent screen, such as product name, user support email, and developer contact information.
 
 5. Save and Continue:
-Save the consent screen configuration.
-
+   Save the consent screen configuration.
 
 ## Create OAuth Client ID Credentials
+
 1. Navigate to the API & Services Dashboard:
-In the "Credentials" page, click on "Create Credentials" and choose "OAuth client ID."
-Configure OAuth Client ID:
-Select the application type and
-Enter a name for your client ID.
-Configure the authorized redirect URIs.
+   In the "Credentials" page, click on "Create Credentials" and choose "OAuth client ID."
+   Configure OAuth Client ID:
+   Select the application type and
+   Enter a name for your client ID.
+   Configure the authorized redirect URIs.
 
 2. Save Credentials:
 
 Click "Create" to generate your OAuth client ID and client secret.
 
 ## Set Environment Variables
+
 After obtaining the OAuth client ID and client secret,set the environment variables in your application to use these credentials.
 
 Ex:
@@ -248,7 +248,6 @@ Ex:
 process.env.GOOGLE_CLIENT_ID = 'your-client-id';
 process.env.GOOGLE_CLIENT_SECRET = 'your-client-secret';
 process.env.GOOGLE_REDIRECT_URL = 'your-redirect-uri';
-
 
 We appreciate your interest in ScholarX. Happy contributing! If you have any questions or need assistance, please don't hesitate to reach out to us.
 
@@ -259,6 +258,7 @@ We appreciate your interest in ScholarX. Happy contributing! If you have any que
 2. Navigate to https://developer.linkedin.com/
 
 3. Select "Create App":
+
    - Add App name.
    - Search for the LinkedIn page that was previously created.
    - Upload an image as a Logo.
@@ -270,6 +270,14 @@ We appreciate your interest in ScholarX. Happy contributing! If you have any que
 
 6. Copy Client Id and Client Secret from the Auth Section.
 
-6. In setting section verify the LinkedIn Page and generate URL.
+7. In setting section verify the LinkedIn Page and generate URL.
 
-7. Verify it from your account.
+8. Verify it from your account.
+
+## Create dummy data
+
+1. Run the seeding script:
+
+   ```bash
+   npm run seed
+   ```
