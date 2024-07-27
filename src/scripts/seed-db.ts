@@ -126,7 +126,7 @@ const createRandomProfile = (): Partial<Profile> => {
 const createMentor = (category: Category, profile: Profile): Mentor => {
   return {
     state: faker.helpers.enumValue(ApplicationStatus),
-    category: category,
+    category,
     application: {
       firstName: faker.person.firstName(),
       lastName: faker.person.firstName(),
@@ -154,7 +154,7 @@ const createMentor = (category: Category, profile: Profile): Mentor => {
       email: faker.internet.email()
     },
     availability: faker.datatype.boolean(),
-    profile: profile
+    profile
   } as unknown as Mentor
 }
 
