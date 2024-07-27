@@ -1,6 +1,6 @@
-import { DataSource } from 'typeorm'
-import { DB_PASSWORD, DB_HOST, DB_PORT, DB_USER, DB_NAME } from './envConfig'
 import path from 'path'
+import { DataSource } from 'typeorm'
+import { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } from './envConfig'
 
 export const dataSource = new DataSource({
   type: 'postgres',
