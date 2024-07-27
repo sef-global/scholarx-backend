@@ -1,14 +1,14 @@
 import type { Request, Response } from 'express'
-import { ApplicationStatus, ProfileTypes, StatusUpdatedBy } from '../../enums'
-import type Profile from '../../entities/profile.entity'
 import type Mentee from '../../entities/mentee.entity'
-import type { ApiResponse } from '../../types'
+import type Profile from '../../entities/profile.entity'
+import { ApplicationStatus, ProfileTypes, StatusUpdatedBy } from '../../enums'
 import {
   getAllMenteeEmailsService,
   getAllMentees,
   getMentee,
   updateStatus
 } from '../../services/admin/mentee.service'
+import type { ApiResponse } from '../../types'
 
 export const getMentees = async (
   req: Request,
@@ -24,7 +24,7 @@ export const getMentees = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status.toUpperCase() in ApplicationStatus)) {
+    if (status && !Object.values(ApplicationStatus).includes(status)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
