@@ -17,7 +17,6 @@ describe('getAllUsers', () => {
       'User1',
       'Last1',
       'image1.jpg',
-      'linkedin1',
       ProfileTypes.DEFAULT,
       'hashedPassword1'
     )
@@ -28,7 +27,6 @@ describe('getAllUsers', () => {
       'User2',
       'Last2',
       'image2.jpg',
-      'linkedin2',
       ProfileTypes.ADMIN,
       'hashedPassword2'
     )

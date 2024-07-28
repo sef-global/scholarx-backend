@@ -14,11 +14,14 @@
     "debug": "nodemon --watch 'src/**/*.ts' --exec ts-node-dev  --inspect --respawn src/server.ts",
     "typeorm:db": "npm run build && npx typeorm -d dist/src/configs/dbConfig.js",
     "migration:generate": "npm run typeorm:db -- migration:generate",
-    "migration:run": "npm run typeorm:db -- migration:run"
+    "migration:run": "npm run typeorm:db -- migration:run",
+    "sync:db": "npm run typeorm:db schema:sync",
+    "seed": "npm run build && node dist/src/scripts/seed-db.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@tsed/passport": "^7.57.1",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
