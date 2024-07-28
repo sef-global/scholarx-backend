@@ -7,8 +7,7 @@ import multer from 'multer'
 import ejs from 'ejs'
 import { ApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
-import { v4 as uuidv4 } from 'uuid'
-
+import { randomUUID } from 'crypto'
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
 
@@ -177,7 +176,7 @@ export const getEmailContent = async (
           Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours.`
         }
       case ApplicationStatus.COMPLETED: {
-        const uniqueId = uuidv4()
+        const uniqueId = randomUUID()
         const pdfFileName = await generateCertificate(
           name,
           './src/certificates/certificate_template.pdf',
