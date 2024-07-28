@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm'
+import { Column, Entity, ManyToOne } from 'typeorm'
 import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
 import { ApplicationStatus, StatusUpdatedBy } from '../enums'
@@ -29,8 +29,7 @@ class Mentee extends BaseEntity {
   @Column({ default: null, nullable: true })
   journal!: string
 
-  @OneToOne(() => profileEntity)
-  @JoinColumn()
+  @ManyToOne(() => profileEntity, (profile) => profile.mentee)
   profile: profileEntity
 
   @ManyToOne(() => Mentor, (mentor) => mentor.mentees)

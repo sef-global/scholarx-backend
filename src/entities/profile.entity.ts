@@ -37,7 +37,6 @@ class Profile extends BaseEntity {
     first_name: string,
     last_name: string,
     image_uri: string,
-    linkedin_uri: string,
     type: ProfileTypes,
     password: string
   ) {

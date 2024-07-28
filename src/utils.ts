@@ -108,12 +108,23 @@ export const getEmailContent = async (
           subject:
             'Congratulations! You have been selected as a ScholarX Mentor',
           message: `Dear ${name},<br /><br />
-          I hope this email finds you in high spirits! I am delighted to inform you that you have been selected as a mentor for ScholarX, and we extend our heartfelt congratulations to you! <br /><br />
-          We received a large number of qualified applicants, and after a thorough review of all candidates, we are thrilled to invite you to accept a place in our program. Your profile stood out amongst the others, and we are confident that you will contribute positively to our program.<br /><br />
-          We understand that your hard work and dedication have brought you to this moment, and we recognize your exceptional talent, experience, and potential in your respective fields. We are excited to have you join our community of learners and scholars.<br /><br />
-          We look forward to seeing the unique perspective and insights you will bring to the mentees and to the program. We believe that you will flourish in this year's edition of ScholarX, and we are thrilled to be a part of your academic or professional journey.<br /><br />
-          Once again, congratulations on your selection! We cannot wait to have you on board. We will keep you informed on the next steps, and in the meantime would like to invite you to go through some of the resources that would be useful to thrive as a great mentor in ScholarX.`
+            I hope this email finds you in high spirits! I am delighted to inform you that you have been selected as a mentor for ScholarX, and we extend our heartfelt congratulations to you! <br /><br />
+            We received a large number of qualified applicants, and after a thorough review of all candidates, we are thrilled to invite you to accept a place in our program. Your profile stood out amongst the others, and we are confident that you will contribute positively to our program.<br /><br />
+            We understand that your hard work and dedication have brought you to this moment, and we recognize your exceptional talent, experience, and potential in your respective fields. We are excited to have you join our community of learners and scholars.<br /><br />
+            We look forward to seeing the unique perspective and insights you will bring to the mentees and to the program. We believe that you will flourish in this year's edition of ScholarX, and we are thrilled to be a part of your academic or professional journey.<br /><br />
+            Once again, congratulations on your selection! We cannot wait to have you on board. We will keep you informed on the next steps, and in the meantime, we would like to invite you to go through some of the resources that would be useful to thrive as a great mentor in ScholarX.<br /><br />
+            <strong>Important:</strong> To help you get started and to provide all the necessary information you will need, please carefully read the <strong>Mentor Guide</strong>. This guide contains crucial details about the program and your responsibilities. You can access the Mentor Guide using the link below:<br /><br />
+            <a
+              href="https://docs.google.com/document/d/1uMMcGWJ35nblOj1zZ1XzJuYm-LOi1Lyj02yYRNsaOkY/edit?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
+              style="display: inline-block; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"
+            >
+              Read the Mentor Guide
+            </a><br /><br />
+            Please ensure you review this guide thoroughly to understand the next steps and to prepare for your journey with us.`
         }
+
       case ApplicationStatus.REJECTED:
         return {
           subject: 'Thank You for Your Interest in the ScholarX Program',
@@ -139,11 +150,21 @@ export const getEmailContent = async (
         return {
           subject: 'Congratulations! You have been selected for ScholarX',
           message: `Dear ${name},<br /><br />
-          We are delighted to inform you that you have been selected for our undergraduate program, and we extend our heartfelt congratulations to you!<br /><br />
-          We received a large number of qualified applicants, and after a thorough review of all candidates, we are thrilled to offer you a place in our program. Your application stood out amongst the others, and we are confident that you will contribute positively to our program.<br /><br />
-          We believe that you have great potential to succeed in your academic and professional pursuits, and we are excited to have you join our community of learners and scholars.<br /><br />
-          To emphasize the importance of completing the program, you have received a valuable opportunity. If, for any reason, you are uncertain about completing the program within the 6-month timeline, please inform our admissions team as soon as possible, so we can provide the opportunity to another deserving student.<br /><br />
-          Once again, congratulations on your selection! We cannot wait to have you on board. `
+            We are delighted to inform you that you have been selected for our undergraduate program, and we extend our heartfelt congratulations to you!<br /><br />
+            We received a large number of qualified applicants, and after a thorough review of all candidates, we are thrilled to offer you a place in our program. Your application stood out amongst the others, and we are confident that you will contribute positively to our program.<br /><br />
+            We believe that you have great potential to succeed in your academic and professional pursuits, and we are excited to have you join our community of learners and scholars.<br /><br />
+            To emphasize the importance of completing the program, you have received a valuable opportunity. If, for any reason, you are uncertain about completing the program within the 6-month timeline, please inform our admissions team as soon as possible, so we can provide the opportunity to another deserving student.<br /><br />
+            Once again, congratulations on your selection! We cannot wait to have you on board.<br /><br />
+            <strong>Important:</strong> To help you get started and to provide all the necessary information you will need, please carefully read the <strong>Mentee Guide</strong>. This guide contains crucial details about the program, your responsibilities, and how to make the most of this opportunity. You can access the Mentee Guide using the link below:<br /><br />
+            <a
+              href="https://docs.google.com/document/d/1gIYte14FIQtqUhGiMErZRovhNErdUrFdQ0LnCFFnfag/edit?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
+              style="display: inline-block; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"
+            >
+              Read the Mentee Guide
+            </a><br /><br />
+            Please ensure you review this guide thoroughly to understand the next steps and to prepare for your journey with us.`
         }
       case ApplicationStatus.REJECTED:
         return {
