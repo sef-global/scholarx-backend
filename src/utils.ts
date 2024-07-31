@@ -179,8 +179,8 @@ export const getEmailContent = async (
         const uniqueId = randomUUID()
         const pdfFileName = await generateCertificate(
           name,
-          './src/certificates/certificate_template.pdf',
-          `./src/certificates/mentee/${uniqueId}_certificate.pdf`
+          './certificates/certificate_template.pdf',
+          `./certificates/${uniqueId}_certificate.pdf`
         )
         return {
           subject: 'Congratulations! You have completed ScholarX',
@@ -192,7 +192,7 @@ export const getEmailContent = async (
             Once again, congratulations on your completion! We cannot wait to see the great things you will achieve in the future.`,
           attachment: [
             {
-              filename: `${name}_certificate.pdf`,
+              filename: `${name}_${uniqueId}_certificate.pdf`,
               path: pdfFileName
             }
           ],
