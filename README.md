@@ -168,6 +168,99 @@ scholarx-backend/
 - `package.json`: Contains information about the project and its dependencies.
 - `tsconfig.json`: Configuration file for the TypeScript compiler.
 
+Database Configuration and Migration
+------------------------------------
+
+### Setting up the Database
+
+1.  Ensure you have PostgreSQL installed on your machine. If not, you can download it from [here](https://www.postgresql.org/download/).
+
+2.  Create a new PostgreSQL database:
+
+   ```bash
+   CREATE DATABASE scholarx;
+   ```
+	
+
+3.  Update your `.env` file with your database configuration:
+
+    ```bash
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_USER=your_db_user
+    DB_PASSWORD=your_db_password
+    DB_NAME=scholarx
+	```
+
+### Running Migrations and Seeding the Database
+
+#### Migration Commands
+
+1.  **Generate a new migration**:
+
+    
+    ```bash
+    npm run migration:generate -- -n MigrationName
+    ```
+
+    This command generates a new migration file with the specified name.
+
+2.  **Run migrations**:
+
+    
+     ```bash
+     npm run migration:run
+     ```
+
+    This command runs all pending migrations.
+
+3.  **Synchronize the database schema**:
+
+    
+     ```bash
+     npm run sync:db
+     ```
+
+    This command synchronizes your database schema with the current state of your entities.
+
+4.  **Seed the database**:
+
+    
+     ```bash
+     npm run seed
+     ```
+
+    This command builds the project and runs the database seeding script located in `dist/src/scripts/seed-db.js`.
+
+### Example Migration and Seeding Commands
+
+-   To generate a new migration named `AddUserTable`:
+
+    
+     ```bash
+     npm run migration:generate -- -n AddUserTable
+     ```
+
+-   To run all pending migrations:
+
+
+     ```bash
+     npm run migration:run
+     ```
+
+-   To synchronize the database schema:
+
+     ```bash
+     npm run sync:db
+     ```
+
+-   To seed the database:
+
+   
+     ```bash
+     npm run seed
+     ```
+     
 ## Setting up Google Authentication
 
 1. Open Google Cloud Console:
