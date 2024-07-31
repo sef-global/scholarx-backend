@@ -1,10 +1,10 @@
+import { randomUUID } from 'crypto'
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   PrimaryGeneratedColumn
 } from 'typeorm'
-import { v4 as uuidv4 } from 'uuid'
 
 class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -28,7 +28,7 @@ class BaseEntity {
   @BeforeInsert()
   async generateUuid(): Promise<void> {
     if (!this.uuid) {
-      this.uuid = uuidv4()
+      this.uuid = randomUUID()
     }
   }
 }
