@@ -192,7 +192,7 @@ export const getEmailContent = async (
             Once again, congratulations on your completion! We cannot wait to see the great things you will achieve in the future.`,
           attachment: [
             {
-              filename: `${name}_${uniqueId}_certificate.pdf`,
+              filename: `${name}_certificate.pdf`,
               path: pdfFileName
             }
           ],
