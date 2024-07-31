@@ -76,7 +76,7 @@ export const addMentee = async (
 
     await menteeRepository.save(newMentee)
 
-    const content = await getEmailContent(
+    const content = getEmailContent(
       'mentee',
       ApplicationStatus.PENDING,
       application.firstName as string

@@ -12,8 +12,7 @@ export enum EmailStatusTypes {
 export enum ApplicationStatus {
   PENDING = 'pending',
   REJECTED = 'rejected',
-  APPROVED = 'approved',
-  COMPLETED = 'completed'
+  APPROVED = 'approved'
 }
 
 export enum StatusUpdatedBy {

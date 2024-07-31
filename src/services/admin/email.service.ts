@@ -18,8 +18,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (
   to: string,
   subject: string,
-  message: string,
-  attachments?: Array<{ filename: string; path: string }>
+  message: string
 ): Promise<{
   statusCode: number
   message: string
@@ -36,8 +35,7 @@ export const sendEmail = async (
       from: `"Sustainable Education Foundation" <${SMTP_MAIL}>`,
       to,
       subject,
-      html,
-      attachments
+      html
     })
 
     const email = new Email(to, subject, message, EmailStatusTypes.SENT)
