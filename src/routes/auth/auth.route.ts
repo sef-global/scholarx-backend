@@ -9,10 +9,12 @@ import {
   passwordResetRequest,
   register
 } from '../../controllers/auth.controller'
+import { requestValidator } from '../../middlewares/requestValidator'
+import { registerSchema } from '../../schemas/auth-routes.schems'
 
 const authRouter = express.Router()
 
-authRouter.post('/register', register)
+authRouter.post('/register', requestValidator(registerSchema), register)
 authRouter.post('/login', login)
 authRouter.get('/logout', logout)
 
