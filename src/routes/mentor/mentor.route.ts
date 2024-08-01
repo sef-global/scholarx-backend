@@ -1,17 +1,33 @@
 import express from 'express'
+import {
+  requestBodyValidator,
+  requestQueryValidator
+} from '../../middlewares/requestValidator'
+import {
+  getMenteesByMentorSchema,
+  mentorApplicationSchema
+} from '../../schemas/mentor-routes.schema'
 import { requireAuth } from './../../controllers/auth.controller'
 import {
+  getAllMentorsHandler,
+  getMenteesByMentor,
   mentorApplicationHandler,
   mentorAvailabilityHandler,
-  mentorDetailsHandler,
-  getAllMentorsHandler,
-  getMenteesByMentor
+  mentorDetailsHandler
 } from './../../controllers/mentor.controller'
 
 const mentorRouter = express.Router()
 
-mentorRouter.post('/', requireAuth, mentorApplicationHandler)
-mentorRouter.get('/mentees', requireAuth, getMenteesByMentor)
+mentorRouter.post(
+  '/',
+  [requireAuth, requestBodyValidator(mentorApplicationSchema)],
+  mentorApplicationHandler
+)
+mentorRouter.get(
+  '/mentees',
+  [requireAuth, requestQueryValidator(getMenteesByMentorSchema)],
+  getMenteesByMentor
+)
 mentorRouter.put(
   '/:mentorId/availability',
   requireAuth,
