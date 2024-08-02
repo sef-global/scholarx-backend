@@ -1,5 +1,4 @@
 import express from 'express'
-import { requireAuth } from '../../../controllers/auth.controller'
 import {
   getAllMentorEmails,
   getAllMentorsByStatus,
@@ -8,18 +7,46 @@ import {
   searchMentors,
   updateMentorAvailability
 } from '../../../controllers/admin/mentor.controller'
+import { requireAuth } from '../../../controllers/auth.controller'
+import {
+  requestBodyValidator,
+  requestQueryValidator
+} from '../../../middlewares/requestValidator'
+import {
+  getAllMentorEmailsSchema,
+  getAllMentorsByStatusSchema,
+  mentorStatusSchema,
+  searchMentorsSchema,
+  updateMentorAvailabilitySchema
+} from '../../../schemas/admin/admin.mentor-routes.schema'
 
 const mentorRouter = express.Router()
 
-mentorRouter.put('/:mentorId/state', requireAuth, mentorStatusHandler)
+mentorRouter.put(
+  '/:mentorId/state',
+  [requireAuth, requestBodyValidator(mentorStatusSchema)],
+  mentorStatusHandler
+)
 mentorRouter.get('/:mentorId', requireAuth, mentorDetailsHandler)
-mentorRouter.get('/', requireAuth, getAllMentorsByStatus)
-mentorRouter.get('/emails', requireAuth, getAllMentorEmails)
+mentorRouter.get(
+  '/',
+  [requireAuth, requestQueryValidator(getAllMentorsByStatusSchema)],
+  getAllMentorsByStatus
+)
+mentorRouter.get(
+  '/emails',
+  [requireAuth, requestQueryValidator(getAllMentorEmailsSchema)],
+  getAllMentorEmails
+)
 mentorRouter.put(
   '/:mentorId/availability',
-  requireAuth,
+  [requireAuth, requestBodyValidator(updateMentorAvailabilitySchema)],
   updateMentorAvailability
 )
-mentorRouter.get('/search', requireAuth, searchMentors)
+mentorRouter.get(
+  '/search',
+  [requireAuth, requestQueryValidator(searchMentorsSchema)],
+  searchMentors
+)
 
 export default mentorRouter
