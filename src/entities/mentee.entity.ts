@@ -3,6 +3,7 @@ import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
 import { ApplicationStatus, StatusUpdatedBy } from '../enums'
 import BaseEntity from './baseEntity'
+import { UUID } from 'typeorm/driver/mongodb/bson.typings'
 
 @Entity('mentee')
 class Mentee extends BaseEntity {
@@ -22,8 +23,8 @@ class Mentee extends BaseEntity {
   @Column({ type: 'json' })
   application: Record<string, unknown>
 
-  @Column({ type: 'bigint', nullable: true, default: null })
-  certificate_id!: bigint
+  @Column({ type: 'uuid', nullable: true, default: null })
+  certificate_id!: UUID
 
   @Column({ default: null, nullable: true })
   journal!: string

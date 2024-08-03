@@ -3,9 +3,12 @@ import jwt from 'jsonwebtoken'
 import type { Response } from 'express'
 import type Mentor from './entities/mentor.entity'
 import path from 'path'
+import fs from 'fs'
 import multer from 'multer'
 import ejs from 'ejs'
 import { ApplicationStatus } from './enums'
+import { generateCertificate } from './services/admin/generateCertificate'
+import { randomUUID } from 'crypto'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
@@ -79,11 +82,19 @@ export const loadTemplate = (
   })
 }
 
-export const getEmailContent = (
+export const getEmailContent = async (
   type: 'mentor' | 'mentee',
   status: ApplicationStatus,
   name: string
-): { subject: string; message: string } | undefined => {
+): Promise<
+  | {
+      subject: string
+      message: string
+      attachment?: Array<{ filename: string; path: string }>
+      uniqueId?: string
+    }
+  | undefined
+> => {
   if (type === 'mentor') {
     switch (status) {
       case ApplicationStatus.PENDING:
@@ -166,6 +177,42 @@ export const getEmailContent = (
           We do offer the possibility for you to apply again next time if you meet the eligibility criteria. We invite you to stay engaged with us by attending our events, reaching out to our admissions team, and taking advantage of any opportunities to connect with our current students and alumni.<br /><br />
           Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours.`
         }
+      case ApplicationStatus.COMPLETED: {
+        const certificatesDir = path.join(__dirname, 'certificates')
+
+        if (!fs.existsSync(certificatesDir)) {
+          fs.mkdirSync(certificatesDir)
+        }
+
+        const templatePath = path.join(
+          __dirname,
+          'templates',
+          'certificateTemplate.pdf'
+        )
+
+        const uniqueId = randomUUID()
+        const pdfFileName = await generateCertificate(
+          name,
+          templatePath,
+          path.join(certificatesDir, `${uniqueId}_certificate.pdf`)
+        )
+        return {
+          subject: 'Congratulations! You have completed ScholarX',
+          message: `Dear ${name},<br /><br />
+            We are delighted to inform you that you have successfully completed the ScholarX program. We extend our heartfelt congratulations to you!<br /><br />
+            We are proud of your dedication, hard work, and commitment to the program. You have demonstrated exceptional talent, and we are confident that you will go on to achieve great success in your academic and professional pursuits.<br /><br />
+            To commemorate your achievement, we have attached your certificate of completion. Please download and save the certificate for your records.<br /><br />
+            We look forward to seeing the unique perspective and insights you will bring to the program. We believe that you will flourish in this year's edition of ScholarX, and we are thrilled to be a part of your academic or professional journey.<br /><br />
+            Once again, congratulations on your completion! We cannot wait to see the great things you will achieve in the future.`,
+          attachment: [
+            {
+              filename: `${name}_certificate.pdf`,
+              path: pdfFileName
+            }
+          ],
+          uniqueId
+        }
+      }
       default:
         return undefined
     }
