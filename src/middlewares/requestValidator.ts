@@ -1,4 +1,4 @@
-import { ZodError, ZodSchema } from 'zod'
+import { ZodError, type ZodSchema } from 'zod'
 
 export const requestBodyValidator = (schema: ZodSchema<any, any, any>) => {
   return (req: any, res: any, next: any) => {
