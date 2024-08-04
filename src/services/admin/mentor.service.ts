@@ -1,12 +1,12 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentor from '../../entities/mentor.entity'
-import type { ApplicationStatus } from '../../enums'
+import type { MentorApplicationStatus } from '../../enums'
 import { getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
 export const updateMentorStatus = async (
   mentorId: string,
-  status: ApplicationStatus
+  status: MentorApplicationStatus
 ): Promise<{
   statusCode: number
   mentor?: Mentor | null
@@ -54,7 +54,7 @@ export const updateMentorStatus = async (
 }
 
 export const getAllMentors = async (
-  status: ApplicationStatus | undefined
+  status: MentorApplicationStatus | undefined
 ): Promise<{
   statusCode: number
   mentors?: Mentor[]
@@ -86,7 +86,7 @@ export const getAllMentors = async (
 }
 
 export const findAllMentorEmails = async (
-  status: ApplicationStatus | undefined
+  status: MentorApplicationStatus | undefined
 ): Promise<{
   statusCode: number
   emails?: string[]

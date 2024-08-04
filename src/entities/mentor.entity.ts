@@ -2,17 +2,17 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import Profile from './profile.entity'
 import Mentee from './mentee.entity'
 import Category from './category.entity'
-import { ApplicationStatus } from '../enums'
+import { MentorApplicationStatus } from '../enums'
 import BaseEntity from './baseEntity'
 
 @Entity('mentor')
 class Mentor extends BaseEntity {
   @Column({
     type: 'enum',
-    enum: ApplicationStatus,
-    default: ApplicationStatus.PENDING
+    enum: MentorApplicationStatus,
+    default: MentorApplicationStatus.PENDING
   })
-  state: ApplicationStatus
+  state: MentorApplicationStatus
 
   @ManyToOne(() => Category, (category) => category.mentors)
   @JoinColumn()
@@ -32,7 +32,7 @@ class Mentor extends BaseEntity {
   mentees?: Mentee[]
 
   constructor(
-    state: ApplicationStatus,
+    state: MentorApplicationStatus,
     category: Category,
     application: Record<string, unknown>,
     availability: boolean,

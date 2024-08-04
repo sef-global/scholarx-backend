@@ -2,7 +2,7 @@ import { dataSource } from '../configs/dbConfig'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
-import { ApplicationStatus } from '../enums'
+import { MenteeApplicationStatus } from '../enums'
 import { getEmailContent, getMentorNotifyEmailContent } from '../utils'
 import { sendEmail } from './admin/email.service'
 
@@ -30,6 +30,13 @@ export const addMentee = async (
       }
     }
 
+    if (!mentor.availability) {
+      return {
+        statusCode: 403,
+        message: 'Mentor is not currently available'
+      }
+    }
+
     const userMentorProfile = await mentorRepository.findOne({
       where: {
         profile: {
@@ -52,12 +59,12 @@ export const addMentee = async (
 
     for (const mentee of existingMentees) {
       switch (mentee.state) {
-        case ApplicationStatus.PENDING:
+        case MenteeApplicationStatus.PENDING:
           return {
             statusCode: 409,
             message: 'The mentee application is pending'
           }
-        case ApplicationStatus.APPROVED:
+        case MenteeApplicationStatus.APPROVED:
           return {
             statusCode: 409,
             message: 'The user is already a mentee'
@@ -68,7 +75,7 @@ export const addMentee = async (
     }
 
     const newMentee = new Mentee(
-      ApplicationStatus.PENDING,
+      MenteeApplicationStatus.PENDING,
       application,
       user,
       mentor
@@ -78,7 +85,7 @@ export const addMentee = async (
 
     const content = await getEmailContent(
       'mentee',
-      ApplicationStatus.PENDING,
+      MenteeApplicationStatus.PENDING,
       application.firstName as string
     )
 
