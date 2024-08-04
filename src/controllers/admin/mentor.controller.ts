@@ -5,7 +5,7 @@ import {
   updateMentorStatus,
   getMentor
 } from '../../services/admin/mentor.service'
-import { ApplicationStatus, ProfileTypes } from '../../enums'
+import { MentorApplicationStatus, ProfileTypes } from '../../enums'
 import type Profile from '../../entities/profile.entity'
 import type Mentor from '../../entities/mentor.entity'
 import type { ApiResponse } from '../../types'
@@ -27,7 +27,7 @@ export const mentorStatusHandler = async (
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (!(state.toUpperCase() in ApplicationStatus)) {
+    if (!(state.toUpperCase() in MentorApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
@@ -54,15 +54,15 @@ export const getAllMentorsByStatus = async (
 ): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
-    const status: ApplicationStatus | undefined = req.query.status as
-      | ApplicationStatus
+    const status: MentorApplicationStatus | undefined = req.query.status as
+      | MentorApplicationStatus
       | undefined
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in MentorApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
@@ -86,15 +86,15 @@ export const getAllMentorEmails = async (
 ): Promise<ApiResponse<string[]>> => {
   try {
     const user = req.user as Profile
-    const status: ApplicationStatus | undefined = req.query.status as
-      | ApplicationStatus
+    const status: MentorApplicationStatus | undefined = req.query.status as
+      | MentorApplicationStatus
       | undefined
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in MentorApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 

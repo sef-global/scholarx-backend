@@ -5,7 +5,7 @@ import {
 } from './mentor.service'
 import { dataSource } from '../../configs/dbConfig'
 import type Mentor from '../../entities/mentor.entity'
-import { ApplicationStatus } from '../../enums'
+import { MentorApplicationStatus } from '../../enums'
 
 jest.mock('../../configs/dbConfig', () => ({
   dataSource: {
@@ -17,7 +17,7 @@ describe('Mentor Service', () => {
   describe('updateMentorStatus', () => {
     it('should handle mentor not found during update', async () => {
       const mentorId = 'nonexistent-uuid'
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentorRepository = {
         findOne: jest.fn().mockResolvedValue(null)
@@ -35,7 +35,7 @@ describe('Mentor Service', () => {
 
     it('should handle error during mentor status update', async () => {
       const mentorId = 'mock-uuid'
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentorRepository = {
         findOne: jest.fn().mockResolvedValue({}),
@@ -54,7 +54,7 @@ describe('Mentor Service', () => {
 
   describe('getAllMentors', () => {
     it('should get all mentors successfully', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentors = [
         {
@@ -91,7 +91,7 @@ describe('Mentor Service', () => {
     })
 
     it('should handle no mentors found', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentorRepository = {
         find: jest.fn().mockResolvedValue(null)
@@ -108,7 +108,7 @@ describe('Mentor Service', () => {
     })
 
     it('should handle error during mentors retrieval', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentorRepository = {
         find: jest.fn().mockRejectedValue(new Error('Test repository error'))
@@ -126,7 +126,7 @@ describe('Mentor Service', () => {
 
   describe('findAllMentorEmails', () => {
     it('should get all mentor emails successfully', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentors = [
         {
@@ -164,7 +164,7 @@ describe('Mentor Service', () => {
     })
 
     it('should handle no mentor emails found', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentorRepository = {
         find: jest.fn().mockResolvedValue(null)
@@ -183,7 +183,7 @@ describe('Mentor Service', () => {
     })
 
     it('should handle error during mentor emails retrieval', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentorRepository = {
         find: jest.fn().mockRejectedValue(new Error('Test repository error'))

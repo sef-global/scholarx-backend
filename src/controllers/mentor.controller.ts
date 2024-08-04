@@ -9,7 +9,7 @@ import type Profile from '../entities/profile.entity'
 import type Mentor from '../entities/mentor.entity'
 import type { ApiResponse } from '../types'
 import type Mentee from '../entities/mentee.entity'
-import { ApplicationStatus } from '../enums'
+import { MenteeApplicationStatus } from '../enums'
 import { getAllMenteesByMentor } from '../services/admin/mentee.service'
 
 export const mentorApplicationHandler = async (
@@ -117,11 +117,11 @@ export const getMenteesByMentor = async (
 ): Promise<ApiResponse<Mentee[]>> => {
   try {
     const user = req.user as Profile
-    const status: ApplicationStatus | undefined = req.query.status as
-      | ApplicationStatus
+    const status: MenteeApplicationStatus | undefined = req.query.status as
+      | MenteeApplicationStatus
       | undefined
 
-    if (status && !(status.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in MenteeApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
