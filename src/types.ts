@@ -1,8 +1,3 @@
-export interface MenteeApplication {
-  state: string
-  mentor_id: bigint
-}
-
 export interface ApiResponse<T> {
   statusCode: number
   message?: string

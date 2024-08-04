@@ -3,12 +3,12 @@ import jwt from 'jsonwebtoken'
 import type { Response } from 'express'
 import type Mentor from './entities/mentor.entity'
 import path from 'path'
-import fs from 'fs'
 import multer from 'multer'
 import ejs from 'ejs'
 import { MenteeApplicationStatus, MentorApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
 import { randomUUID } from 'crypto'
+import { certificatesDir } from './app'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
@@ -178,12 +178,6 @@ export const getEmailContent = async (
           Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours.`
         }
       case MenteeApplicationStatus.COMPLETED: {
-        const certificatesDir = path.join(__dirname, 'certificates')
-
-        if (!fs.existsSync(certificatesDir)) {
-          fs.mkdirSync(certificatesDir)
-        }
-
         const templatePath = path.join(
           __dirname,
           'templates',

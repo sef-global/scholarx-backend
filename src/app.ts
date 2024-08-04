@@ -16,9 +16,11 @@ import emailRouter from './routes/emails/emails.route'
 import menteeRouter from './routes/mentee/mentee.route'
 import mentorRouter from './routes/mentor/mentor.route'
 import profileRouter from './routes/profile/profile.route'
+import path from 'path'
 
 const app = express()
 const staticFolder = 'uploads'
+export const certificatesDir = path.join(__dirname, 'certificates')
 
 app.use(cookieParser())
 app.use(bodyParser.json())
@@ -49,6 +51,10 @@ if (!fs.existsSync(staticFolder)) {
   console.log('Directory created successfully!')
 } else {
   console.log('Directory already exists.')
+}
+
+if (!fs.existsSync(certificatesDir)) {
+  fs.mkdirSync(certificatesDir)
 }
 
 export const startServer = async (port: number): Promise<Express> => {
