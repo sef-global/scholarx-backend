@@ -1,14 +1,14 @@
 import { z } from 'zod'
-import { ApplicationStatus } from '../../enums'
+import { MenteeApplicationStatus } from '../../enums'
 
 export const getAllMenteeEmailsSchema = z.object({
-  status: z.nativeEnum(ApplicationStatus)
+  status: z.nativeEnum(MenteeApplicationStatus)
 })
 
 export const getMenteesSchema = z.object({
-  state: z.nativeEnum(ApplicationStatus)
+  state: z.nativeEnum(MenteeApplicationStatus)
 })
 
 export const updateMenteeStatusSchema = z.object({
-  state: z.nativeEnum(ApplicationStatus)
+  state: z.nativeEnum(MenteeApplicationStatus)
 })
