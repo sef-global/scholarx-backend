@@ -5,9 +5,11 @@ import type Mentor from './entities/mentor.entity'
 import path from 'path'
 import multer from 'multer'
 import ejs from 'ejs'
-import { ApplicationStatus } from './enums'
+import { MenteeApplicationStatus, MentorApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
 import { randomUUID } from 'crypto'
+import { certificatesDir } from './app'
+
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
 
@@ -82,7 +84,7 @@ export const loadTemplate = (
 
 export const getEmailContent = async (
   type: 'mentor' | 'mentee',
-  status: ApplicationStatus,
+  status: MenteeApplicationStatus | MentorApplicationStatus,
   name: string
 ): Promise<
   | {
@@ -95,14 +97,14 @@ export const getEmailContent = async (
 > => {
   if (type === 'mentor') {
     switch (status) {
-      case ApplicationStatus.PENDING:
+      case MentorApplicationStatus.PENDING:
         return {
           subject: 'Thank you very much for applying to ScholarX',
           message: `Dear ${name},<br /><br />
           Thank you very much for applying to ScholarX. Your application has been received. Our team will soon review your application, and we will keep you posted on the progress via email. 
           Please reach out to us via <a href="mailto:sustainableedufoundation@gmail.com">sustainableedufoundation@gmail.com</a> for any clarifications.`
         }
-      case ApplicationStatus.APPROVED:
+      case MentorApplicationStatus.APPROVED:
         return {
           subject:
             'Congratulations! You have been selected as a ScholarX Mentor',
@@ -124,7 +126,7 @@ export const getEmailContent = async (
             Please ensure you review this guide thoroughly to understand the next steps and to prepare for your journey with us.`
         }
 
-      case ApplicationStatus.REJECTED:
+      case MentorApplicationStatus.REJECTED:
         return {
           subject: 'Thank You for Your Interest in the ScholarX Program',
           message: `Dear ${name},<br /><br />
@@ -139,13 +141,13 @@ export const getEmailContent = async (
     }
   } else {
     switch (status) {
-      case ApplicationStatus.PENDING:
+      case MenteeApplicationStatus.PENDING:
         return {
           subject: 'Thank you very much for applying to ScholarX',
           message: `Dear ${name},<br /><br />
           Thank you very much for applying to ScholarX. Your application has been received. Mentor will soon review your application and we will keep you posted on the progress via email. Until then, read more about student experience <a href="https://medium.com/search?q=scholarx">here</a> and reach out to us via <a href="mailto:sustainableedufoundation@gmail.com">sustainableedufoundation@gmail.com</a> for any clarifications. `
         }
-      case ApplicationStatus.APPROVED:
+      case MenteeApplicationStatus.APPROVED:
         return {
           subject: 'Congratulations! You have been selected for ScholarX',
           message: `Dear ${name},<br /><br />
@@ -165,7 +167,7 @@ export const getEmailContent = async (
             </a><br /><br />
             Please ensure you review this guide thoroughly to understand the next steps and to prepare for your journey with us.`
         }
-      case ApplicationStatus.REJECTED:
+      case MenteeApplicationStatus.REJECTED:
         return {
           subject: 'Thank You for Your Interest in the ScholarX Program',
           message: `Dear ${name},<br /><br />
@@ -175,12 +177,18 @@ export const getEmailContent = async (
           We do offer the possibility for you to apply again next time if you meet the eligibility criteria. We invite you to stay engaged with us by attending our events, reaching out to our admissions team, and taking advantage of any opportunities to connect with our current students and alumni.<br /><br />
           Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours.`
         }
-      case ApplicationStatus.COMPLETED: {
+      case MenteeApplicationStatus.COMPLETED: {
+        const templatePath = path.join(
+          __dirname,
+          'templates',
+          'certificateTemplate.pdf'
+        )
+
         const uniqueId = randomUUID()
         const pdfFileName = await generateCertificate(
           name,
-          './src/certificates/certificate_template.pdf',
-          `./src/certificates/mentee/${uniqueId}_certificate.pdf`
+          templatePath,
+          path.join(certificatesDir, `${uniqueId}_certificate.pdf`)
         )
         return {
           subject: 'Congratulations! You have completed ScholarX',

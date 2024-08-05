@@ -1,12 +1,16 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentee from '../../entities/mentee.entity'
 import Mentor from '../../entities/mentor.entity'
-import { ApplicationStatus, type StatusUpdatedBy } from '../../enums'
+import {
+  MenteeApplicationStatus,
+  MentorApplicationStatus,
+  type StatusUpdatedBy
+} from '../../enums'
 import { getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
 export const getAllMentees = async (
-  status: ApplicationStatus | undefined
+  status: MenteeApplicationStatus | undefined
 ): Promise<{
   statusCode: number
   mentees?: Mentee[]
@@ -38,7 +42,7 @@ export const getAllMentees = async (
 }
 
 export const getAllMenteesByMentor = async (
-  status: ApplicationStatus | undefined,
+  status: MenteeApplicationStatus | undefined,
   userId: string
 ): Promise<{
   statusCode: number
@@ -50,7 +54,10 @@ export const getAllMenteesByMentor = async (
     const mentorRepository = dataSource.getRepository(Mentor)
 
     const mentor: Mentor | null = await mentorRepository.findOne({
-      where: { profile: { uuid: userId }, state: ApplicationStatus.APPROVED },
+      where: {
+        profile: { uuid: userId },
+        state: MentorApplicationStatus.APPROVED
+      },
       relations: ['profile']
     })
 
@@ -80,7 +87,7 @@ export const getAllMenteesByMentor = async (
 
 export const updateStatus = async (
   menteeId: string,
-  state: ApplicationStatus,
+  state: MenteeApplicationStatus,
   statusUpdatedBy: StatusUpdatedBy
 ): Promise<{
   statusCode: number
@@ -107,7 +114,7 @@ export const updateStatus = async (
 
     const approvedApplications = await menteeRepository.findOne({
       where: {
-        state: ApplicationStatus.APPROVED,
+        state: MenteeApplicationStatus.APPROVED,
         profile: {
           uuid: profileUuid
         }
@@ -156,7 +163,7 @@ export const updateStatus = async (
 }
 
 export const getAllMenteeEmailsService = async (
-  status: ApplicationStatus | undefined
+  status: MenteeApplicationStatus | undefined
 ): Promise<{
   statusCode: number
   emails?: string[]
