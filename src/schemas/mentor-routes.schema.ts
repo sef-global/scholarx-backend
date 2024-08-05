@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ApplicationStatus } from '../enums'
+import { MentorApplicationStatus } from '../enums'
 
 export const mentorApplicationSchema = z.object({
   application: z.record(z.unknown()),
@@ -7,5 +7,5 @@ export const mentorApplicationSchema = z.object({
 })
 
 export const getMenteesByMentorSchema = z.object({
-  status: z.nativeEnum(ApplicationStatus).or(z.undefined())
+  status: z.nativeEnum(MentorApplicationStatus).or(z.undefined())
 })

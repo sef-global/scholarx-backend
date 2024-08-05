@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ApplicationStatus } from '../enums'
+import { MenteeApplicationStatus } from '../enums'
 
 export const menteeApplicationSchema = z.object({
   application: z.record(z.unknown()),
@@ -7,5 +7,5 @@ export const menteeApplicationSchema = z.object({
 })
 
 export const updateMenteeStatusSchema = z.object({
-  state: z.nativeEnum(ApplicationStatus)
+  state: z.nativeEnum(MenteeApplicationStatus)
 })
