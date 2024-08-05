@@ -1,5 +1,9 @@
 import type { Request, Response } from 'express'
-import { ApplicationStatus, ProfileTypes, StatusUpdatedBy } from '../../enums'
+import {
+  MenteeApplicationStatus,
+  ProfileTypes,
+  StatusUpdatedBy
+} from '../../enums'
 import type Profile from '../../entities/profile.entity'
 import type Mentee from '../../entities/mentee.entity'
 import type { ApiResponse } from '../../types'
@@ -16,15 +20,15 @@ export const getMentees = async (
 ): Promise<ApiResponse<Mentee[]>> => {
   try {
     const user = req.user as Profile
-    const status: ApplicationStatus | undefined = req.query.status as
-      | ApplicationStatus
+    const status: MenteeApplicationStatus | undefined = req.query.status as
+      | MenteeApplicationStatus
       | undefined
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    if (status && !(status.toUpperCase() in ApplicationStatus)) {
+    if (status && !(status.toUpperCase() in MenteeApplicationStatus)) {
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
@@ -101,12 +105,10 @@ export const getAllMenteeEmails = async (
   res: Response
 ): Promise<ApiResponse<string[]>> => {
   try {
-    const status = req.query.status
-    if (
-      status === ApplicationStatus.APPROVED ||
-      status === ApplicationStatus.REJECTED ||
-      status === ApplicationStatus.PENDING
-    ) {
+    const status: MenteeApplicationStatus | undefined = req.query.status as
+      | MenteeApplicationStatus
+      | undefined
+    if (status && status.toUpperCase() in MenteeApplicationStatus) {
       const { emails, statusCode, message } = await getAllMenteeEmailsService(
         status
       )

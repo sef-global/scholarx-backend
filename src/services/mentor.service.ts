@@ -1,7 +1,7 @@
 import { dataSource } from '../configs/dbConfig'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
-import { ApplicationStatus } from '../enums'
+import { MentorApplicationStatus } from '../enums'
 import Category from '../entities/category.entity'
 import { getEmailContent, getMentorPublicData } from '../utils'
 import { sendEmail } from './admin/email.service'
@@ -54,13 +54,13 @@ export const createMentor = async (
 
     for (const mentor of existingMentorApplications) {
       switch (mentor.state) {
-        case ApplicationStatus.PENDING:
+        case MentorApplicationStatus.PENDING:
           return {
             mentor,
             statusCode: 409,
             message: 'You have already applied'
           }
-        case ApplicationStatus.APPROVED:
+        case MentorApplicationStatus.APPROVED:
           return {
             mentor,
             statusCode: 409,
@@ -72,7 +72,7 @@ export const createMentor = async (
     }
 
     const newMentor = new Mentor(
-      ApplicationStatus.PENDING,
+      MentorApplicationStatus.PENDING,
       category,
       application,
       true,
@@ -83,7 +83,7 @@ export const createMentor = async (
 
     const content = await getEmailContent(
       'mentor',
-      ApplicationStatus.PENDING,
+      MentorApplicationStatus.PENDING,
       application.firstName as string
     )
 
@@ -229,9 +229,9 @@ export const getAllMentors = async (
       where: categoryId
         ? {
             category: { uuid: categoryId },
-            state: ApplicationStatus.APPROVED
+            state: MentorApplicationStatus.APPROVED
           }
-        : { state: ApplicationStatus.APPROVED },
+        : { state: MentorApplicationStatus.APPROVED },
       relations: ['profile', 'category'],
       select: ['application', 'uuid', 'availability'],
       order: {
