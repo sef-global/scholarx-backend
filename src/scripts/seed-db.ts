@@ -5,7 +5,11 @@ import Email from '../entities/email.entity'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import Profile from '../entities/profile.entity'
-import { ApplicationStatus, EmailStatusTypes, ProfileTypes } from '../enums'
+import {
+  EmailStatusTypes,
+  MenteeApplicationStatus,
+  ProfileTypes
+} from '../enums'
 
 export const seedDatabaseService = async (): Promise<string> => {
   try {
@@ -74,7 +78,7 @@ export const seedDatabaseService = async (): Promise<string> => {
         const mentor =
           mentors[faker.number.int({ min: 0, max: mentors.length - 1 })]
         return new Mentee(
-          faker.helpers.enumValue(ApplicationStatus),
+          faker.helpers.enumValue(MenteeApplicationStatus),
           {
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
@@ -125,7 +129,7 @@ const createRandomProfile = (): Partial<Profile> => {
 
 const createMentor = (category: Category, profile: Profile): Mentor => {
   return {
-    state: faker.helpers.enumValue(ApplicationStatus),
+    state: faker.helpers.enumValue(MenteeApplicationStatus),
     category,
     application: {
       firstName: faker.person.firstName(),

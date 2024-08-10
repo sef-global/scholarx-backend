@@ -1,6 +1,6 @@
 import { getAllMentees, getAllMenteeEmailsService } from './mentee.service'
 import { dataSource } from '../../configs/dbConfig'
-import { ApplicationStatus } from '../../enums'
+import { MenteeApplicationStatus } from '../../enums'
 import type Mentee from '../../entities/mentee.entity'
 
 jest.mock('../../configs/dbConfig', () => ({
@@ -11,7 +11,7 @@ jest.mock('../../configs/dbConfig', () => ({
 
 describe('Mentee Service - getAllMenteeEmailsService', () => {
   it('should get all mentee emails with a specific status successfully', async () => {
-    const status: ApplicationStatus = ApplicationStatus.APPROVED
+    const status: MenteeApplicationStatus = MenteeApplicationStatus.APPROVED
 
     const mockMentees = [
       {
@@ -87,7 +87,9 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
       mockMenteeRepository
     )
 
-    const result = await getAllMenteeEmailsService(ApplicationStatus.PENDING)
+    const result = await getAllMenteeEmailsService(
+      MenteeApplicationStatus.PENDING
+    )
 
     expect(result.emails?.length).toBe(0)
   })
@@ -102,7 +104,7 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
     )
 
     await expect(
-      getAllMenteeEmailsService(ApplicationStatus.APPROVED)
+      getAllMenteeEmailsService(MenteeApplicationStatus.APPROVED)
     ).rejects.toThrowError('Error getting mentee emails')
   })
 })
@@ -110,7 +112,7 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
 describe('Mentee Service', () => {
   describe('getAllMentees', () => {
     it('should get all mentees successfully', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MenteeApplicationStatus = MenteeApplicationStatus.APPROVED
 
       const mockMentees = [
         {
@@ -145,7 +147,7 @@ describe('Mentee Service', () => {
     })
 
     it('should handle no mentees found', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MenteeApplicationStatus = MenteeApplicationStatus.APPROVED
 
       const mockMenteeRepository = {
         find: jest.fn().mockResolvedValue(null)
@@ -162,7 +164,7 @@ describe('Mentee Service', () => {
     })
 
     it('should handle error during mentees retrieval', async () => {
-      const status: ApplicationStatus = ApplicationStatus.APPROVED
+      const status: MenteeApplicationStatus = MenteeApplicationStatus.APPROVED
 
       const mockMenteeRepository = {
         find: jest.fn().mockRejectedValue(new Error('Test repository error'))

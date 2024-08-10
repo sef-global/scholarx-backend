@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne } from 'typeorm'
 import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
-import { ApplicationStatus, StatusUpdatedBy } from '../enums'
+import { MenteeApplicationStatus, StatusUpdatedBy } from '../enums'
 import BaseEntity from './baseEntity'
 import { UUID } from 'typeorm/driver/mongodb/bson.typings'
 
@@ -9,10 +9,10 @@ import { UUID } from 'typeorm/driver/mongodb/bson.typings'
 class Mentee extends BaseEntity {
   @Column({
     type: 'enum',
-    enum: ApplicationStatus,
-    default: ApplicationStatus.PENDING
+    enum: MenteeApplicationStatus,
+    default: MenteeApplicationStatus.PENDING
   })
-  state: ApplicationStatus
+  state: MenteeApplicationStatus
 
   @Column({ type: 'enum', enum: StatusUpdatedBy, nullable: true })
   status_updated_by!: StatusUpdatedBy
@@ -36,13 +36,13 @@ class Mentee extends BaseEntity {
   mentor: Mentor
 
   constructor(
-    state: ApplicationStatus,
+    state: MenteeApplicationStatus,
     application: Record<string, unknown>,
     profile: profileEntity,
     mentor: Mentor
   ) {
     super()
-    this.state = state || ApplicationStatus.PENDING
+    this.state = state || MenteeApplicationStatus.PENDING
     this.application = application
     this.profile = profile
     this.mentor = mentor

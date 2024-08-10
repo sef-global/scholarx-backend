@@ -9,11 +9,18 @@ export enum EmailStatusTypes {
   FAILED = 'failed'
 }
 
-export enum ApplicationStatus {
+export enum MentorApplicationStatus {
+  PENDING = 'pending',
+  REJECTED = 'rejected',
+  APPROVED = 'approved'
+}
+
+export enum MenteeApplicationStatus {
   PENDING = 'pending',
   REJECTED = 'rejected',
   APPROVED = 'approved',
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
+  REVOKED = 'revoked'
 }
 
 export enum StatusUpdatedBy {

@@ -47,6 +47,16 @@ jobs:
           echo "DB_PORT=5432" >> .env
           echo "SERVER_PORT=4000" >> .env 
           echo "JWT_SECRET=your_jwt_secret_key" >> .env
+          echo "GOOGLE_CLIENT_ID=your_google_client_id" >> .env
+          echo "GOOGLE_CLIENT_SECRET=your_google_client_secret" >> .env
+          echo "GOOGLE_REDIRECT_URL=http://localhost:${SERVER_PORT}/api/auth/google/callback" >> .env
+          echo "CLIENT_URL=http://localhost:5173" >> .env
+          echo "IMG_HOST=http://localhost:${SERVER_PORT}" >> .env
+          echo "SMTP_MAIL=your_smtp_mail" >> .env
+          echo "SMTP_PASSWORD=your_smtp_password" >> .env
+          echo "LINKEDIN_CLIENT_ID=your_linkedin_client_id" >> .env
+          echo "LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret" >> .env
+          echo "LINKEDIN_REDIRECT_URL=http://localhost:${SERVER_PORT}/api/auth/linkedin/callback" >> .env
 
       - name: Run tests
         run: npm run test
