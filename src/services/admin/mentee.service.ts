@@ -6,34 +6,35 @@ import {
   MentorApplicationStatus,
   type StatusUpdatedBy
 } from '../../enums'
+import { type PaginatedApiResponse } from '../../types'
 import { getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
-export const getAllMentees = async (
+export const getAllMentees = async ({
+  status,
+  pageNumber,
+  pageSize
+}: {
   status: MenteeApplicationStatus | undefined
-): Promise<{
-  statusCode: number
-  mentees?: Mentee[]
-  message: string
-}> => {
+  pageNumber: number
+  pageSize: number
+}): Promise<PaginatedApiResponse<Mentee>> => {
   try {
     const menteeRepository = dataSource.getRepository(Mentee)
 
-    const mentees: Mentee[] = await menteeRepository.find({
+    const mentees = await menteeRepository.findAndCount({
       where: status ? { state: status } : {},
-      relations: ['profile', 'mentor']
+      relations: ['profile', 'mentor'],
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize
     })
-
-    if (!mentees) {
-      return {
-        statusCode: 404,
-        message: 'Mentees not found'
-      }
-    }
 
     return {
       statusCode: 200,
-      mentees,
+      items: mentees[0],
+      totalItemCount: mentees[1],
+      pageNumber,
+      pageSize,
       message: 'All mentees found'
     }
   } catch (err) {
@@ -162,29 +163,31 @@ export const updateStatus = async (
   }
 }
 
-export const getAllMenteeEmailsService = async (
+export const getAllMenteeEmailsService = async ({
+  status,
+  pageNumber,
+  pageSize
+}: {
   status: MenteeApplicationStatus | undefined
-): Promise<{
-  statusCode: number
-  emails?: string[]
-  message: string
-}> => {
+  pageNumber: number
+  pageSize: number
+}): Promise<PaginatedApiResponse<string>> => {
   try {
     const menteeRepositroy = dataSource.getRepository(Mentee)
-    const allMentees: Mentee[] = await menteeRepositroy.find({
+    const allMentees = await menteeRepositroy.findAndCount({
       where: status ? { state: status } : {},
-      relations: ['profile']
+      relations: ['profile'],
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize
     })
-    const emails = allMentees.map((mentee) => mentee?.profile?.primary_email)
-    if (!emails) {
-      return {
-        statusCode: 404,
-        message: 'Mentees Emails not found'
-      }
-    }
+    const emails = allMentees[0].map((mentee) => mentee?.profile?.primary_email)
+
     return {
       statusCode: 200,
-      emails,
+      items: emails,
+      pageNumber,
+      pageSize,
+      totalItemCount: allMentees[1],
       message: 'All mentee emails with status ' + (status ?? 'undefined')
     }
   } catch (err) {

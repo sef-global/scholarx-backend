@@ -1,24 +1,27 @@
 import type { Request, Response } from 'express'
+import type Mentee from '../../entities/mentee.entity'
+import type Profile from '../../entities/profile.entity'
 import {
   MenteeApplicationStatus,
   ProfileTypes,
   StatusUpdatedBy
 } from '../../enums'
-import type Profile from '../../entities/profile.entity'
-import type Mentee from '../../entities/mentee.entity'
-import type { ApiResponse } from '../../types'
 import {
   getAllMenteeEmailsService,
   getAllMentees,
   getMentee,
   updateStatus
 } from '../../services/admin/mentee.service'
+import type { ApiResponse, PaginatedApiResponse } from '../../types'
 
 export const getMentees = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<Mentee[]>> => {
+): Promise<ApiResponse<PaginatedApiResponse<Mentee>>> => {
   try {
+    const pageNumber = parseInt(req.query.pageNumber as string)
+    const pageSize = parseInt(req.query.pageSize as string)
+
     const user = req.user as Profile
     const status: MenteeApplicationStatus | undefined = req.query.status as
       | MenteeApplicationStatus
@@ -32,8 +35,18 @@ export const getMentees = async (
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
-    const { mentees, statusCode, message } = await getAllMentees(status)
-    return res.status(statusCode).json({ mentees, message })
+    const { items, totalItemCount, statusCode, message } = await getAllMentees({
+      status,
+      pageNumber,
+      pageSize
+    })
+    return res.status(statusCode).json({
+      items,
+      totalItemCount,
+      pageNumber,
+      pageSize,
+      message
+    })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
@@ -103,16 +116,28 @@ export const getMenteeDetails = async (
 export const getAllMenteeEmails = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<string[]>> => {
+): Promise<ApiResponse<PaginatedApiResponse<string>>> => {
   try {
+    const pageNumber = parseInt(req.query.pageNumber as string)
+    const pageSize = parseInt(req.query.pageSize as string)
+
     const status: MenteeApplicationStatus | undefined = req.query.status as
       | MenteeApplicationStatus
       | undefined
     if (status && status.toUpperCase() in MenteeApplicationStatus) {
-      const { emails, statusCode, message } = await getAllMenteeEmailsService(
-        status
-      )
-      return res.status(statusCode).json({ emails, message })
+      const { items, statusCode, message, totalItemCount } =
+        await getAllMenteeEmailsService({
+          status,
+          pageNumber,
+          pageSize
+        })
+      return res.status(statusCode).json({
+        items,
+        pageNumber,
+        pageSize,
+        totalItemCount,
+        message
+      })
     } else {
       return res.status(400).json({ message: 'Invalid Status' })
     }
