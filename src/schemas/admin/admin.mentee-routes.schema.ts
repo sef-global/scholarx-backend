@@ -6,7 +6,7 @@ export const getAllMenteeEmailsSchema = z.object({
 })
 
 export const getMenteesSchema = z.object({
-  state: z.nativeEnum(MenteeApplicationStatus)
+  state: z.nativeEnum(MenteeApplicationStatus).optional()
 })
 
 export const updateMenteeStatusSchema = z.object({

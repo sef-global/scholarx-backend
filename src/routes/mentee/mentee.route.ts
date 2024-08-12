@@ -2,6 +2,7 @@ import express from 'express'
 import { requireAuth } from '../../controllers/auth.controller'
 import {
   getMenteeDetails,
+  getPublicMenteeDetails,
   menteeApplicationHandler,
   updateMenteeStatus
 } from '../../controllers/mentee.controller'
@@ -18,7 +19,8 @@ menteeRouter.post(
   [requireAuth, requestBodyValidator(menteeApplicationSchema)],
   menteeApplicationHandler
 )
-menteeRouter.get('/:menteeId', getMenteeDetails)
+menteeRouter.get('/:menteeId', requireAuth, getMenteeDetails)
+menteeRouter.get('/public/:menteeId', getPublicMenteeDetails)
 menteeRouter.put(
   '/:menteeId/status/',
   [requireAuth, requestBodyValidator(updateMenteeStatusSchema)],
