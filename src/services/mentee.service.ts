@@ -8,6 +8,7 @@ import {
   getMentorNotifyEmailContent,
   getMenteePublicData
 } from '../utils'
+import { sendEmail } from './admin/email.service'
 
 export const addMentee = async (
   user: Profile,
