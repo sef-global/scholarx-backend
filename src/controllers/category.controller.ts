@@ -8,8 +8,8 @@ export const getCategories = async (
   res: Response
 ): Promise<Response<PaginatedApiResponse<Category>>> => {
   try {
-    const pageNumber = parseInt(req.query.pageNumber as string) || 1
-    const pageSize = parseInt(req.query.pageSize as string) || 10
+    const pageNumber = parseInt(req.query.pageNumber as string)
+    const pageSize = parseInt(req.query.pageSize as string)
 
     const { statusCode, items, totalItemCount, message } =
       await getAllCategories(pageNumber, pageSize)
