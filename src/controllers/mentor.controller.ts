@@ -1,16 +1,16 @@
 import type { Request, Response } from 'express'
-import {
-  createMentor,
-  updateAvailability,
-  getMentor,
-  getAllMentors
-} from '../services/mentor.service'
-import type Profile from '../entities/profile.entity'
-import type Mentor from '../entities/mentor.entity'
-import type { ApiResponse } from '../types'
 import type Mentee from '../entities/mentee.entity'
+import type Mentor from '../entities/mentor.entity'
+import type Profile from '../entities/profile.entity'
 import { MenteeApplicationStatus } from '../enums'
 import { getAllMenteesByMentor } from '../services/admin/mentee.service'
+import {
+  createMentor,
+  getAllMentors,
+  getMentor,
+  updateAvailability
+} from '../services/mentor.service'
+import type { ApiResponse, PaginatedApiResponse } from '../types'
 
 export const mentorApplicationHandler = async (
   req: Request,
@@ -93,12 +93,25 @@ export const mentorDetailsHandler = async (
 export const getAllMentorsHandler = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<Mentor>> => {
+): Promise<ApiResponse<PaginatedApiResponse<Mentor>>> => {
   try {
-    const categoryId: string = req.query.categoryId as string
-    const { mentors, statusCode, message } = await getAllMentors(categoryId)
+    const pageNumber = parseInt(req.query.pageNumber as string)
+    const pageSize = parseInt(req.query.pageSize as string)
 
-    return res.status(statusCode).json({ mentors, message })
+    const categoryId: string = req.query.categoryId as string
+    const { items, totalItemCount, statusCode, message } = await getAllMentors({
+      categoryId,
+      pageNumber,
+      pageSize
+    })
+
+    return res.status(statusCode).json({
+      pageNumber,
+      pageSize,
+      totalItemCount,
+      items,
+      message
+    })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

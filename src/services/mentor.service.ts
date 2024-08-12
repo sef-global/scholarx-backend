@@ -1,11 +1,12 @@
 import { dataSource } from '../configs/dbConfig'
+import Category from '../entities/category.entity'
+import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { MentorApplicationStatus } from '../enums'
-import Category from '../entities/category.entity'
+import { type PaginatedApiResponse } from '../types'
 import { getEmailContent, getMentorPublicData } from '../utils'
 import { sendEmail } from './admin/email.service'
-import Mentee from '../entities/mentee.entity'
 
 export const createMentor = async (
   user: Profile,
@@ -216,16 +217,18 @@ export const searchMentorsByQuery = async (
   }
 }
 
-export const getAllMentors = async (
+export const getAllMentors = async ({
+  categoryId,
+  pageNumber,
+  pageSize
+}: {
   categoryId?: string | null
-): Promise<{
-  statusCode: number
-  mentors?: Mentor[] | null
-  message: string
-}> => {
+  pageNumber: number
+  pageSize: number
+}): Promise<PaginatedApiResponse<Mentor>> => {
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
-    const mentors = await mentorRepository.find({
+    const mentors = await mentorRepository.findAndCount({
       where: categoryId
         ? {
             category: { uuid: categoryId },
@@ -236,22 +239,21 @@ export const getAllMentors = async (
       select: ['application', 'uuid', 'availability'],
       order: {
         availability: 'DESC'
-      }
+      },
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize
     })
 
-    const publicMentors = mentors.map((mentor) => getMentorPublicData(mentor))
-
-    if (!mentors || mentors.length === 0) {
-      return {
-        statusCode: 200,
-        mentors: [],
-        message: 'No mentors found'
-      }
-    }
+    const publicMentors = mentors[0].map((mentor) =>
+      getMentorPublicData(mentor)
+    )
 
     return {
       statusCode: 200,
-      mentors: publicMentors,
+      items: publicMentors,
+      totalItemCount: mentors[1],
+      pageNumber,
+      pageSize,
       message: 'Mentors found'
     }
   } catch (err) {
