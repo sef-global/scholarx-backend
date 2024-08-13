@@ -166,7 +166,7 @@ export const requireAuth = (
       const token = req.cookies.jwt
 
       if (!token) {
-        return res.status(401).json({ error: 'Use is not authenticated' })
+        return res.status(401).json({ error: 'User is not authenticated' })
       }
 
       try {

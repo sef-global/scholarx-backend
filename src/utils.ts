@@ -9,6 +9,7 @@ import { MenteeApplicationStatus, MentorApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
 import { randomUUID } from 'crypto'
 import { certificatesDir } from './app'
+import type Mentee from './entities/mentee.entity'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
@@ -21,12 +22,43 @@ export const signAndSetCookie = (res: Response, uuid: string): void => {
 }
 
 export const getMentorPublicData = (mentor: Mentor): Mentor => {
-  const { application } = mentor
+  const { application, profile } = mentor
+
   delete application.cv
   delete application.contactNo
   delete application.email
+  delete application.motivation
+  delete application.reasonToMentor
+
+  delete profile.created_at
+  delete profile.updated_at
+
+  if (mentor.mentees) {
+    mentor.mentees = mentor.mentees.map((mentee) => {
+      return getMenteePublicData(mentee)
+    })
+  }
 
   return mentor
+}
+
+export const getMenteePublicData = (mentee: Mentee): Mentee => {
+  const { application, profile } = mentee
+
+  delete application.cv
+  delete application.contactNo
+  delete application.email
+  delete application.submission
+  delete application.consentGiven
+
+  delete profile.created_at
+  delete profile.updated_at
+
+  if (mentee.mentor) {
+    mentee.mentor = getMentorPublicData(mentee.mentor)
+  }
+
+  return mentee
 }
 
 export const checkProfilePictureFileType = (
@@ -101,7 +133,7 @@ export const getEmailContent = async (
         return {
           subject: 'Thank you very much for applying to ScholarX',
           message: `Dear ${name},<br /><br />
-          Thank you very much for applying to ScholarX. Your application has been received. Our team will soon review your application, and we will keep you posted on the progress via email. 
+          Thank you very much for applying to ScholarX. Your application has been received. Our team will soon review your application, and we will keep you posted on the progress via email.
           Please reach out to us via <a href="mailto:sustainableedufoundation@gmail.com">sustainableedufoundation@gmail.com</a> for any clarifications.`
         }
       case MentorApplicationStatus.APPROVED:
