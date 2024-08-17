@@ -3,7 +3,11 @@ import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { MenteeApplicationStatus } from '../enums'
-import { getEmailContent, getMentorNotifyEmailContent } from '../utils'
+import {
+  getEmailContent,
+  getMentorNotifyEmailContent,
+  getMenteePublicData
+} from '../utils'
 import { sendEmail } from './admin/email.service'
 
 export const addMentee = async (
@@ -114,5 +118,40 @@ export const addMentee = async (
     }
   } catch (err) {
     throw new Error('Error adding mentee')
+  }
+}
+
+export const getPublicMentee = async (
+  menteeId: string
+): Promise<{
+  statusCode: number
+  mentee: Mentee | null
+  message: string
+}> => {
+  try {
+    const menteeRepository = dataSource.getRepository(Mentee)
+
+    const mentee = await menteeRepository.findOne({
+      where: { uuid: menteeId },
+      relations: ['profile', 'mentor', 'mentor.profile']
+    })
+
+    if (!mentee) {
+      return {
+        statusCode: 404,
+        mentee: null,
+        message: 'Mentee not found'
+      }
+    }
+
+    const publicMentee = getMenteePublicData(mentee)
+
+    return {
+      statusCode: 200,
+      mentee: publicMentee,
+      message: 'Mentees found'
+    }
+  } catch (err) {
+    throw new Error('Error getting mentees')
   }
 }

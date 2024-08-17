@@ -8,6 +8,7 @@ import Profile from '../entities/profile.entity'
 import {
   EmailStatusTypes,
   MenteeApplicationStatus,
+  MentorApplicationStatus,
   ProfileTypes
 } from '../enums'
 
@@ -129,7 +130,7 @@ const createRandomProfile = (): Partial<Profile> => {
 
 const createMentor = (category: Category, profile: Profile): Mentor => {
   return {
-    state: faker.helpers.enumValue(MenteeApplicationStatus),
+    state: faker.helpers.enumValue(MentorApplicationStatus),
     category,
     application: {
       firstName: faker.person.firstName(),
