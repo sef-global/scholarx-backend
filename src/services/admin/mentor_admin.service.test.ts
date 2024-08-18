@@ -1,11 +1,11 @@
-import {
-  updateMentorStatus,
-  getAllMentors,
-  findAllMentorEmails
-} from './mentor.service'
 import { dataSource } from '../../configs/dbConfig'
 import type Mentor from '../../entities/mentor.entity'
 import { MentorApplicationStatus } from '../../enums'
+import {
+  findAllMentorEmails,
+  getAllMentors,
+  updateMentorStatus
+} from './mentor.service'
 
 jest.mock('../../configs/dbConfig', () => ({
   dataSource: {
@@ -83,10 +83,10 @@ describe('Mentor Service', () => {
         mockMentorRepository
       )
 
-      const result = await getAllMentors(status)
+      const result = await getAllMentors({ status, pageNumber: 1, pageSize: 2 })
 
       expect(result.statusCode).toBe(200)
-      expect(result.mentors).toEqual(mockMentors)
+      expect(result.items).toEqual(mockMentors)
       expect(result.message).toBe('All Mentors found')
     })
 
@@ -101,7 +101,7 @@ describe('Mentor Service', () => {
         mockMentorRepository
       )
 
-      const result = await getAllMentors(status)
+      const result = await getAllMentors({ status, pageNumber: 1, pageSize: 2 })
 
       expect(result.statusCode).toBe(404)
       expect(result.message).toBe('Mentors not found')
@@ -118,9 +118,9 @@ describe('Mentor Service', () => {
         mockMentorRepository
       )
 
-      await expect(getAllMentors(status)).rejects.toThrowError(
-        'Error getting mentors'
-      )
+      await expect(
+        getAllMentors({ status, pageNumber: 1, pageSize: 3 })
+      ).rejects.toThrowError('Error getting mentors')
     })
   })
 
