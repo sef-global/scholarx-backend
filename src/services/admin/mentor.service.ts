@@ -73,6 +73,17 @@ export const getAllMentors = async ({
       take: pageSize
     })
 
+    if (mentors.length === 0) {
+      return {
+        statusCode: 404,
+        pageNumber,
+        pageSize,
+        items: [],
+        totalItemCount: 0,
+        message: 'Mentors not found'
+      }
+    }
+
     return {
       statusCode: 200,
       pageNumber,

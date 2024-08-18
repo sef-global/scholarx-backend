@@ -203,7 +203,7 @@ describe('getAllMentors', () => {
       pageSize: 2
     })
 
-    expect(result.statusCode).toBe(200)
+    expect(result.statusCode).toBe(404)
     expect(result.message).toBe('No mentors found')
     expect(result.items).toStrictEqual([])
   })

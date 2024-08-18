@@ -247,7 +247,7 @@ export const getAllMentors = async ({
 
     if (publicMentors.length === 0) {
       return {
-        statusCode: 200,
+        statusCode: 404,
         items: [],
         totalItemCount: 0,
         pageNumber,
