@@ -22,17 +22,28 @@ export const getAllMentees = async ({
   try {
     const menteeRepository = dataSource.getRepository(Mentee)
 
-    const mentees = await menteeRepository.findAndCount({
+    const [mentees, count] = await menteeRepository.findAndCount({
       where: status ? { state: status } : {},
       relations: ['profile', 'mentor'],
       skip: (pageNumber - 1) * pageSize,
       take: pageSize
     })
 
+    if (mentees.length === 0) {
+      return {
+        statusCode: 404,
+        items: [],
+        totalItemCount: 0,
+        pageNumber,
+        pageSize,
+        message: 'Mentees not found'
+      }
+    }
+
     return {
       statusCode: 200,
-      items: mentees[0],
-      totalItemCount: mentees[1],
+      items: mentees,
+      totalItemCount: count,
       pageNumber,
       pageSize,
       message: 'All mentees found'

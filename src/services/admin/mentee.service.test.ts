@@ -27,7 +27,8 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
     ] as Mentee[]
 
     const mockMenteeRepository = {
-      find: jest.fn().mockResolvedValue(mockMentees)
+      find: jest.fn().mockResolvedValue(mockMentees),
+      findAndCount: jest.fn().mockResolvedValue([mockMentees, 2])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
@@ -61,7 +62,8 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
     ] as Mentee[]
 
     const mockMenteeRepository = {
-      find: jest.fn().mockResolvedValue(mockMentees)
+      find: jest.fn().mockResolvedValue(mockMentees),
+      findAndCount: jest.fn().mockResolvedValue([mockMentees, 2])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
@@ -82,7 +84,8 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
 
   it('should handle mentees emails not found', async () => {
     const mockMenteeRepository = {
-      find: jest.fn().mockResolvedValue([])
+      find: jest.fn().mockResolvedValue([]),
+      findAndCount: jest.fn().mockResolvedValue([[], 0])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
@@ -140,7 +143,8 @@ describe('Mentee Service', () => {
       ] as const
 
       const mockMenteeRepository = {
-        find: jest.fn().mockResolvedValue(mockMentees)
+        find: jest.fn().mockResolvedValue(mockMentees),
+        findAndCount: jest.fn().mockResolvedValue([mockMentees, 2])
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
@@ -158,7 +162,8 @@ describe('Mentee Service', () => {
       const status: MenteeApplicationStatus = MenteeApplicationStatus.APPROVED
 
       const mockMenteeRepository = {
-        find: jest.fn().mockResolvedValue(null)
+        find: jest.fn().mockResolvedValue(null),
+        findAndCount: jest.fn().mockResolvedValue([[], 0])
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
