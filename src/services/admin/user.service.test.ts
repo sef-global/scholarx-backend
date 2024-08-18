@@ -32,7 +32,8 @@ describe('getAllUsers', () => {
     )
 
     const mockProfileRepository = {
-      find: jest.fn().mockResolvedValue([mockUser1, mockUser2])
+      find: jest.fn().mockResolvedValue([mockUser1, mockUser2]),
+      findAndCount: jest.fn().mockResolvedValue([[mockUser1, mockUser2], 2])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
@@ -44,6 +45,6 @@ describe('getAllUsers', () => {
       pageSize: 2
     })
 
-    expect(result).toEqual([mockUser1, mockUser2])
+    expect(result.items).toEqual([mockUser1, mockUser2])
   })
 })
