@@ -150,7 +150,7 @@ export const getMentor = async (
     const mentorRepository = dataSource.getRepository(Mentor)
     const mentor = await mentorRepository.findOne({
       where: { uuid: mentorId },
-      relations: ['profile', 'category', 'mentees'],
+      relations: ['profile', 'category', 'mentees', 'mentees.profile'],
       select: ['application', 'uuid', 'availability']
     })
 
@@ -161,14 +161,11 @@ export const getMentor = async (
       }
     }
 
-    const { application } = mentor
-    delete application.cv
-    delete application.contactNo
-    delete application.email
+    const publicMentor = getMentorPublicData(mentor)
 
     return {
       statusCode: 200,
-      mentor,
+      mentor: publicMentor,
       message: 'Mentor found'
     }
   } catch (err) {

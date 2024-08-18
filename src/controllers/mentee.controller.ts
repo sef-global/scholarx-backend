@@ -4,7 +4,7 @@ import type Mentee from '../entities/mentee.entity'
 import type Profile from '../entities/profile.entity'
 import { getMentee, updateStatus } from '../services/admin/mentee.service'
 import { MentorApplicationStatus, StatusUpdatedBy } from '../enums'
-import { addMentee } from '../services/mentee.service'
+import { addMentee, getPublicMentee } from '../services/mentee.service'
 
 export const menteeApplicationHandler = async (
   req: Request,
@@ -71,8 +71,26 @@ export const getMenteeDetails = async (
 ): Promise<ApiResponse<Mentee>> => {
   try {
     const { menteeId } = req.params
-
     const { statusCode, message, mentee } = await getMentee(menteeId)
+    return res.status(statusCode).json({ mentee, message })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+    throw err
+  }
+}
+
+export const getPublicMenteeDetails = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentee>> => {
+  try {
+    const { menteeId } = req.params
+    const { statusCode, message, mentee } = await getPublicMentee(menteeId)
     return res.status(statusCode).json({ mentee, message })
   } catch (err) {
     if (err instanceof Error) {
