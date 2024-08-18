@@ -245,6 +245,17 @@ export const getAllMentors = async ({
       getMentorPublicData(mentor)
     )
 
+    if (publicMentors.length === 0) {
+      return {
+        statusCode: 200,
+        items: [],
+        totalItemCount: 0,
+        pageNumber,
+        pageSize,
+        message: 'No mentors found'
+      }
+    }
+
     return {
       statusCode: 200,
       items: publicMentors,

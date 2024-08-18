@@ -147,6 +147,7 @@ const mentors = [
 
 interface MockMentorRepository {
   find: jest.Mock<Promise<Mentor[]>>
+  findAndCount: jest.Mock<Promise<[Mentor[], number]>>
 }
 
 jest.mock('../configs/dbConfig', () => ({
@@ -199,7 +200,7 @@ describe('getAllMentors', () => {
     const result = await getAllMentors({
       categoryId: 'SomeCategory',
       pageNumber: 1,
-      pageSize: 3
+      pageSize: 2
     })
 
     expect(result.statusCode).toBe(200)
@@ -213,6 +214,7 @@ function createMockMentorRepository(
   error?: Error
 ): MockMentorRepository {
   return {
-    find: jest.fn().mockResolvedValue(data)
+    find: jest.fn().mockResolvedValue(data),
+    findAndCount: jest.fn().mockResolvedValue([data, data.length])
   }
 }
