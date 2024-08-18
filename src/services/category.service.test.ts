@@ -22,7 +22,8 @@ describe('Category Service - getAllCategories', () => {
     ] as Category[]
 
     const mockCategoryRepository = {
-      find: jest.fn().mockResolvedValue(mockCategories)
+      find: jest.fn().mockResolvedValue(mockCategories),
+      findAndCount: jest.fn().mockResolvedValue([mockCategories, 2])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
@@ -37,12 +38,13 @@ describe('Category Service - getAllCategories', () => {
       { uuid: 'mock-uuid-1', category: 'Category 1' },
       { uuid: 'mock-uuid-2', category: 'Category 2' }
     ])
-    expect(result.message).toBe('All Categories found')
+    expect(result.message).toBe('Categories retrieved successfully')
   })
 
   it('should handle categories not found', async () => {
     const mockCategoryRepository = {
-      find: jest.fn().mockResolvedValue([])
+      find: jest.fn().mockResolvedValue([]),
+      findAndCount: jest.fn().mockResolvedValue([[], 0])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
