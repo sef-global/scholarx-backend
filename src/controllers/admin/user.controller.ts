@@ -1,26 +1,35 @@
 import type { Request, Response } from 'express'
-import { getAllUsers } from '../../services/admin/user.service'
 import type Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
-import type { ApiResponse } from '../../types'
+import { getAllUsers } from '../../services/admin/user.service'
+import type { PaginatedApiResponse } from '../../types'
 
 export const getAllUsersHandler = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<Profile>> => {
+): Promise<Response<PaginatedApiResponse<Profile>>> => {
   try {
     const user = req.user as Profile
+
+    const pageNumber = parseInt(req.query.pageNumber as string)
+    const pageSize = parseInt(req.query.pageSize as string)
 
     if (user.type !== ProfileTypes.ADMIN) {
       return res.status(403).json({ message: 'Only Admins are allowed' })
     }
 
-    const users = await getAllUsers()
-    if (users?.length === 0) {
-      return res.status(404).json({ message: 'No users available' })
-    }
+    const { items, message, statusCode, totalItemCount } = await getAllUsers({
+      pageNumber,
+      pageSize
+    })
 
-    return res.status(200).json({ profiles: users })
+    return res.status(statusCode).json({
+      items,
+      message,
+      pageNumber,
+      pageSize,
+      totalItemCount
+    })
   } catch (err) {
     console.error('Error executing query', err)
     return res.status(500).json({ error: err })
