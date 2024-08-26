@@ -19,6 +19,7 @@ import {
   searchMentorsSchema,
   updateMentorAvailabilitySchema
 } from '../../../schemas/admin/admin.mentor-routes.schema'
+import { paginationSchema } from '../../../schemas/common/pagination-request.schema'
 
 const mentorRouter = express.Router()
 
@@ -27,10 +28,12 @@ mentorRouter.put(
   [requireAuth, requestBodyValidator(mentorStatusSchema)],
   mentorStatusHandler
 )
-mentorRouter.get('/:mentorId', requireAuth, mentorDetailsHandler)
 mentorRouter.get(
   '/',
-  [requireAuth, requestQueryValidator(getAllMentorsByStatusSchema)],
+  [
+    requireAuth,
+    requestQueryValidator(getAllMentorsByStatusSchema.merge(paginationSchema))
+  ],
   getAllMentorsByStatus
 )
 mentorRouter.get(
@@ -38,6 +41,7 @@ mentorRouter.get(
   [requireAuth, requestQueryValidator(getAllMentorEmailsSchema)],
   getAllMentorEmails
 )
+mentorRouter.get('/:mentorId', requireAuth, mentorDetailsHandler)
 mentorRouter.put(
   '/:mentorId/availability',
   [requireAuth, requestBodyValidator(updateMentorAvailabilitySchema)],

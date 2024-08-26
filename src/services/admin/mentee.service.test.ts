@@ -1,7 +1,7 @@
-import { getAllMentees, getAllMenteeEmailsService } from './mentee.service'
 import { dataSource } from '../../configs/dbConfig'
-import { MenteeApplicationStatus } from '../../enums'
 import type Mentee from '../../entities/mentee.entity'
+import { MenteeApplicationStatus } from '../../enums'
+import { getAllMenteeEmailsService, getAllMentees } from './mentee.service'
 
 jest.mock('../../configs/dbConfig', () => ({
   dataSource: {
@@ -27,21 +27,23 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
     ] as Mentee[]
 
     const mockMenteeRepository = {
-      find: jest.fn().mockResolvedValue(mockMentees)
+      find: jest.fn().mockResolvedValue(mockMentees),
+      findAndCount: jest.fn().mockResolvedValue([mockMentees, 2])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
       mockMenteeRepository
     )
 
-    const result = await getAllMenteeEmailsService(status)
+    const result = await getAllMenteeEmailsService({
+      status,
+      pageNumber: 1,
+      pageSize: 2
+    })
 
     expect(result.statusCode).toBe(200)
-    expect(result.emails?.length).toBe(2)
-    expect(result.emails).toEqual([
-      'mentee1@example.com',
-      'mentee2@example.com'
-    ])
+    expect(result.items?.length).toBe(2)
+    expect(result.items).toEqual(['mentee1@example.com', 'mentee2@example.com'])
     expect(result.message).toBe('All mentee emails with status ' + status)
   })
 
@@ -60,38 +62,43 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
     ] as Mentee[]
 
     const mockMenteeRepository = {
-      find: jest.fn().mockResolvedValue(mockMentees)
+      find: jest.fn().mockResolvedValue(mockMentees),
+      findAndCount: jest.fn().mockResolvedValue([mockMentees, 2])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
       mockMenteeRepository
     )
 
-    const result = await getAllMenteeEmailsService(undefined)
+    const result = await getAllMenteeEmailsService({
+      status: undefined,
+      pageNumber: 1,
+      pageSize: 2
+    })
 
     expect(result.statusCode).toBe(200)
-    expect(result.emails?.length).toBe(2)
-    expect(result.emails).toEqual([
-      'mentee1@example.com',
-      'mentee2@example.com'
-    ])
+    expect(result.items?.length).toBe(2)
+    expect(result.items).toEqual(['mentee1@example.com', 'mentee2@example.com'])
     expect(result.message).toBe('All mentee emails with status undefined')
   })
 
   it('should handle mentees emails not found', async () => {
     const mockMenteeRepository = {
-      find: jest.fn().mockResolvedValue([])
+      find: jest.fn().mockResolvedValue([]),
+      findAndCount: jest.fn().mockResolvedValue([[], 0])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
       mockMenteeRepository
     )
 
-    const result = await getAllMenteeEmailsService(
-      MenteeApplicationStatus.PENDING
-    )
+    const result = await getAllMenteeEmailsService({
+      status: MenteeApplicationStatus.PENDING,
+      pageNumber: 1,
+      pageSize: 2
+    })
 
-    expect(result.emails?.length).toBe(0)
+    expect(result.items?.length).toBe(0)
   })
 
   it('should handle error during mentee emails retrieval', async () => {
@@ -104,7 +111,11 @@ describe('Mentee Service - getAllMenteeEmailsService', () => {
     )
 
     await expect(
-      getAllMenteeEmailsService(MenteeApplicationStatus.APPROVED)
+      getAllMenteeEmailsService({
+        status: MenteeApplicationStatus.APPROVED,
+        pageNumber: 1,
+        pageSize: 2
+      })
     ).rejects.toThrowError('Error getting mentee emails')
   })
 })
@@ -132,17 +143,18 @@ describe('Mentee Service', () => {
       ] as const
 
       const mockMenteeRepository = {
-        find: jest.fn().mockResolvedValue(mockMentees)
+        find: jest.fn().mockResolvedValue(mockMentees),
+        findAndCount: jest.fn().mockResolvedValue([mockMentees, 2])
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
         mockMenteeRepository
       )
 
-      const result = await getAllMentees(status)
+      const result = await getAllMentees({ status, pageNumber: 1, pageSize: 2 })
 
       expect(result.statusCode).toBe(200)
-      expect(result.mentees).toEqual(mockMentees)
+      expect(result.items).toEqual(mockMentees)
       expect(result.message).toBe('All mentees found')
     })
 
@@ -150,14 +162,15 @@ describe('Mentee Service', () => {
       const status: MenteeApplicationStatus = MenteeApplicationStatus.APPROVED
 
       const mockMenteeRepository = {
-        find: jest.fn().mockResolvedValue(null)
+        find: jest.fn().mockResolvedValue(null),
+        findAndCount: jest.fn().mockResolvedValue([[], 0])
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
         mockMenteeRepository
       )
 
-      const result = await getAllMentees(status)
+      const result = await getAllMentees({ status, pageNumber: 1, pageSize: 2 })
 
       expect(result.statusCode).toBe(404)
       expect(result.message).toBe('Mentees not found')
@@ -174,9 +187,9 @@ describe('Mentee Service', () => {
         mockMenteeRepository
       )
 
-      await expect(getAllMentees(status)).rejects.toThrowError(
-        'Error getting mentees'
-      )
+      await expect(
+        getAllMentees({ status, pageNumber: 1, pageSize: 2 })
+      ).rejects.toThrowError('Error getting mentees')
     })
   })
 })

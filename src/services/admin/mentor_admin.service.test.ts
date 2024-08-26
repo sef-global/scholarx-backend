@@ -1,11 +1,11 @@
-import {
-  updateMentorStatus,
-  getAllMentors,
-  findAllMentorEmails
-} from './mentor.service'
 import { dataSource } from '../../configs/dbConfig'
 import type Mentor from '../../entities/mentor.entity'
 import { MentorApplicationStatus } from '../../enums'
+import {
+  findAllMentorEmails,
+  getAllMentors,
+  updateMentorStatus
+} from './mentor.service'
 
 jest.mock('../../configs/dbConfig', () => ({
   dataSource: {
@@ -76,17 +76,18 @@ describe('Mentor Service', () => {
       ] as const
 
       const mockMentorRepository = {
-        find: jest.fn().mockResolvedValue(mockMentors)
+        find: jest.fn().mockResolvedValue(mockMentors),
+        findAndCount: jest.fn().mockResolvedValue([mockMentors, 2])
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
         mockMentorRepository
       )
 
-      const result = await getAllMentors(status)
+      const result = await getAllMentors({ status, pageNumber: 1, pageSize: 2 })
 
       expect(result.statusCode).toBe(200)
-      expect(result.mentors).toEqual(mockMentors)
+      expect(result.items).toEqual(mockMentors)
       expect(result.message).toBe('All Mentors found')
     })
 
@@ -94,14 +95,17 @@ describe('Mentor Service', () => {
       const status: MentorApplicationStatus = MentorApplicationStatus.APPROVED
 
       const mockMentorRepository = {
-        find: jest.fn().mockResolvedValue(null)
+        find: jest.fn().mockResolvedValue(null),
+        findAndCount: jest.fn().mockResolvedValue([[], 0])
       }
 
       ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
         mockMentorRepository
       )
 
-      const result = await getAllMentors(status)
+      const result = await getAllMentors({ status, pageNumber: 1, pageSize: 2 })
+
+      console.log({ result })
 
       expect(result.statusCode).toBe(404)
       expect(result.message).toBe('Mentors not found')
@@ -118,9 +122,9 @@ describe('Mentor Service', () => {
         mockMentorRepository
       )
 
-      await expect(getAllMentors(status)).rejects.toThrowError(
-        'Error getting mentors'
-      )
+      await expect(
+        getAllMentors({ status, pageNumber: 1, pageSize: 3 })
+      ).rejects.toThrowError('Error getting mentors')
     })
   })
 

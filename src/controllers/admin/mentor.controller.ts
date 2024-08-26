@@ -1,18 +1,18 @@
 import type { Request, Response } from 'express'
+import type Mentor from '../../entities/mentor.entity'
+import type Profile from '../../entities/profile.entity'
+import { MentorApplicationStatus, ProfileTypes } from '../../enums'
 import {
   findAllMentorEmails,
   getAllMentors,
-  updateMentorStatus,
-  getMentor
+  getMentor,
+  updateMentorStatus
 } from '../../services/admin/mentor.service'
-import { MentorApplicationStatus, ProfileTypes } from '../../enums'
-import type Profile from '../../entities/profile.entity'
-import type Mentor from '../../entities/mentor.entity'
-import type { ApiResponse } from '../../types'
 import {
   searchMentorsByQuery,
   updateAvailability
 } from '../../services/mentor.service'
+import type { ApiResponse, PaginatedApiResponse } from '../../types'
 
 export const mentorStatusHandler = async (
   req: Request,
@@ -51,8 +51,11 @@ export const mentorStatusHandler = async (
 export const getAllMentorsByStatus = async (
   req: Request,
   res: Response
-): Promise<ApiResponse<Mentor>> => {
+): Promise<ApiResponse<PaginatedApiResponse<Mentor>>> => {
   try {
+    const pageNumber = parseInt(req.query.pageNumber as string)
+    const pageSize = parseInt(req.query.pageSize as string)
+
     const user = req.user as Profile
     const status: MentorApplicationStatus | undefined = req.query.status as
       | MentorApplicationStatus
@@ -66,8 +69,18 @@ export const getAllMentorsByStatus = async (
       return res.status(400).json({ message: 'Please provide a valid status' })
     }
 
-    const { mentors, statusCode, message } = await getAllMentors(status)
-    return res.status(statusCode).json({ mentors, message })
+    const { items, totalItemCount, statusCode, message } = await getAllMentors({
+      status,
+      pageNumber,
+      pageSize
+    })
+    return res.status(statusCode).json({
+      pageNumber,
+      pageSize,
+      totalItemCount,
+      items,
+      message
+    })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

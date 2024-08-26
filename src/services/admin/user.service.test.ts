@@ -1,7 +1,7 @@
-import { getAllUsers } from './user.service'
 import { dataSource } from '../../configs/dbConfig'
 import Profile from '../../entities/profile.entity'
 import { ProfileTypes } from '../../enums'
+import { getAllUsers } from './user.service'
 
 jest.mock('../../configs/dbConfig', () => ({
   dataSource: {
@@ -32,15 +32,19 @@ describe('getAllUsers', () => {
     )
 
     const mockProfileRepository = {
-      find: jest.fn().mockResolvedValue([mockUser1, mockUser2])
+      find: jest.fn().mockResolvedValue([mockUser1, mockUser2]),
+      findAndCount: jest.fn().mockResolvedValue([[mockUser1, mockUser2], 2])
     }
 
     ;(dataSource.getRepository as jest.Mock).mockReturnValueOnce(
       mockProfileRepository
     )
 
-    const result = await getAllUsers()
+    const result = await getAllUsers({
+      pageNumber: 1,
+      pageSize: 2
+    })
 
-    expect(result).toEqual([mockUser1, mockUser2])
+    expect(result.items).toEqual([mockUser1, mockUser2])
   })
 })

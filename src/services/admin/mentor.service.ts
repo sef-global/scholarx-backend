@@ -1,6 +1,7 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentor from '../../entities/mentor.entity'
 import type { MentorApplicationStatus } from '../../enums'
+import { type PaginatedApiResponse } from '../../types'
 import { getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
@@ -53,31 +54,42 @@ export const updateMentorStatus = async (
   }
 }
 
-export const getAllMentors = async (
+export const getAllMentors = async ({
+  status,
+  pageNumber,
+  pageSize
+}: {
   status: MentorApplicationStatus | undefined
-): Promise<{
-  statusCode: number
-  mentors?: Mentor[]
-  message: string
-}> => {
+  pageNumber: number
+  pageSize: number
+}): Promise<PaginatedApiResponse<Mentor>> => {
   try {
     const mentorRepository = dataSource.getRepository(Mentor)
 
-    const mentors: Mentor[] = await mentorRepository.find({
+    const [mentors, count] = await mentorRepository.findAndCount({
       where: status ? { state: status } : {},
-      relations: ['profile', 'category']
+      relations: ['profile', 'category'],
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize
     })
 
-    if (!mentors) {
+    if (mentors.length === 0) {
       return {
         statusCode: 404,
+        pageNumber,
+        pageSize,
+        items: [],
+        totalItemCount: 0,
         message: 'Mentors not found'
       }
     }
 
     return {
       statusCode: 200,
-      mentors,
+      pageNumber,
+      pageSize,
+      items: mentors,
+      totalItemCount: count,
       message: 'All Mentors found'
     }
   } catch (err) {
