@@ -3,6 +3,7 @@ import {
   requestBodyValidator,
   requestQueryValidator
 } from '../../middlewares/requestValidator'
+import { paginationSchema } from '../../schemas/common/pagination-request.schema'
 import {
   getMenteesByMentorSchema,
   mentorApplicationSchema
@@ -34,6 +35,10 @@ mentorRouter.put(
   mentorAvailabilityHandler
 )
 mentorRouter.get('/:mentorId', mentorDetailsHandler)
-mentorRouter.get('/', getAllMentorsHandler)
+mentorRouter.get(
+  '/',
+  requestQueryValidator(paginationSchema),
+  getAllMentorsHandler
+)
 
 export default mentorRouter

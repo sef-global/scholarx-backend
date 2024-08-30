@@ -1,6 +1,6 @@
-import { getAllMentors } from './mentor.service'
 import { dataSource } from '../configs/dbConfig'
 import { ProfileTypes } from '../enums'
+import { getAllMentors } from './mentor.service'
 
 interface Mentor {
   id: number
@@ -147,6 +147,7 @@ const mentors = [
 
 interface MockMentorRepository {
   find: jest.Mock<Promise<Mentor[]>>
+  findAndCount: jest.Mock<Promise<[Mentor[], number]>>
 }
 
 jest.mock('../configs/dbConfig', () => ({
@@ -162,11 +163,14 @@ describe('getAllMentors', () => {
       mockMentorRepository
     )
 
-    const result = await getAllMentors()
+    const result = await getAllMentors({
+      pageNumber: 1,
+      pageSize: 3
+    })
 
     expect(result.statusCode).toBe(200)
     expect(result.message).toBe('Mentors found')
-    expect(result.mentors).toEqual(mentors)
+    expect(result.items).toEqual(mentors)
   })
 
   it('should get mentors with category', async () => {
@@ -176,11 +180,15 @@ describe('getAllMentors', () => {
       mockMentorRepository
     )
 
-    const result = await getAllMentors('fef68adb-e710-4d9e-8772-dc4905885088')
+    const result = await getAllMentors({
+      categoryId: 'fef68adb-e710-4d9e-8772-dc4905885088',
+      pageNumber: 1,
+      pageSize: 3
+    })
 
     expect(result.statusCode).toBe(200)
     expect(result.message).toBe('Mentors found')
-    expect(result.mentors).toEqual(mentors)
+    expect(result.items).toEqual(mentors)
   })
 
   it('should return an empty array if no mentors found', async () => {
@@ -189,11 +197,15 @@ describe('getAllMentors', () => {
       mockMentorRepository
     )
 
-    const result = await getAllMentors('SomeCategory')
+    const result = await getAllMentors({
+      categoryId: 'SomeCategory',
+      pageNumber: 1,
+      pageSize: 2
+    })
 
-    expect(result.statusCode).toBe(200)
+    expect(result.statusCode).toBe(404)
     expect(result.message).toBe('No mentors found')
-    expect(result.mentors).toStrictEqual([])
+    expect(result.items).toStrictEqual([])
   })
 })
 
@@ -202,6 +214,7 @@ function createMockMentorRepository(
   error?: Error
 ): MockMentorRepository {
   return {
-    find: jest.fn().mockResolvedValue(data)
+    find: jest.fn().mockResolvedValue(data),
+    findAndCount: jest.fn().mockResolvedValue([data, data.length])
   }
 }

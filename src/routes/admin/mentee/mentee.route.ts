@@ -15,17 +15,24 @@ import {
   getMenteesSchema,
   updateMenteeStatusSchema
 } from '../../../schemas/admin/admin.mentee-routes.schema'
+import { paginationSchema } from '../../../schemas/common/pagination-request.schema'
 
 const menteeRouter = express.Router()
 
 menteeRouter.get(
-  '/emails/',
-  [requireAuth, requestQueryValidator(getAllMenteeEmailsSchema)],
+  '/emails',
+  [
+    requireAuth,
+    requestQueryValidator(getAllMenteeEmailsSchema.merge(paginationSchema))
+  ],
   getAllMenteeEmails
 )
 menteeRouter.get(
   '/applications',
-  [requireAuth, requestQueryValidator(getMenteesSchema)],
+  [
+    requireAuth,
+    requestQueryValidator(getMenteesSchema.merge(paginationSchema))
+  ],
   getMentees
 )
 menteeRouter.get('/:menteeId', requireAuth, getMenteeDetails)

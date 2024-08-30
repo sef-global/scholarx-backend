@@ -4,6 +4,15 @@ export interface ApiResponse<T> {
   data?: T | null
 }
 
+export interface PaginatedApiResponse<TItem> {
+  pageNumber: number
+  pageSize: number
+  totalItemCount: number
+  items: TItem[]
+  statusCode: number
+  message: string
+}
+
 export interface User extends Express.User {
   primary_email: string
 }
