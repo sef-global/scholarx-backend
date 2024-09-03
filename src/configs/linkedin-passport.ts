@@ -68,7 +68,7 @@ passport.deserializeUser(async (primary_email: string, done) => {
 const cookieExtractor = (req: Request): string => {
   let token = null
   if (req?.cookies) {
-    token = req.cookies.jwt
+    token = req.cookies.accessToken
   }
   return token
 }

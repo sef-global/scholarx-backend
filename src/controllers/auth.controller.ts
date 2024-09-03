@@ -135,7 +135,7 @@ export const logout = async (
   res: Response
 ): Promise<ApiResponse<Profile>> => {
   try {
-    res.clearCookie('jwt', { httpOnly: true })
+    res.clearCookie('accessToken', { httpOnly: true })
     res.clearCookie('refreshToken', { httpOnly: true })
     return res.status(200).json({ message: 'Logged out successfully' })
   } catch (err) {
@@ -164,7 +164,7 @@ export const requireAuth = (
         return
       }
 
-      const token = req.cookies.jwt
+      const token = req.cookies.accessToken
       const refreshToken = req.cookies.refreshToken
 
       if (!token && !refreshToken) {

@@ -12,12 +12,12 @@ import { MenteeApplicationStatus, MentorApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
-  const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
+  const accessToken = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
   const refreshToken = jwt.sign({ userId: uuid }, REFRESH_JWT_SECRET ?? '', {
     expiresIn: '10d'
   })
 
-  res.cookie('jwt', token, {
+  res.cookie('accessToken', accessToken, {
     httpOnly: true,
     maxAge: 5 * 24 * 60 * 60 * 1000,
     secure: false // TODO: Set to true when using HTTPS
