@@ -1,14 +1,14 @@
-import type { Request, Response, NextFunction } from 'express'
-import {
-  registerUser,
-  loginUser,
-  resetPassword,
-  generateResetToken
-} from '../services/auth.service'
-import passport from 'passport'
-import type Profile from '../entities/profile.entity'
+import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { JWT_SECRET } from '../configs/envConfig'
+import passport from 'passport'
+import { JWT_SECRET, REFRESH_JWT_SECRET } from '../configs/envConfig'
+import type Profile from '../entities/profile.entity'
+import {
+  generateResetToken,
+  loginUser,
+  registerUser,
+  resetPassword
+} from '../services/auth.service'
 import type { ApiResponse } from '../types'
 import { signAndSetCookie } from '../utils'
 
@@ -136,6 +136,7 @@ export const logout = async (
 ): Promise<ApiResponse<Profile>> => {
   try {
     res.clearCookie('jwt', { httpOnly: true })
+    res.clearCookie('refreshToken', { httpOnly: true })
     return res.status(200).json({ message: 'Logged out successfully' })
   } catch (err) {
     if (err instanceof Error) {
@@ -164,17 +165,32 @@ export const requireAuth = (
       }
 
       const token = req.cookies.jwt
+      const refreshToken = req.cookies.refreshToken
 
-      if (!token) {
-        return res.status(401).json({ error: 'User is not authenticated' })
+      if (!token && !refreshToken) {
+        return res
+          .status(401)
+          .json({ error: 'Access Denied. No token provided.' })
       }
 
       try {
         jwt.verify(token, JWT_SECRET)
       } catch (err) {
-        return res
-          .status(401)
-          .json({ error: 'Invalid token, please log in again' })
+        if (!refreshToken) {
+          return res.status(401).send('Access Denied. Please Login again.')
+        }
+
+        try {
+          const decoded = jwt.verify(refreshToken, REFRESH_JWT_SECRET) as {
+            userId: string
+          }
+
+          signAndSetCookie(res, decoded.userId)
+        } catch (error) {
+          return res
+            .status(401)
+            .json({ error: 'Invalid token, please log in again' })
+        }
       }
 
       if (!user) {
