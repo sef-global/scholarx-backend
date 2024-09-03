@@ -1,22 +1,31 @@
-import { JWT_SECRET, CLIENT_URL } from './configs/envConfig'
-import jwt from 'jsonwebtoken'
-import type { Response } from 'express'
-import type Mentor from './entities/mentor.entity'
-import path from 'path'
-import multer from 'multer'
+import { randomUUID } from 'crypto'
 import ejs from 'ejs'
+import type { Response } from 'express'
+import jwt from 'jsonwebtoken'
+import multer from 'multer'
+import path from 'path'
+import { certificatesDir } from './app'
+import { CLIENT_URL, JWT_SECRET, REFRESH_JWT_SECRET } from './configs/envConfig'
+import type Mentee from './entities/mentee.entity'
+import type Mentor from './entities/mentor.entity'
 import { MenteeApplicationStatus, MentorApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
-import { randomUUID } from 'crypto'
-import { certificatesDir } from './app'
-import type Mentee from './entities/mentee.entity'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
+  const refreshToken = jwt.sign({ userId: uuid }, REFRESH_JWT_SECRET ?? '', {
+    expiresIn: '10d'
+  })
 
   res.cookie('jwt', token, {
     httpOnly: true,
     maxAge: 5 * 24 * 60 * 60 * 1000,
+    secure: false // TODO: Set to true when using HTTPS
+  })
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    maxAge: 10 * 24 * 60 * 60 * 1000,
     secure: false // TODO: Set to true when using HTTPS
   })
 }
