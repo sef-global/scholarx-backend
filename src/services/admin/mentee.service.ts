@@ -238,3 +238,45 @@ export const getMentee = async (
     throw new Error('Error getting mentees')
   }
 }
+
+export const revoke = async (
+  userId: string
+): Promise<{
+  statusCode: number
+  updatedMenteeApplication?: Mentee
+  message: string
+}> => {
+  try {
+    const menteeRepository = dataSource.getRepository(Mentee)
+    const mentee = await menteeRepository.findOne({
+      where: {
+        profile: { uuid: userId },
+        state: MenteeApplicationStatus.PENDING
+      },
+      relations: ['profile', 'mentor']
+    })
+
+    if (!mentee) {
+      return {
+        statusCode: 404,
+        message: 'Mentee not found'
+      }
+    }
+
+    await menteeRepository.update(
+      { uuid: mentee.uuid },
+      {
+        state: MenteeApplicationStatus.REVOKED,
+        status_updated_date: new Date()
+      }
+    )
+
+    return {
+      statusCode: 200,
+      message: 'Mentee application state successfully updated'
+    }
+  } catch (err) {
+    console.error('Error updating mentee status', err)
+    throw new Error('Error updating mentee status')
+  }
+}
