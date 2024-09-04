@@ -246,3 +246,21 @@ export const passwordReset = async (
     })
   }
 }
+
+export const refresh = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'Access Denied. No token provided.' })
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, REFRESH_JWT_SECRET) as {
+      userId: string
+    }
+
+    signAndSetCookie(res, decoded.userId)
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid token, please log in again' })
+  }
+}
