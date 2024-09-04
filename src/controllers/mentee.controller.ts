@@ -2,7 +2,11 @@ import type { Request, Response } from 'express'
 import { type ApiResponse } from '../types'
 import type Mentee from '../entities/mentee.entity'
 import type Profile from '../entities/profile.entity'
-import { getMentee, updateStatus } from '../services/admin/mentee.service'
+import {
+  getMentee,
+  revoke,
+  updateStatus
+} from '../services/admin/mentee.service'
 import { MentorApplicationStatus, StatusUpdatedBy } from '../enums'
 import { addMentee, getPublicMentee } from '../services/mentee.service'
 
@@ -53,6 +57,26 @@ export const updateMenteeStatus = async (
       state,
       StatusUpdatedBy.MENTOR
     )
+    return res.status(statusCode).json({ message })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+    throw err
+  }
+}
+
+export const revokeApplication = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentee>> => {
+  try {
+    const user = req.user as Profile
+
+    const { statusCode, message } = await revoke(user.uuid)
     return res.status(statusCode).json({ message })
   } catch (err) {
     if (err instanceof Error) {
