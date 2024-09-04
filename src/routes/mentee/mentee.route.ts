@@ -4,6 +4,7 @@ import {
   getMenteeDetails,
   getPublicMenteeDetails,
   menteeApplicationHandler,
+  revokeApplication,
   updateMenteeStatus
 } from '../../controllers/mentee.controller'
 import { requestBodyValidator } from '../../middlewares/requestValidator'
@@ -26,5 +27,6 @@ menteeRouter.put(
   [requireAuth, requestBodyValidator(updateMenteeStatusSchema)],
   updateMenteeStatus
 )
+menteeRouter.put('/revoke-application', requireAuth, revokeApplication)
 
 export default menteeRouter
