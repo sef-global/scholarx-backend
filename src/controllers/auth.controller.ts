@@ -247,11 +247,12 @@ export const passwordReset = async (
   }
 }
 
-export const refresh = async (req: Request, res: Response) => {
+export const refresh = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = req.cookies.refreshToken
 
   if (!refreshToken) {
-    return res.status(401).json({ error: 'Access Denied. No token provided.' })
+    res.status(401).json({ error: 'Access Denied. No token provided.' })
+    return
   }
 
   try {
@@ -261,6 +262,6 @@ export const refresh = async (req: Request, res: Response) => {
 
     signAndSetCookie(res, decoded.userId)
   } catch (error) {
-    return res.status(401).json({ error: 'Invalid token, please log in again' })
+    res.status(401).json({ error: 'Invalid token, please log in again' })
   }
 }
