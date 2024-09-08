@@ -1,26 +1,16 @@
 import type { Request, Response } from 'express'
-import type Category from '../entities/category.entity'
 import { getAllCategories } from '../services/category.service'
-import { type PaginatedApiResponse } from '../types'
+import type { ApiResponse } from '../types'
+import type Category from '../entities/category.entity'
 
 export const getCategories = async (
   req: Request,
   res: Response
-): Promise<Response<PaginatedApiResponse<Category>>> => {
+): Promise<ApiResponse<Category>> => {
   try {
-    const pageNumber = parseInt(req.query.pageNumber as string)
-    const pageSize = parseInt(req.query.pageSize as string)
+    const { statusCode, categories, message } = await getAllCategories()
 
-    const { statusCode, items, totalItemCount, message } =
-      await getAllCategories(pageNumber, pageSize)
-
-    return res.status(statusCode).json({
-      pageNumber,
-      pageSize,
-      totalItemCount,
-      items,
-      message
-    })
+    return res.status(statusCode).json({ categories, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
