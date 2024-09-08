@@ -1,47 +1,35 @@
 import { dataSource } from '../configs/dbConfig'
 import Category from '../entities/category.entity'
-import { type PaginatedApiResponse } from '../types'
 
-export const getAllCategories = async (
-  pageNumber: number,
-  pageSize: number
-): Promise<PaginatedApiResponse<Pick<Category, 'uuid' | 'category'>>> => {
+export const getAllCategories = async (): Promise<{
+  statusCode: number
+  categories?: Array<Pick<Category, 'uuid' | 'category'>> | null
+  message: string
+}> => {
   try {
     const categoryRepository = dataSource.getRepository(Category)
+    const allCategories: Category[] = await categoryRepository.find({
+      select: ['category', 'uuid']
+    })
 
-    const [allCategories, totalItemCount] =
-      await categoryRepository.findAndCount({
-        select: ['category', 'uuid'],
-        skip: (pageNumber - 1) * pageSize,
-        take: pageSize
-      })
+    const categories = allCategories.map((category) => {
+      return { category: category.category, uuid: category.uuid }
+    })
 
-    const items = allCategories.map((category) => ({
-      category: category.category,
-      uuid: category.uuid
-    }))
-
-    if (items.length === 0) {
+    if (!categories) {
       return {
-        pageNumber,
-        pageSize,
-        totalItemCount,
-        items: [],
         statusCode: 404,
-        message: 'No categories found'
+        message: 'Categories not found'
       }
     }
 
     return {
-      pageNumber,
-      pageSize,
-      totalItemCount,
-      items,
       statusCode: 200,
-      message: 'Categories retrieved successfully'
+      categories,
+      message: 'All Categories found'
     }
   } catch (err) {
-    console.error('Error getting categories', err)
-    throw new Error('Error getting categories')
+    console.error('Error getting mentor', err)
+    throw new Error('Error getting mentor')
   }
 }
