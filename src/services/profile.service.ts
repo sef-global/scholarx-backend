@@ -16,13 +16,14 @@ export const updateProfile = async (
   try {
     const profileRepository = dataSource.getRepository(Profile)
 
-    const updatedFields: Partial<Profile> = {}
+    const { primary_email, first_name, last_name, image_url } = updateData
 
-    if (updateData.primary_email)
-      updatedFields.primary_email = updateData.primary_email
-    if (updateData.first_name) updatedFields.first_name = updateData.first_name
-    if (updateData.last_name) updatedFields.last_name = updateData.last_name
-    if (updateData.image_url) updatedFields.image_url = updateData.image_url
+    const updatedFields: Partial<Profile> = {
+      primary_email,
+      first_name,
+      last_name,
+      image_url
+    }
 
     await profileRepository.update(
       { uuid: user.uuid },
