@@ -2,11 +2,12 @@ import { dataSource } from '../configs/dbConfig'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import Profile from '../entities/profile.entity'
+import { type CreateProfile } from '../types'
 import { getMentorPublicData } from '../utils'
 
 export const updateProfile = async (
   user: Profile,
-  { primary_email, first_name, last_name, image_url }: Partial<Profile>
+  updateData: Partial<Profile>
 ): Promise<{
   statusCode: number
   profile?: Profile | null
@@ -14,14 +15,18 @@ export const updateProfile = async (
 }> => {
   try {
     const profileRepository = dataSource.getRepository(Profile)
+
+    const updatedFields: Partial<Profile> = {}
+
+    if (updateData.primary_email)
+      updatedFields.primary_email = updateData.primary_email
+    if (updateData.first_name) updatedFields.first_name = updateData.first_name
+    if (updateData.last_name) updatedFields.last_name = updateData.last_name
+    if (updateData.image_url) updatedFields.image_url = updateData.image_url
+
     await profileRepository.update(
       { uuid: user.uuid },
-      {
-        primary_email,
-        first_name,
-        last_name,
-        image_url
-      }
+      updatedFields as CreateProfile
     )
 
     const savedProfile = await profileRepository.findOneBy({
