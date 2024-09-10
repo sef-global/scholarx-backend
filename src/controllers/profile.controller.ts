@@ -49,21 +49,16 @@ export const updateProfileHandler = async (
           reject(err)
         } else {
           try {
+            const updateData: Partial<Profile> = { ...req.body }
+
             if (req.file) {
-              const image_url = IMG_HOST + '/' + req.file?.filename
-              const { statusCode, profile, message } = await updateProfile(
-                user,
-                {
-                  ...req.body,
-                  image_url
-                }
-              )
-              return res.status(statusCode).json({ profile, message })
+              updateData.image_url = IMG_HOST + '/' + req.file.filename
             }
 
-            const { statusCode, profile, message } = await updateProfile(user, {
-              ...req.body
-            })
+            const { statusCode, profile, message } = await updateProfile(
+              user,
+              updateData
+            )
             return res.status(statusCode).json({ profile, message })
           } catch (error) {
             reject(error)
