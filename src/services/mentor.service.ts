@@ -5,7 +5,11 @@ import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { MentorApplicationStatus } from '../enums'
 import { type PaginatedApiResponse } from '../types'
-import { getEmailContent, getMentorPublicData } from '../utils'
+import {
+  capitalizeFirstLetter,
+  getEmailContent,
+  getMentorPublicData
+} from '../utils'
 import { sendEmail } from './admin/email.service'
 
 export const createMentor = async (
@@ -71,6 +75,11 @@ export const createMentor = async (
           break
       }
     }
+
+    application.firstName = capitalizeFirstLetter(
+      application.firstName as string
+    )
+    application.lastName = capitalizeFirstLetter(application.lastName as string)
 
     const newMentor = new Mentor(
       MentorApplicationStatus.PENDING,
