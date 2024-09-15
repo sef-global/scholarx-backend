@@ -79,9 +79,11 @@ export const addMentee = async (
       }
     }
 
-    application.firstName = capitalizeFirstLetter(application.firstName as string)
+    application.firstName = capitalizeFirstLetter(
+      application.firstName as string
+    )
     application.lastName = capitalizeFirstLetter(application.lastName as string)
-    
+
     const newMentee = new Mentee(
       MenteeApplicationStatus.PENDING,
       application,
