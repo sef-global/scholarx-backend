@@ -11,11 +11,19 @@ import type Mentor from './entities/mentor.entity'
 import { MenteeApplicationStatus, MentorApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
 
-export const signAndSetCookie = (res: Response, uuid: string): void => {
-  const accessToken = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
-  const refreshToken = jwt.sign({ userId: uuid }, REFRESH_JWT_SECRET ?? '', {
+const generateAccessToken = (uuid: string): string => {
+  return jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
+}
+
+const generateRefreshToken = (uuid: string): string => {
+  return jwt.sign({ userId: uuid }, REFRESH_JWT_SECRET ?? '', {
     expiresIn: '10d'
   })
+}
+
+export const signAndSetCookie = (res: Response, uuid: string): void => {
+  const accessToken = generateAccessToken(uuid)
+  const refreshToken = generateRefreshToken(uuid)
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
@@ -29,6 +37,16 @@ export const signAndSetCookie = (res: Response, uuid: string): void => {
     secure: false // TODO: Set to true when using HTTPS
   })
 }
+
+export const setAccessToken = (res: Response, uuid: string): void => {
+  const accessToken =  generateAccessToken(uuid)
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    maxAge: 5 * 24 * 60 * 60 * 1000,
+    secure: false // TODO: Set to true when using HTTPS
+  })
+} 
 
 export const getMentorPublicData = (mentor: Mentor): Mentor => {
   const { application, profile } = mentor

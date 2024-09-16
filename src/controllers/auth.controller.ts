@@ -10,7 +10,7 @@ import {
   resetPassword
 } from '../services/auth.service'
 import type { ApiResponse } from '../types'
-import { signAndSetCookie } from '../utils'
+import { setAccessToken, signAndSetCookie } from '../utils'
 
 export const googleRedirect = async (
   req: Request,
@@ -169,23 +169,19 @@ export const requireAuth = (
 
       if (!token && !refreshToken) {
         return res
-          .status(401)
-          .json({ error: 'Access Denied. No token provided.' })
+          .status(403)
+          .json({ error: 'Forbidden. No token provided.' })
       }
 
       try {
         jwt.verify(token, JWT_SECRET)
-      } catch (err) {
-        if (!refreshToken) {
-          return res.status(401).send('Access Denied. Please Login again.')
-        }
-
+      } catch (err) {    
         try {
           const decoded = jwt.verify(refreshToken, REFRESH_JWT_SECRET) as {
             userId: string
           }
 
-          signAndSetCookie(res, decoded.userId)
+          setAccessToken(res, decoded.userId)
         } catch (error) {
           return res
             .status(401)
@@ -260,7 +256,7 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
       userId: string
     }
 
-    signAndSetCookie(res, decoded.userId)
+    setAccessToken(res, decoded.userId)
   } catch (error) {
     res.status(401).json({ error: 'Invalid token, please log in again' })
   }
