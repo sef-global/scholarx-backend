@@ -25,7 +25,6 @@ export const searchMentorsSchema = z.object({
 export const mentorUpdateSchema = z.object({
   availability: z.boolean().optional(),
   application: z.record(z.string(), z.any()).optional(),
-  state: z.nativeEnum(MentorApplicationStatus).optional(),
   category: z.string().uuid().optional(),
   profile: updateProfileSchema.optional()
 })

@@ -86,10 +86,6 @@ export const updateMentorDetails = async (
       mentor.availability = mentorData.availability
     }
 
-    if (mentorData.state) {
-      mentor.state = mentorData.state
-    }
-
     if (mentorData.category) {
       if (typeof mentorData.category === 'string') {
         const category = await categoryRepository.findOne({
