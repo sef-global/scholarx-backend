@@ -17,20 +17,14 @@ import {
   getAllMentorEmailsSchema,
   getAllMentorsByStatusSchema,
   mentorStatusSchema,
-  mentorUpdateSchema,
   searchMentorsSchema,
   updateMentorAvailabilitySchema
 } from '../../../schemas/admin/admin.mentor-routes.schema'
 import { paginationSchema } from '../../../schemas/common/pagination-request.schema'
-import { upload } from '../../../utils'
 
 const mentorRouter = express.Router()
 
-mentorRouter.put(
-  '/:mentorId',
-  [requireAuth, upload, requestBodyValidator(mentorUpdateSchema)],
-  updateMentorHandler
-)
+mentorRouter.put('/:mentorId', requireAuth, updateMentorHandler)
 mentorRouter.put(
   '/:mentorId/state',
   [requireAuth, requestBodyValidator(mentorStatusSchema)],

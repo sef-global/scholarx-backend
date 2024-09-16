@@ -15,6 +15,8 @@ import {
 } from '../../services/mentor.service'
 import type { ApiResponse, PaginatedApiResponse } from '../../types'
 import { IMG_HOST } from '../../configs/envConfig'
+import { formatValidationErrors, upload } from '../../utils'
+import { mentorUpdateSchema } from '../../schemas/admin/admin.mentor-routes.schema'
 
 export const updateMentorHandler = async (
   req: Request,
@@ -27,14 +29,34 @@ export const updateMentorHandler = async (
   }
 
   try {
-    const { mentorId } = req.params
+    await new Promise<void>((resolve, reject) => {
+      upload(req, res, (err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
+
     const data = req.body.data ? JSON.parse(req.body.data) : req.body
+
+    const result = mentorUpdateSchema.safeParse(data)
+    if (!result.success) {
+      return res.status(400).json({
+        error: 'Invalid data',
+        details: formatValidationErrors(result.error)
+      })
+    }
+
     const mentorUpdateData: Partial<Mentor> = { ...data }
     const profileUpdateData: Partial<Profile> = { ...data.profile }
 
     if (req.file) {
       profileUpdateData.image_url = `${IMG_HOST}/${req.file.filename}`
     }
+
+    const { mentorId } = req.params
 
     const { mentor, statusCode, message } = await updateMentorDetails(
       mentorId,
