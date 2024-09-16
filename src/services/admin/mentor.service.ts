@@ -1,7 +1,9 @@
 import { dataSource } from '../../configs/dbConfig'
+import Category from '../../entities/category.entity'
 import Mentor from '../../entities/mentor.entity'
+import Profile from '../../entities/profile.entity'
 import type { MentorApplicationStatus } from '../../enums'
-import { type PaginatedApiResponse } from '../../types'
+import { type CreateProfile, type PaginatedApiResponse } from '../../types'
 import { getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
@@ -51,6 +53,106 @@ export const updateMentorStatus = async (
   } catch (err) {
     console.error('Error updating the mentor status', err)
     throw new Error('Error updating the mentor status')
+  }
+}
+
+export const updateMentorDetails = async (
+  mentorId: string,
+  mentorData: Partial<Mentor>,
+  profileData?: Partial<Profile>
+): Promise<{
+  statusCode: number
+  mentor?: Mentor | null
+  message: string
+}> => {
+  try {
+    const mentorRepository = dataSource.getRepository(Mentor)
+    const profileRepository = dataSource.getRepository(Profile)
+    const categoryRepository = dataSource.getRepository(Category)
+
+    const mentor = await mentorRepository.findOne({
+      where: { uuid: mentorId },
+      relations: ['profile']
+    })
+
+    if (!mentor) {
+      return {
+        statusCode: 404,
+        message: 'Mentor not found'
+      }
+    }
+
+    if (mentorData.availability !== undefined) {
+      mentor.availability = mentorData.availability
+    }
+
+    if (mentorData.state) {
+      mentor.state = mentorData.state
+    }
+
+    if (mentorData.category) {
+      if (typeof mentorData.category === 'string') {
+        const category = await categoryRepository.findOne({
+          where: { uuid: mentorData.category }
+        })
+
+        if (!category) {
+          return {
+            statusCode: 404,
+            message: 'Category not found'
+          }
+        }
+        mentor.category = category
+      }
+    }
+
+    // will override values of keys if exisitng keys provided. add new key-value pairs if not exists
+    if (mentorData.application) {
+      mentor.application = {
+        ...mentor.application,
+        ...mentorData.application
+      }
+    }
+
+    await mentorRepository.save(mentor)
+
+    if (profileData && mentor.profile) {
+      const updatedProfileData: Partial<Profile> = {}
+
+      if (profileData.primary_email) {
+        updatedProfileData.primary_email = profileData.primary_email
+      }
+      if (profileData.first_name) {
+        updatedProfileData.first_name = profileData.first_name
+      }
+      if (profileData.last_name) {
+        updatedProfileData.last_name = profileData.last_name
+      }
+      if (profileData.image_url) {
+        updatedProfileData.image_url = profileData.image_url
+      }
+
+      if (Object.keys(updatedProfileData).length > 0) {
+        await profileRepository.update(
+          { uuid: mentor.profile.uuid },
+          updatedProfileData as CreateProfile
+        )
+      }
+    }
+
+    const updatedMentor = await mentorRepository.findOne({
+      where: { uuid: mentorId },
+      relations: ['profile', 'category']
+    })
+
+    return {
+      statusCode: 200,
+      mentor: updatedMentor,
+      message: 'Updated Mentor details successfully'
+    }
+  } catch (err) {
+    console.error('Error updating the mentor details', err)
+    throw new Error('Error updating the mentor details')
   }
 }
 

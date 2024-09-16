@@ -5,7 +5,8 @@ import {
   mentorDetailsHandler,
   mentorStatusHandler,
   searchMentors,
-  updateMentorAvailability
+  updateMentorAvailability,
+  updateMentorHandler
 } from '../../../controllers/admin/mentor.controller'
 import { requireAuth } from '../../../controllers/auth.controller'
 import {
@@ -16,13 +17,20 @@ import {
   getAllMentorEmailsSchema,
   getAllMentorsByStatusSchema,
   mentorStatusSchema,
+  mentorUpdateSchema,
   searchMentorsSchema,
   updateMentorAvailabilitySchema
 } from '../../../schemas/admin/admin.mentor-routes.schema'
 import { paginationSchema } from '../../../schemas/common/pagination-request.schema'
+import { upload } from '../../../utils'
 
 const mentorRouter = express.Router()
 
+mentorRouter.put(
+  '/:mentorId',
+  [requireAuth, upload, requestBodyValidator(mentorUpdateSchema)],
+  updateMentorHandler
+)
 mentorRouter.put(
   '/:mentorId/state',
   [requireAuth, requestBodyValidator(mentorStatusSchema)],
