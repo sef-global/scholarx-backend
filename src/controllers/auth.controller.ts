@@ -168,14 +168,12 @@ export const requireAuth = (
       const refreshToken = req.cookies.refreshToken
 
       if (!token && !refreshToken) {
-        return res
-          .status(403)
-          .json({ error: 'Forbidden. No token provided.' })
+        return res.status(403).json({ error: 'Forbidden. No token provided.' })
       }
 
       try {
         jwt.verify(token, JWT_SECRET)
-      } catch (err) {    
+      } catch (err) {
         try {
           const decoded = jwt.verify(refreshToken, REFRESH_JWT_SECRET) as {
             userId: string

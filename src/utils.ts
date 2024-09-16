@@ -39,14 +39,14 @@ export const signAndSetCookie = (res: Response, uuid: string): void => {
 }
 
 export const setAccessToken = (res: Response, uuid: string): void => {
-  const accessToken =  generateAccessToken(uuid)
+  const accessToken = generateAccessToken(uuid)
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     maxAge: 5 * 24 * 60 * 60 * 1000,
     secure: false // TODO: Set to true when using HTTPS
   })
-} 
+}
 
 export const getMentorPublicData = (mentor: Mentor): Mentor => {
   const { application, profile } = mentor
