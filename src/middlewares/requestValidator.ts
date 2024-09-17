@@ -4,7 +4,11 @@ import { ZodError, type ZodSchema } from 'zod'
 export const requestBodyValidator = <T extends ZodSchema>(schema: T) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse(req.body)
+      if (req.body.data) {
+        schema.parse(JSON.parse(req.body.data))
+      } else {
+        schema.parse(req.body)
+      }
       next()
     } catch (err) {
       console.log(err)

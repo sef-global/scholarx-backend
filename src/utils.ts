@@ -10,6 +10,7 @@ import type Mentee from './entities/mentee.entity'
 import type Mentor from './entities/mentor.entity'
 import { MenteeApplicationStatus, MentorApplicationStatus } from './enums'
 import { generateCertificate } from './services/admin/generateCertificate'
+import { type ZodError } from 'zod'
 
 const generateAccessToken = (uuid: string): string => {
   return jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
@@ -316,4 +317,12 @@ export const getPasswordChangedEmailContent = (
 
 export const capitalizeFirstLetter = (word: string): string => {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+}
+
+export const formatValidationErrors = (
+  err: ZodError
+): Array<{ message: string }> => {
+  return err.errors.map((issue) => ({
+    message: `${issue.path.join('.')} is ${issue.message}`
+  }))
 }
