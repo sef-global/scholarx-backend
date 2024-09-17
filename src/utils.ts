@@ -10,6 +10,7 @@ import { generateCertificate } from './services/admin/generateCertificate'
 import { randomUUID } from 'crypto'
 import { certificatesDir } from './app'
 import type Mentee from './entities/mentee.entity'
+import { type ZodError } from 'zod'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
@@ -285,4 +286,16 @@ export const getPasswordChangedEmailContent = (
     If you have any questions, please contact our support team.<br /><br />
     `
   }
+}
+
+export const capitalizeFirstLetter = (word: string): string => {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+}
+
+export const formatValidationErrors = (
+  err: ZodError
+): Array<{ message: string }> => {
+  return err.errors.map((issue) => ({
+    message: `${issue.path.join('.')} is ${issue.message}`
+  }))
 }

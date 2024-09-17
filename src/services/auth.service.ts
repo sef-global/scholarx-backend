@@ -5,6 +5,7 @@ import { JWT_SECRET } from '../configs/envConfig'
 import Profile from '../entities/profile.entity'
 import { type CreateProfile, type ApiResponse } from '../types'
 import {
+  capitalizeFirstLetter,
   getPasswordChangedEmailContent,
   getPasswordResetEmailContent
 } from '../utils'
@@ -35,8 +36,8 @@ export const registerUser = async (
     const newProfile = profileRepository.create({
       primary_email: email,
       password: hashedPassword,
-      first_name,
-      last_name,
+      first_name: capitalizeFirstLetter(first_name),
+      last_name: capitalizeFirstLetter(last_name),
       image_url: ''
     })
 

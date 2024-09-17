@@ -6,6 +6,7 @@ import {
   findAllMentorEmails,
   getAllMentors,
   getMentor,
+  updateMentorDetails,
   updateMentorStatus
 } from '../../services/admin/mentor.service'
 import {
@@ -13,6 +14,67 @@ import {
   updateAvailability
 } from '../../services/mentor.service'
 import type { ApiResponse, PaginatedApiResponse } from '../../types'
+import { IMG_HOST } from '../../configs/envConfig'
+import { formatValidationErrors, upload } from '../../utils'
+import { mentorUpdateSchema } from '../../schemas/admin/admin.mentor-routes.schema'
+
+export const updateMentorHandler = async (
+  req: Request,
+  res: Response
+): Promise<ApiResponse<Mentor>> => {
+  const user = req.user as Profile
+
+  if (user.type !== ProfileTypes.ADMIN) {
+    return res.status(403).json({ message: 'Only Admins are allowed' })
+  }
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      upload(req, res, (err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
+
+    const data = req.body.data ? JSON.parse(req.body.data) : req.body
+
+    const result = mentorUpdateSchema.safeParse(data)
+    if (!result.success) {
+      return res.status(400).json({
+        error: 'Invalid data',
+        details: formatValidationErrors(result.error)
+      })
+    }
+
+    const mentorUpdateData: Partial<Mentor> = { ...data }
+    const profileUpdateData: Partial<Profile> = { ...data.profile }
+
+    if (req.file) {
+      profileUpdateData.image_url = `${IMG_HOST}/${req.file.filename}`
+    }
+
+    const { mentorId } = req.params
+
+    const { mentor, statusCode, message } = await updateMentorDetails(
+      mentorId,
+      mentorUpdateData,
+      profileUpdateData
+    )
+    return res.status(statusCode).json({ mentor, message })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error updating mentor details:', err)
+      return res.status(500).json({
+        error: 'Internal server error',
+        message: err.message
+      })
+    }
+    throw err
+  }
+}
 
 export const mentorStatusHandler = async (
   req: Request,
