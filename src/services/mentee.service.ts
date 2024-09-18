@@ -1,4 +1,5 @@
 import { dataSource } from '../configs/dbConfig'
+import MonthlyCheckIn from '../entities/checkin.entity'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
@@ -159,5 +160,101 @@ export const getPublicMentee = async (
     }
   } catch (err) {
     throw new Error('Error getting mentees')
+  }
+}
+
+export const addMonthlyCheckIn = async (
+  menteeId: string,
+  checkInData: {
+    generalUpdatedsAndFeedback: string
+    progressTowardsGoals: string
+    mediaContentLinks: string[]
+  }
+): Promise<{
+  statusCode: number
+  checkIn?: MonthlyCheckIn
+  message: string
+}> => {
+  try {
+    const menteeRepository = dataSource.getRepository(Mentee)
+    const checkInRepository = dataSource.getRepository(MonthlyCheckIn)
+
+    const mentee = await menteeRepository.findOne({
+      where: { uuid: menteeId }
+    })
+
+    if (!mentee) {
+      return {
+        statusCode: 404,
+        message: 'Mentee not found'
+      }
+    }
+
+    const newCheckIn = new MonthlyCheckIn(
+      checkInData.generalUpdatedsAndFeedback,
+      checkInData.progressTowardsGoals,
+      checkInData.mediaContentLinks,
+      new Date(),
+      mentee
+    )
+
+    await checkInRepository.save(newCheckIn)
+
+    const mentor = await dataSource
+      .getRepository(Mentor)
+      .findOne({ where: { uuid: mentee.mentor.uuid }, relations: ['profile'] })
+
+    if (mentor) {
+      const mentorNotificationContent = {
+        subject: 'New Monthly Check-In Submitted',
+        message: `A new monthly check-in has been submitted by ${mentee.application.firstName} ${mentee.application.lastName}`
+      }
+
+      await sendEmail(
+        mentor.profile.primary_email,
+        mentorNotificationContent.subject,
+        mentorNotificationContent.message
+      )
+    }
+    return {
+      statusCode: 200,
+      checkIn: newCheckIn,
+      message: 'New check-in created'
+    }
+  } catch (err) {
+    throw new Error('Error adding check-in')
+  }
+}
+
+export const fetchMonthlyCheckIns = async (
+  menteeId: string
+): Promise<{
+  statusCode: number
+  checkIns: MonthlyCheckIn[]
+  message: string
+}> => {
+  try {
+    const checkInRepository = dataSource.getRepository(MonthlyCheckIn)
+
+    const checkIns = await checkInRepository.find({
+      where: { mentee: { uuid: menteeId } },
+      order: { checkInDate: 'DESC' }
+    })
+
+    if (checkIns.length === 0) {
+      return {
+        statusCode: 404,
+        checkIns: [],
+        message: 'No check-ins found'
+      }
+    }
+
+    return {
+      statusCode: 200,
+      checkIns,
+      message: 'Check-ins found'
+    }
+  } catch (err) {
+    throw new Error('Error getting check-ins')
   }
 }
