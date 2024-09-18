@@ -4,7 +4,6 @@ import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { MenteeApplicationStatus } from '../enums'
-import { type ApiResponse } from '../types'
 import {
   getEmailContent,
   getMentorNotifyEmailContent,
@@ -169,7 +168,10 @@ export const addMonthlyCheckIn = async (
   generalUpdatesAndFeedback: string,
   progressTowardsGoals: string,
   mediaContentLinks: string[]
-): Promise<ApiResponse<MonthlyCheckIn>> => {
+): Promise<{
+  statusCode: number
+  message: string
+}> => {
   try {
     const menteeRepository = dataSource.getRepository(Mentee)
     const checkInRepository = dataSource.getRepository(MonthlyCheckIn)
@@ -197,34 +199,9 @@ export const addMonthlyCheckIn = async (
     })
 
     console.log(newCheckIn)
-    try {
-      await checkInRepository.save(newCheckIn)
+    await checkInRepository.save(newCheckIn)
 
-      const mentor = await dataSource.getRepository(Mentor).findOne({
-        where: { uuid: mentee.mentor.uuid },
-        relations: ['profile']
-      })
-
-      if (mentor) {
-        const mentorNotificationContent = {
-          subject: 'New Monthly Check-In Submitted',
-          message: `A new monthly check-in has been submitted by ${mentee.uuid}`
-        }
-
-        await sendEmail(
-          mentor.profile.primary_email,
-          mentorNotificationContent.subject,
-          mentorNotificationContent.message
-        )
-      }
-      return {
-        statusCode: 200,
-        data: newCheckIn,
-        message: 'New check-in created'
-      }
-    } catch (err) {
-      throw new Error('Error adding check-in')
-    }
+    return { statusCode: 200, message: 'monthly checking inserted' }
   } catch (err) {
     console.error('Error in addMonthlyCheckIn', err)
     throw new Error('Error in addMonthlyCheckIn')
