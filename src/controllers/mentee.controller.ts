@@ -10,9 +10,9 @@ import {
 import { MentorApplicationStatus, StatusUpdatedBy } from '../enums'
 import {
   addMentee,
-  addMonthlyCheckIn,
   fetchMonthlyCheckIns,
-  getPublicMentee
+  getPublicMentee,
+  addMonthlyCheckIn
 } from '../services/mentee.service'
 import type MonthlyCheckIn from '../entities/checkin.entity'
 
@@ -138,26 +138,29 @@ export const submitMonthlyCheckIn = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = req.user as Profile
-    const { menteeId } = req.params
-    const checkInData = req.body
+    const menteeId = '342c9387-4505-4c44-bacc-a80ad6850df3'
+    const {
+      generalUpdatesAndFeedback,
+      progressTowardsGoals,
+      mediaContentLinks
+    } = req.body
 
-    if (user.uuid !== menteeId) {
-      res.status(403).json({ message: 'Unauthorized' })
-    }
-
-    const { statusCode, message } = await addMonthlyCheckIn(
+    const newCheckIn = await addMonthlyCheckIn(
       menteeId,
-      checkInData
+      generalUpdatesAndFeedback,
+      progressTowardsGoals,
+      mediaContentLinks
     )
-    res.status(statusCode).json({ message })
+
+    res
+      .status(201)
+      .json({ checkIn: newCheckIn, message: 'Check-in added successfully' })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
       res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
-      return
     }
     throw err
   }

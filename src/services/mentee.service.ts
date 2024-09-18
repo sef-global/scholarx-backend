@@ -4,6 +4,7 @@ import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
 import { MenteeApplicationStatus } from '../enums'
+import { type ApiResponse } from '../types'
 import {
   getEmailContent,
   getMentorNotifyEmailContent,
@@ -165,64 +166,68 @@ export const getPublicMentee = async (
 
 export const addMonthlyCheckIn = async (
   menteeId: string,
-  checkInData: {
-    generalUpdatedsAndFeedback: string
-    progressTowardsGoals: string
-    mediaContentLinks: string[]
-  }
-): Promise<{
-  statusCode: number
-  checkIn?: MonthlyCheckIn
-  message: string
-}> => {
+  generalUpdatesAndFeedback: string,
+  progressTowardsGoals: string,
+  mediaContentLinks: string[]
+): Promise<ApiResponse<MonthlyCheckIn>> => {
   try {
     const menteeRepository = dataSource.getRepository(Mentee)
     const checkInRepository = dataSource.getRepository(MonthlyCheckIn)
 
+    console.log(checkInRepository)
+
     const mentee = await menteeRepository.findOne({
-      where: { uuid: menteeId }
+      where: {
+        uuid: menteeId
+      }
     })
 
+    console.log(mentee)
+
     if (!mentee) {
-      return {
-        statusCode: 404,
-        message: 'Mentee not found'
-      }
+      return { statusCode: 404, message: 'Mentee not found' }
     }
 
-    const newCheckIn = new MonthlyCheckIn(
-      checkInData.generalUpdatedsAndFeedback,
-      checkInData.progressTowardsGoals,
-      checkInData.mediaContentLinks,
-      new Date(),
+    const newCheckIn = checkInRepository.create({
+      generalUpdatesAndFeedback,
+      progressTowardsGoals,
+      mediaContentLinks,
+      checkInDate: new Date(),
       mentee
-    )
+    })
 
-    await checkInRepository.save(newCheckIn)
+    console.log(newCheckIn)
+    try {
+      await checkInRepository.save(newCheckIn)
 
-    const mentor = await dataSource
-      .getRepository(Mentor)
-      .findOne({ where: { uuid: mentee.mentor.uuid }, relations: ['profile'] })
+      const mentor = await dataSource.getRepository(Mentor).findOne({
+        where: { uuid: mentee.mentor.uuid },
+        relations: ['profile']
+      })
 
-    if (mentor) {
-      const mentorNotificationContent = {
-        subject: 'New Monthly Check-In Submitted',
-        message: `A new monthly check-in has been submitted by ${mentee.application.firstName} ${mentee.application.lastName}`
+      if (mentor) {
+        const mentorNotificationContent = {
+          subject: 'New Monthly Check-In Submitted',
+          message: `A new monthly check-in has been submitted by ${mentee.uuid}`
+        }
+
+        await sendEmail(
+          mentor.profile.primary_email,
+          mentorNotificationContent.subject,
+          mentorNotificationContent.message
+        )
       }
-
-      await sendEmail(
-        mentor.profile.primary_email,
-        mentorNotificationContent.subject,
-        mentorNotificationContent.message
-      )
-    }
-    return {
-      statusCode: 200,
-      checkIn: newCheckIn,
-      message: 'New check-in created'
+      return {
+        statusCode: 200,
+        data: newCheckIn,
+        message: 'New check-in created'
+      }
+    } catch (err) {
+      throw new Error('Error adding check-in')
     }
   } catch (err) {
-    throw new Error('Error adding check-in')
+    console.error('Error in addMonthlyCheckIn', err)
+    throw new Error('Error in addMonthlyCheckIn')
   }
 }
 

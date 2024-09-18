@@ -37,19 +37,21 @@ class Mentee extends BaseEntity {
   mentor: Mentor
 
   @OneToMany(() => MonthlyCheckIn, (checkIn) => checkIn.mentee)
-  checkIns!: MonthlyCheckIn[]
+  checkIns?: MonthlyCheckIn[]
 
   constructor(
     state: MenteeApplicationStatus,
     application: Record<string, unknown>,
     profile: profileEntity,
-    mentor: Mentor
+    mentor: Mentor,
+    checkIns?: MonthlyCheckIn[]
   ) {
     super()
     this.state = state || MenteeApplicationStatus.PENDING
     this.application = application
     this.profile = profile
     this.mentor = mentor
+    this.checkIns = checkIns
   }
 }
 
