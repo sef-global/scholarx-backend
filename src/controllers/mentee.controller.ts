@@ -138,15 +138,19 @@ export const submitMonthlyCheckIn = async (
   res: Response
 ): Promise<void> => {
   try {
-    const menteeId = '342c9387-4505-4c44-bacc-a80ad6850df3'
     const {
+      menteeId,
+      title,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks
     } = req.body
 
+    console.log(menteeId)
+
     const newCheckIn = await addMonthlyCheckIn(
       menteeId,
+      title,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks
@@ -171,20 +175,9 @@ export const getMonthlyCheckIns = async (
   res: Response
 ): Promise<Response<ApiResponse<MonthlyCheckIn>>> => {
   try {
-    const user = req.user as Profile
     const { menteeId } = req.params
 
-    const isMentee = user.uuid === menteeId
-    const isMentor = user.mentor?.some(
-      (mentor) =>
-        mentor.state === MentorApplicationStatus.APPROVED &&
-        mentor.mentees?.some((mentee) => mentee.uuid === menteeId)
-    )
-
-    if (!isMentee && !isMentor) {
-      return res.status(403).json({ message: 'Unauthorized' })
-    }
-
+    console.log('menteeId', menteeId)
     const { statusCode, checkIns, message } = await fetchMonthlyCheckIns(
       menteeId
     )

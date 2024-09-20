@@ -38,5 +38,5 @@ menteeRouter.post(
   submitMonthlyCheckIn
 )
 
-menteeRouter.get('/:menteeId/checkin', requireAuth, getMonthlyCheckIns)
+menteeRouter.get('/checkin/:menteeId', requireAuth, getMonthlyCheckIns)
 export default menteeRouter

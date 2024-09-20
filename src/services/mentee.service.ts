@@ -165,6 +165,7 @@ export const getPublicMentee = async (
 
 export const addMonthlyCheckIn = async (
   menteeId: string,
+  title: string,
   generalUpdatesAndFeedback: string,
   progressTowardsGoals: string,
   mediaContentLinks: string[]
@@ -176,7 +177,7 @@ export const addMonthlyCheckIn = async (
     const menteeRepository = dataSource.getRepository(Mentee)
     const checkInRepository = dataSource.getRepository(MonthlyCheckIn)
 
-    console.log(checkInRepository)
+    console.log(menteeId)
 
     const mentee = await menteeRepository.findOne({
       where: {
@@ -191,6 +192,7 @@ export const addMonthlyCheckIn = async (
     }
 
     const newCheckIn = checkInRepository.create({
+      title,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks,
@@ -218,8 +220,17 @@ export const fetchMonthlyCheckIns = async (
   try {
     const checkInRepository = dataSource.getRepository(MonthlyCheckIn)
 
+    const mentee = await dataSource.getRepository(Mentee).findOne({
+      where: { uuid: menteeId }
+    })
+
+    if (!mentee) {
+      return { statusCode: 404, checkIns: [], message: 'Mentee not found' }
+    }
+
     const checkIns = await checkInRepository.find({
       where: { mentee: { uuid: menteeId } },
+      relations: ['mentee'],
       order: { checkInDate: 'DESC' }
     })
 
