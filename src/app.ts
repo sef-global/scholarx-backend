@@ -17,6 +17,7 @@ import menteeRouter from './routes/mentee/mentee.route'
 import mentorRouter from './routes/mentor/mentor.route'
 import profileRouter from './routes/profile/profile.route'
 import path from 'path'
+import countryRouter from './routes/country/country.route'
 
 const app = express()
 const staticFolder = 'uploads'
@@ -45,6 +46,7 @@ app.use('/api/mentors', mentorRouter)
 app.use('/api/mentees', menteeRouter)
 app.use('/api/categories', categoryRouter)
 app.use('/api/emails', emailRouter)
+app.use('/api/countries', countryRouter)
 
 if (!fs.existsSync(staticFolder)) {
   fs.mkdirSync(staticFolder, { recursive: true })
