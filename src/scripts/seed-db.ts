@@ -24,12 +24,14 @@ export const seedDatabaseService = async (): Promise<string> => {
     const emailRepository = dataSource.getRepository(Email)
     const menteeRepository = dataSource.getRepository(Mentee)
     const mentorRepository = dataSource.getRepository(Mentor)
+    const countryRepository = dataSource.getRepository(Country)
 
     await menteeRepository.remove(await menteeRepository.find())
     await mentorRepository.remove(await mentorRepository.find())
     await profileRepository.remove(await profileRepository.find())
     await categoryRepository.remove(await categoryRepository.find())
     await emailRepository.remove(await emailRepository.find())
+    await countryRepository.remove(await countryRepository.find())
 
     const genProfiles = faker.helpers.multiple(createRandomProfile, {
       count: 100
@@ -64,6 +66,22 @@ export const seedDatabaseService = async (): Promise<string> => {
       }
     )
     const categories = await categoryRepository.save(genCategories)
+
+    // Countries data file must be in the same directory as the seeding file in build directory.
+    const countriesDataFilePath = path.join(__dirname, 'countries.json')
+    const countriesData: Record<string, string> = JSON.parse(
+      fs.readFileSync(countriesDataFilePath, 'utf-8')
+    )
+
+    for (const [code, name] of Object.entries(countriesData)) {
+      const existingCountry = await countryRepository.findOne({
+        where: { code }
+      })
+
+      if (!existingCountry) {
+        await countryRepository.save(new Country(code, name))
+      }
+    }
 
     const genMentors = (
       categories: Category[],
@@ -112,6 +130,7 @@ export const seedDatabaseService = async (): Promise<string> => {
 
     await menteeRepository.save(menteesEntities)
 
+    await dataSource.destroy()
     return 'Database seeded successfully'
   } catch (err) {
     console.error(err)
@@ -167,44 +186,10 @@ const createMentor = (category: Category, profile: Profile): Mentor => {
   } as unknown as Mentor
 }
 
-export const seedCountries = async (): Promise<void> => {
-  // Countries data file must be in the same directory as the seeding file in build directory.
-  const countriesDataFilePath = path.join(__dirname, 'countries.json')
-
-  const countriesData: Record<string, string> = JSON.parse(
-    fs.readFileSync(countriesDataFilePath, 'utf-8')
-  )
-
-  await dataSource.initialize()
-  const countryRepository = dataSource.getRepository(Country)
-
-  for (const [code, name] of Object.entries(countriesData)) {
-    const existingCountry = await countryRepository.findOne({
-      where: { code }
-    })
-
-    if (!existingCountry) {
-      await countryRepository.save(new Country(code, name))
-      console.log(`Inserted: ${name}`)
-    } else {
-      console.log(`Country already exists: ${name}`)
-    }
-  }
-  await dataSource.destroy()
-}
-
 seedDatabaseService()
   .then((res) => {
     console.log(res)
   })
   .catch((err) => {
     console.error(err)
-  })
-
-seedCountries()
-  .then(() => {
-    console.log('Countries Seeding completed')
-  })
-  .catch((err) => {
-    console.error('Countries Seeding Error', err)
   })
