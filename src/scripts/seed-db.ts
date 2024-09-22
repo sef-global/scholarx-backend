@@ -1,10 +1,14 @@
 import { faker } from '@faker-js/faker'
+import path from 'path'
+import fs from 'fs'
 import { dataSource } from '../configs/dbConfig'
 import Category from '../entities/category.entity'
 import Email from '../entities/email.entity'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import Profile from '../entities/profile.entity'
+import Country from '../entities/country.entity'
+
 import {
   EmailStatusTypes,
   MenteeApplicationStatus,
@@ -163,10 +167,44 @@ const createMentor = (category: Category, profile: Profile): Mentor => {
   } as unknown as Mentor
 }
 
+export const seedCountries = async (): Promise<void> => {
+  // Countries data file must be in the same directory as the seeding file in build directory.
+  const countriesDataFilePath = path.join(__dirname, 'countries.json')
+
+  const countriesData: Record<string, string> = JSON.parse(
+    fs.readFileSync(countriesDataFilePath, 'utf-8')
+  )
+
+  await dataSource.initialize()
+  const countryRepository = dataSource.getRepository(Country)
+
+  for (const [code, name] of Object.entries(countriesData)) {
+    const existingCountry = await countryRepository.findOne({
+      where: { code }
+    })
+
+    if (!existingCountry) {
+      await countryRepository.save(new Country(code, name))
+      console.log(`Inserted: ${name}`)
+    } else {
+      console.log(`Country already exists: ${name}`)
+    }
+  }
+  await dataSource.destroy()
+}
+
 seedDatabaseService()
   .then((res) => {
     console.log(res)
   })
   .catch((err) => {
     console.error(err)
+  })
+
+seedCountries()
+  .then(() => {
+    console.log('Countries Seeding completed')
+  })
+  .catch((err) => {
+    console.error('Countries Seeding Error', err)
   })
