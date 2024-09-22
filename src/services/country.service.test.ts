@@ -1,5 +1,5 @@
 import { dataSource } from '../configs/dbConfig'
-import { type Country } from '../entities/country.entity'
+import type Country from '../entities/country.entity'
 import { getAllCountries } from './country.service'
 
 jest.mock('../configs/dbConfig', () => ({

@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 import type { ApiResponse } from '../types'
-import { type Country } from '../entities/country.entity'
+import type Country from '../entities/country.entity'
 import { getAllCountries } from '../services/country.service'
 
 export const getCountries = async (

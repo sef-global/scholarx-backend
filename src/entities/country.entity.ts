@@ -15,3 +15,5 @@ export class Country extends BaseEntity {
     this.name = name
   }
 }
+
+export default Country
