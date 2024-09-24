@@ -5,6 +5,7 @@ import {
   addMonthlyCheckIn
 } from '../services/mentee.service'
 import type MonthlyCheckIn from '../entities/checkin.entity'
+import { addMentorFeedbackMonthlyCheckIn } from '../services/monthlyChecking.service'
 
 export const postMonthlyCheckIn = async (
   req: Request,
@@ -62,6 +63,37 @@ export const getMonthlyCheckIns = async (
     if (err instanceof Error) {
       console.error('Error executing query', err)
       return res
+        .status(500)
+        .json({ error: 'Internal server error', message: err.message })
+    }
+    throw err
+  }
+}
+
+export const addFeedbackMonthlyCheckIn = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { checkInId, menteeId, mentorFeedback, isCheckedByMentor } = req.body
+
+    console.log(menteeId, checkInId)
+
+    const newMentorFeedbackCheckIn = await addMentorFeedbackMonthlyCheckIn(
+      checkInId,
+      menteeId,
+      mentorFeedback,
+      isCheckedByMentor
+    )
+
+    res.status(201).json({
+      feedbackCheckIn: newMentorFeedbackCheckIn,
+      message: 'Mentor Feedback added successfully'
+    })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error executing query', err)
+      res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }

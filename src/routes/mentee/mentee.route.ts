@@ -14,6 +14,7 @@ import {
   updateMenteeStatusSchema
 } from '../../schemas/mentee-routes.schemas'
 import {
+  addFeedbackMonthlyCheckIn,
   getMonthlyCheckIns,
   postMonthlyCheckIn
 } from '../../controllers/monthlyChecking.controller'
@@ -41,4 +42,7 @@ menteeRouter.post(
 )
 
 menteeRouter.get('/checkin/:menteeId', requireAuth, getMonthlyCheckIns)
+
+menteeRouter.put('/checking/feedback', requireAuth, addFeedbackMonthlyCheckIn)
+
 export default menteeRouter
