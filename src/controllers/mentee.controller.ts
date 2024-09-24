@@ -8,13 +8,7 @@ import {
   updateStatus
 } from '../services/admin/mentee.service'
 import { MentorApplicationStatus, StatusUpdatedBy } from '../enums'
-import {
-  addMentee,
-  fetchMonthlyCheckIns,
-  getPublicMentee,
-  addMonthlyCheckIn
-} from '../services/mentee.service'
-import type MonthlyCheckIn from '../entities/checkin.entity'
+import { addMentee, getPublicMentee } from '../services/mentee.service'
 
 export const menteeApplicationHandler = async (
   req: Request,
@@ -122,67 +116,6 @@ export const getPublicMenteeDetails = async (
     const { menteeId } = req.params
     const { statusCode, message, mentee } = await getPublicMentee(menteeId)
     return res.status(statusCode).json({ mentee, message })
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error('Error executing query', err)
-      return res
-        .status(500)
-        .json({ error: 'Internal server error', message: err.message })
-    }
-    throw err
-  }
-}
-
-export const submitMonthlyCheckIn = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const {
-      menteeId,
-      title,
-      generalUpdatesAndFeedback,
-      progressTowardsGoals,
-      mediaContentLinks
-    } = req.body
-
-    console.log(menteeId)
-
-    const newCheckIn = await addMonthlyCheckIn(
-      menteeId,
-      title,
-      generalUpdatesAndFeedback,
-      progressTowardsGoals,
-      mediaContentLinks
-    )
-
-    res
-      .status(201)
-      .json({ checkIn: newCheckIn, message: 'Check-in added successfully' })
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error('Error executing query', err)
-      res
-        .status(500)
-        .json({ error: 'Internal server error', message: err.message })
-    }
-    throw err
-  }
-}
-
-export const getMonthlyCheckIns = async (
-  req: Request,
-  res: Response
-): Promise<Response<ApiResponse<MonthlyCheckIn>>> => {
-  try {
-    const { menteeId } = req.params
-
-    console.log('menteeId', menteeId)
-    const { statusCode, checkIns, message } = await fetchMonthlyCheckIns(
-      menteeId
-    )
-
-    return res.status(statusCode).json({ checkIns, message })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)

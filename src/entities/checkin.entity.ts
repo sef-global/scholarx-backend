@@ -16,6 +16,9 @@ class MonthlyCheckIn extends BaseEntity {
   @Column({ type: 'json' })
   mediaContentLinks: string[]
 
+  @Column({ type: 'json', nullable: true })
+  tags: string[]
+
   @Column({ type: 'text', nullable: true })
   mentorFeedback: string
 
@@ -38,6 +41,7 @@ class MonthlyCheckIn extends BaseEntity {
     progressTowardsGoals: string,
     mediaContentLinks: string[],
     mentorFeedback: string,
+    tags: string[],
     isCheckedByMentor: boolean,
     mentorCheckedDate: Date,
     checkInDate: Date,
@@ -48,6 +52,7 @@ class MonthlyCheckIn extends BaseEntity {
     this.generalUpdatesAndFeedback = generalUpdatesAndFeedback
     this.progressTowardsGoals = progressTowardsGoals
     this.mediaContentLinks = mediaContentLinks
+    this.tags = tags
     this.mentorFeedback = mentorFeedback
     this.isCheckedByMentor = isCheckedByMentor
     this.mentorCheckedDate = mentorCheckedDate

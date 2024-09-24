@@ -168,7 +168,8 @@ export const addMonthlyCheckIn = async (
   title: string,
   generalUpdatesAndFeedback: string,
   progressTowardsGoals: string,
-  mediaContentLinks: string[]
+  mediaContentLinks: string[],
+  tags: string[]
 ): Promise<{
   statusCode: number
   message: string
@@ -196,6 +197,7 @@ export const addMonthlyCheckIn = async (
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks,
+      tags,
       checkInDate: new Date(),
       mentee
     })
