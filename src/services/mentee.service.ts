@@ -168,8 +168,7 @@ export const addMonthlyCheckIn = async (
   title: string,
   generalUpdatesAndFeedback: string,
   progressTowardsGoals: string,
-  mediaContentLinks: string[],
-  tags: string[]
+  mediaContentLinks: string[]
 ): Promise<{
   statusCode: number
   message: string
@@ -197,7 +196,6 @@ export const addMonthlyCheckIn = async (
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks,
-      tags,
       checkInDate: new Date(),
       mentee
     })
@@ -216,7 +214,18 @@ export const fetchMonthlyCheckIns = async (
   menteeId: string
 ): Promise<{
   statusCode: number
-  checkIns: MonthlyCheckIn[]
+  checkIns: Array<{
+    uuid: string
+    title: string
+    generalUpdatesAndFeedback: string
+    progressTowardsGoals: string
+    mediaContentLinks: string[]
+    mentorFeedback: string | null
+    isCheckedByMentor: boolean
+    mentorCheckedDate: Date | null
+    checkInDate: Date
+    mentee: Mentee
+  }>
   message: string
 }> => {
   try {
@@ -244,12 +253,26 @@ export const fetchMonthlyCheckIns = async (
       }
     }
 
+    const checkInsWithUuid = checkIns.map((checkIn) => ({
+      uuid: checkIn.uuid,
+      title: checkIn.title,
+      generalUpdatesAndFeedback: checkIn.generalUpdatesAndFeedback,
+      progressTowardsGoals: checkIn.progressTowardsGoals,
+      mediaContentLinks: checkIn.mediaContentLinks,
+      mentorFeedback: checkIn.mentorFeedback,
+      isCheckedByMentor: checkIn.isCheckedByMentor,
+      mentorCheckedDate: checkIn.mentorCheckedDate,
+      checkInDate: checkIn.checkInDate,
+      mentee: checkIn.mentee
+    }))
+
     return {
       statusCode: 200,
-      checkIns,
+      checkIns: checkInsWithUuid,
       message: 'Check-ins found'
     }
   } catch (err) {
-    throw new Error('Error getting check-ins')
+    console.error('Error in fetchMonthlyCheckIns', err)
+    return { statusCode: 500, checkIns: [], message: 'Internal server error' }
   }
 }

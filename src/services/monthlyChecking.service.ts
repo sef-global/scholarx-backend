@@ -18,12 +18,10 @@ export const addMentorFeedbackMonthlyCheckIn = async (
     const mentee = await menteeRepository.findOne({
       where: { uuid: menteeId }
     })
-    console.log(menteeId)
 
     if (!mentee) {
       return { statusCode: 404, message: 'Mentee not found' }
     }
-    console.log(mentee)
 
     const checkIn = await checkInRepository.findOne({
       where: { uuid: checkInId, mentee: { uuid: menteeId } }
@@ -32,8 +30,6 @@ export const addMentorFeedbackMonthlyCheckIn = async (
     if (!checkIn) {
       return { statusCode: 404, message: 'Check-in not found' }
     }
-
-    console.log(checkIn)
 
     checkIn.mentorFeedback = mentorfeedback
     checkIn.isCheckedByMentor = isCheckedByMentor

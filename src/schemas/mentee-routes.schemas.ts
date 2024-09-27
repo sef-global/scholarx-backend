@@ -11,6 +11,7 @@ export const updateMenteeStatusSchema = z.object({
 })
 
 export const postMonthlyCheckInSchema = z.object({
+  menteeId: z.string(),
   title: z.enum([
     'January',
     'February',
@@ -33,6 +34,12 @@ export const postMonthlyCheckInSchema = z.object({
     .min(1, 'Please provide a valid progress report'),
   mediaContentLinks: z
     .array(z.string())
-    .min(3, 'Please provide at least 3 media content links'),
-  tags: z.array(z.string()).min(1, 'Please provide at least 1 tag')
+    .min(3, 'Please provide at least 3 media content links')
+})
+
+export const addFeedbackMonthlyCheckInSchema = z.object({
+  menteeId: z.string(),
+  checkInId: z.string(),
+  mentorFeedback: z.string().min(1, 'Please provide a valid feedback'),
+  isCheckedByMentor: z.boolean()
 })

@@ -9,6 +9,7 @@ import {
 } from '../../controllers/mentee.controller'
 import { requestBodyValidator } from '../../middlewares/requestValidator'
 import {
+  addFeedbackMonthlyCheckInSchema,
   menteeApplicationSchema,
   postMonthlyCheckInSchema,
   updateMenteeStatusSchema
@@ -43,6 +44,10 @@ menteeRouter.post(
 
 menteeRouter.get('/checkin/:menteeId', requireAuth, getMonthlyCheckIns)
 
-menteeRouter.put('/checking/feedback', requireAuth, addFeedbackMonthlyCheckIn)
+menteeRouter.put(
+  '/checking/feedback',
+  [requireAuth, requestBodyValidator(addFeedbackMonthlyCheckInSchema)],
+  addFeedbackMonthlyCheckIn
+)
 
 export default menteeRouter

@@ -10,35 +10,31 @@ import { addMentorFeedbackMonthlyCheckIn } from '../services/monthlyChecking.ser
 export const postMonthlyCheckIn = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Response<ApiResponse<MonthlyCheckIn>>> => {
   try {
     const {
       menteeId,
       title,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
-      mediaContentLinks,
-      tags
+      mediaContentLinks
     } = req.body
-
-    console.log(menteeId)
 
     const newCheckIn = await addMonthlyCheckIn(
       menteeId,
       title,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
-      mediaContentLinks,
-      tags
+      mediaContentLinks
     )
 
-    res
+    return res
       .status(201)
       .json({ checkIn: newCheckIn, message: 'Check-in added successfully' })
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error executing query', err)
-      res
+      return res
         .status(500)
         .json({ error: 'Internal server error', message: err.message })
     }
@@ -53,7 +49,6 @@ export const getMonthlyCheckIns = async (
   try {
     const { menteeId } = req.params
 
-    console.log('menteeId', menteeId)
     const { statusCode, checkIns, message } = await fetchMonthlyCheckIns(
       menteeId
     )
@@ -77,18 +72,15 @@ export const addFeedbackMonthlyCheckIn = async (
   try {
     const { checkInId, menteeId, mentorFeedback, isCheckedByMentor } = req.body
 
-    console.log(menteeId, checkInId)
-
     const newMentorFeedbackCheckIn = await addMentorFeedbackMonthlyCheckIn(
-      checkInId,
       menteeId,
+      checkInId,
       mentorFeedback,
       isCheckedByMentor
     )
 
     res.status(201).json({
-      feedbackCheckIn: newMentorFeedbackCheckIn,
-      message: 'Mentor Feedback added successfully'
+      feedbackCheckIn: newMentorFeedbackCheckIn
     })
   } catch (err) {
     if (err instanceof Error) {
