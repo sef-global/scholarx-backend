@@ -157,7 +157,7 @@ export const getPublicMentee = async (
       mentee: publicMentee,
       message: 'Mentees found'
     }
-  } catch (err) {MonthlyCheckIn
+  } catch (err) {
     throw new Error('Error getting mentees')
   }
 }
