@@ -1,11 +1,12 @@
 import type { Request, Response } from 'express'
 import { type ApiResponse } from '../types'
-import {
-  fetchMonthlyCheckIns,
-  addMonthlyCheckIn
-} from '../services/mentee.service'
 import type MonthlyCheckIn from '../entities/checkin.entity'
-import { addMentorFeedbackMonthlyCheckIn } from '../services/monthlyChecking.service'
+
+import {
+  addFeedbackByMentor,
+  addMonthlyCheckInByMentee,
+  fetchMonthlyCheckIns
+} from '../services/monthlyChecking.service'
 
 export const postMonthlyCheckIn = async (
   req: Request,
@@ -20,7 +21,7 @@ export const postMonthlyCheckIn = async (
       mediaContentLinks
     } = req.body
 
-    const newCheckIn = await addMonthlyCheckIn(
+    const newCheckIn = await addMonthlyCheckInByMentee(
       menteeId,
       title,
       generalUpdatesAndFeedback,
@@ -72,7 +73,7 @@ export const addFeedbackMonthlyCheckIn = async (
   try {
     const { checkInId, menteeId, mentorFeedback, isCheckedByMentor } = req.body
 
-    const newMentorFeedbackCheckIn = await addMentorFeedbackMonthlyCheckIn(
+    const newMentorFeedbackCheckIn = await addFeedbackByMentor(
       menteeId,
       checkInId,
       mentorFeedback,
