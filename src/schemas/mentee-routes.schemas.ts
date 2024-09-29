@@ -34,12 +34,12 @@ export const postMonthlyCheckInSchema = z.object({
     .min(1, 'Please provide a valid progress report'),
   mediaContentLinks: z
     .array(z.string())
-    .min(3, 'Please provide at least 3 media content links')
+    .min(1, 'Please provide at least 1 media content links')
 })
 
 export const addFeedbackMonthlyCheckInSchema = z.object({
   menteeId: z.string(),
   checkInId: z.string(),
-  mentorFeedback: z.string().min(1, 'Please provide a valid feedback'),
+  mentorFeedback: z.string().min(5, 'Please provide a valid feedback'),
   isCheckedByMentor: z.boolean()
 })

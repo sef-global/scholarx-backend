@@ -58,15 +58,11 @@ export const addMonthlyCheckInByMentee = async (
     const menteeRepository = dataSource.getRepository(Mentee)
     const checkInRepository = dataSource.getRepository(MonthlyCheckIn)
 
-    console.log(menteeId)
-
     const mentee = await menteeRepository.findOne({
       where: {
         uuid: menteeId
       }
     })
-
-    console.log(mentee)
 
     if (!mentee) {
       return { statusCode: 404, message: 'Mentee not found' }
@@ -81,7 +77,6 @@ export const addMonthlyCheckInByMentee = async (
       mentee
     })
 
-    console.log(newCheckIn)
     await checkInRepository.save(newCheckIn)
 
     return { statusCode: 200, message: 'monthly checking inserted' }
@@ -126,7 +121,7 @@ export const fetchMonthlyCheckIns = async (
       order: { checkInDate: 'DESC' }
     })
 
-    if (checkIns.length === 0) {
+    if (checkIns.length === 0 || !checkIns) {
       return {
         statusCode: 404,
         checkIns: [],
