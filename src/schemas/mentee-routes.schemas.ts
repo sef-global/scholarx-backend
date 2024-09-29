@@ -40,6 +40,6 @@ export const postMonthlyCheckInSchema = z.object({
 export const addFeedbackMonthlyCheckInSchema = z.object({
   menteeId: z.string(),
   checkInId: z.string(),
-  mentorFeedback: z.string().min(5, 'Please provide a valid feedback'),
+  mentorFeedback: z.string().optional(),
   isCheckedByMentor: z.boolean()
 })
