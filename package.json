@@ -15,6 +15,7 @@
     "typeorm:db": "npm run build && npx typeorm -d dist/src/configs/dbConfig.js",
     "migration:generate": "npm run typeorm:db -- migration:generate",
     "migration:run": "npm run typeorm:db -- migration:run",
+    "migration:revert": "npm run typeorm:db -- migration:revert",
     "sync:db": "npm run typeorm:db schema:sync",
     "seed": "npm run build && node dist/src/scripts/seed-db.js"
   },
