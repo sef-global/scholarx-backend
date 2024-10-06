@@ -1,6 +1,7 @@
 import { dataSource } from '../configs/dbConfig'
 import MonthlyCheckIn from '../entities/checkin.entity'
 import Mentee from '../entities/mentee.entity'
+import { type MonthlyCheckInResponse } from '../types'
 
 export const addFeedbackByMentor = async (
   menteeId: string,
@@ -90,18 +91,7 @@ export const fetchMonthlyCheckIns = async (
   menteeId: string
 ): Promise<{
   statusCode: number
-  checkIns: Array<{
-    uuid: string
-    title: string
-    generalUpdatesAndFeedback: string
-    progressTowardsGoals: string
-    mediaContentLinks: string[]
-    mentorFeedback: string | null
-    isCheckedByMentor: boolean
-    mentorCheckedDate: Date | null
-    checkInDate: Date
-    mentee: Mentee
-  }>
+  checkIns: MonthlyCheckInResponse[]
   message: string
 }> => {
   try {
@@ -129,22 +119,9 @@ export const fetchMonthlyCheckIns = async (
       }
     }
 
-    const checkInsWithUuid = checkIns.map((checkIn) => ({
-      uuid: checkIn.uuid,
-      title: checkIn.title,
-      generalUpdatesAndFeedback: checkIn.generalUpdatesAndFeedback,
-      progressTowardsGoals: checkIn.progressTowardsGoals,
-      mediaContentLinks: checkIn.mediaContentLinks,
-      mentorFeedback: checkIn.mentorFeedback,
-      isCheckedByMentor: checkIn.isCheckedByMentor,
-      mentorCheckedDate: checkIn.mentorCheckedDate,
-      checkInDate: checkIn.checkInDate,
-      mentee: checkIn.mentee
-    }))
-
     return {
       statusCode: 200,
-      checkIns: checkInsWithUuid,
+      checkIns,
       message: 'Check-ins found'
     }
   } catch (err) {
