@@ -1,4 +1,4 @@
-import { AppError } from '../AppError'
+import { AppErrorTypes, createAppError } from '../AppError'
 import { dataSource } from '../configs/dbConfig'
 import Country from '../entities/country.entity'
 
@@ -10,7 +10,7 @@ export const getAllCountries = async (): Promise<Country[]> => {
   if (countries && countries.length > 0) {
     return countries
   }
-  throw new AppError('Countries Not Found', 404)
+  throw createAppError(AppErrorTypes.NOT_FOUND_ERROR)
 }
 
 export const getCountryById = async (id: string): Promise<Country> => {
@@ -21,5 +21,5 @@ export const getCountryById = async (id: string): Promise<Country> => {
   if (country) {
     return country
   }
-  throw new AppError('Country Not Found', 404)
+  throw createAppError(AppErrorTypes.NOT_FOUND_ERROR)
 }
