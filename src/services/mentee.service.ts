@@ -6,7 +6,8 @@ import { MenteeApplicationStatus } from '../enums'
 import {
   getEmailContent,
   getMentorNotifyEmailContent,
-  getMenteePublicData
+  getMenteePublicData,
+  capitalizeFirstLetter
 } from '../utils'
 import { sendEmail } from './admin/email.service'
 
@@ -77,6 +78,11 @@ export const addMentee = async (
           break
       }
     }
+
+    application.firstName = capitalizeFirstLetter(
+      application.firstName as string
+    )
+    application.lastName = capitalizeFirstLetter(application.lastName as string)
 
     const newMentee = new Mentee(
       MenteeApplicationStatus.PENDING,
