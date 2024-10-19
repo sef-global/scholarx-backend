@@ -256,7 +256,7 @@ export const getAllMentors = async ({
             state: MentorApplicationStatus.APPROVED
           }
         : { state: MentorApplicationStatus.APPROVED },
-      relations: ['profile', 'category'],
+      relations: ['profile', 'category', 'mentees', 'mentees.profile'],
       select: ['application', 'uuid', 'availability'],
       order: {
         availability: 'DESC'
