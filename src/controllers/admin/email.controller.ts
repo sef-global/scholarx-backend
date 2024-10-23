@@ -30,3 +30,15 @@ export const sendEmailController = async (
     throw err
   }
 }
+
+export const enableEmailReminderHandler = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    res.status(200).json({ message: 'Reminder enabled' })
+  } catch (err) {
+    console.error('Error enabling reminder', err)
+    res.status(500).json({ message: 'Error enabling reminder' })
+  }
+}
