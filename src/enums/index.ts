@@ -27,3 +27,11 @@ export enum StatusUpdatedBy {
   ADMIN = 'admin',
   MENTOR = 'mentor'
 }
+
+export enum ReminderStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  COMPLETE = 'complete',
+  FAILED = 'failed',
+  DONE = 'done'
+}

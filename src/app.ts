@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import cron from 'node-cron'
 import type { Express } from 'express'
 import express from 'express'
 import fs from 'fs'
@@ -18,7 +19,7 @@ import mentorRouter from './routes/mentor/mentor.route'
 import profileRouter from './routes/profile/profile.route'
 import path from 'path'
 import countryRouter from './routes/country/country.route'
-
+import { EmailReminderService } from './services/admin/reminder.service'
 const app = express()
 const staticFolder = 'uploads'
 export const certificatesDir = path.join(__dirname, 'certificates')
@@ -58,6 +59,19 @@ if (!fs.existsSync(staticFolder)) {
 if (!fs.existsSync(certificatesDir)) {
   fs.mkdirSync(certificatesDir)
 }
+
+const sqlReminderService = new EmailReminderService()
+
+// Setup periodic processing
+setInterval(async () => {
+  await sqlReminderService.processReminders()
+}, 60000) // Check every minute
+
+// Schedule new reminders daily
+cron.schedule('* * * * *', async () => {
+  console.log('Scheduling daily reminders')
+  await sqlReminderService.scheduleReminders()
+})
 
 export const startServer = async (port: number): Promise<Express> => {
   try {

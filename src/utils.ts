@@ -288,6 +288,24 @@ export const getPasswordChangedEmailContent = (
   }
 }
 
+export const getReminderEmailContent = (
+  name: string
+): { subject: string; message: string } => {
+  return {
+    subject: 'ScholarX Program Monthly Check-in Reminder',
+    message: `Dear ${name},<br /><br />
+    <p>This is a friendly reminder that your monthly check-in is due. 
+      Please take a moment to share your progress and updates with your mentor.</p>
+      <p>Things to include in your check-in:</p>
+      <ul>
+        <li>General updates and feedback</li>
+        <li>Progress towards your goals</li>
+        <li>Any challenges or successes you'd like to share</li>
+      </ul>
+    `
+  }
+}
+
 export const capitalizeFirstLetter = (word: string): string => {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
 }
