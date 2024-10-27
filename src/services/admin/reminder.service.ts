@@ -23,6 +23,12 @@ export class EmailReminderService {
     console.log('EmailReminderService initialized')
   }
 
+  private calculateNextReminderDate(sequence: number): Date {
+    const nextDue = new Date()
+    nextDue.setMonth(nextDue.getMonth() + sequence)
+    return nextDue
+  }
+
   public async scheduleReminders(): Promise<void> {
     console.log('Starting scheduleReminders')
     const queryRunner = dataSource.createQueryRunner()
@@ -179,15 +185,14 @@ export class EmailReminderService {
       if (attempt.sequence === this.maxReminderSequence) {
         config.isComplete = true
       } else {
-        const nextDue = new Date()
-        nextDue.setMonth(nextDue.getMonth() + 1)
-        config.nextReminderDue = nextDue
+        config.nextReminderDue = this.calculateNextReminderDate(1)
 
         // Create and save next attempt after config is saved
         const nextAttempt = new ReminderAttempt(
           attempt.menteeId,
           attempt.sequence + 1
         )
+        nextAttempt.nextRetryAt = config.nextReminderDue
         await queryRunner.manager.save(nextAttempt)
       }
 
