@@ -182,7 +182,7 @@ export class EmailReminderService {
       // Save config first
       await queryRunner.manager.save(config)
 
-      if (attempt.sequence === this.maxReminderSequence) {
+      if (attempt.sequence >= this.maxReminderSequence) {
         config.isComplete = true
       } else {
         config.nextReminderDue = this.calculateNextReminderDate(1)
