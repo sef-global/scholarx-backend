@@ -1,112 +1,84 @@
 import { type Repository } from 'typeorm'
-import { dataSource } from '../../configs/dbConfig'
+import MenteeReminder from '../../entities/menteeReminders.entity'
 import Mentee from '../../entities/mentee.entity'
-import { MenteeApplicationStatus, ReminderStatus } from '../../enums'
+import { dataSource } from '../../configs/dbConfig'
+import { MenteeApplicationStatus } from '../../enums'
 import { getReminderEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
-import MenteeReminderConfig from '../../entities/mentee_reminder_configs.entity'
-import ReminderAttempt from '../../entities/reminder_attempts.entity'
 
-export class EmailReminderService {
-  private readonly configRepository: Repository<MenteeReminderConfig>
+export class ReminderSerivce {
+  private readonly reminderRepsitory: Repository<MenteeReminder>
   private readonly menteeRepository: Repository<Mentee>
-  private readonly attemptRepository: Repository<ReminderAttempt>
-  private readonly maxRetries = 3
-  private readonly batchSize = 5
-  private readonly maxReminderSequence = 6
+  private readonly MAX_RETRIES = 3
+  private readonly BATCH_SIZE = 10
+  private readonly MAX_REMINDERS = 6
   private processingLock = false
 
   constructor() {
-    this.configRepository = dataSource.getRepository(MenteeReminderConfig)
+    this.reminderRepsitory = dataSource.getRepository(MenteeReminder)
     this.menteeRepository = dataSource.getRepository(Mentee)
-    this.attemptRepository = dataSource.getRepository(ReminderAttempt)
-    console.log('EmailReminderService initialized')
   }
 
-  private calculateNextReminderDate(sequence: number): Date {
-    const nextDue = new Date()
-    nextDue.setMonth(nextDue.getMonth() + sequence)
-    return nextDue
+  private calculateNextReminderDate(): Date {
+    const today = new Date()
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 2,
+      0
+    )
+
+    lastDayOfMonth.setHours(0, 0, 0, 0)
+    return lastDayOfMonth
   }
 
-  public async scheduleReminders(): Promise<void> {
-    console.log('Starting scheduleReminders')
+  private isLastDayOfMonth(): boolean {
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(today.getDate() + 1)
+    return tomorrow.getDate() === 1
+  }
+
+  public async scheduleNewReminders(): Promise<void> {
+    if (!this.isLastDayOfMonth()) {
+      console.log('Not the last day of the month')
+      return
+    }
+
     const queryRunner = dataSource.createQueryRunner()
     await queryRunner.connect()
 
     try {
       await queryRunner.startTransaction()
-      console.log('Transaction started')
 
-      const eligibleMentees = await this.menteeRepository
+      const eligibileMentees = await this.menteeRepository
         .createQueryBuilder('m')
-        .select([
-          'm.uuid AS menteeId',
-          'm.status_updated_date AS statusUpdatedDate',
-          'p.primary_email AS email',
-          'p.first_name AS firstName'
-        ])
-        .innerJoin('m.profile', 'p')
-        .where('m.state = :state', {
-          state: MenteeApplicationStatus.APPROVED
-        })
+        .select(['m.uuid AS menteeId'])
+        .where('m.state = :state', { state: MenteeApplicationStatus.APPROVED })
         .andWhere((qb) => {
           const subQuery = qb
             .subQuery()
-            .select('rc.menteeId')
-            .from(MenteeReminderConfig, 'rc')
+            .select('r.menteeId')
+            .from(MenteeReminder, 'r')
             .getQuery()
-          return 'm.uuid NOT IN ' + subQuery
+          return 'm.uuid NOT IN' + subQuery
         })
-        .limit(this.batchSize)
+        .limit(this.BATCH_SIZE)
         .getRawMany()
 
-      console.log('Eligible mentees found:', eligibleMentees.length)
+      console.log('eligible mentees', eligibileMentees)
 
-      if (eligibleMentees.length === 0) {
-        console.log('No eligible mentees found')
-        return
-      }
-
-      // Process each mentee sequentially within the transaction
-      for (const mentee of eligibleMentees) {
-        if (!mentee.menteeid || !mentee.email || !mentee.firstname) {
-          console.warn('Invalid mentee data:', mentee)
+      for (const mentee of eligibileMentees) {
+        if (!mentee.menteeid) {
           continue
         }
-
-        // First, create and save the config
-        const config = new MenteeReminderConfig(
-          mentee.menteeid,
-          mentee.email,
-          mentee.firstname
-        )
-        const savedConfig = await queryRunner.manager.save(config)
-        console.log(`Created config for mentee: ${mentee.menteeid}`)
-
-        // Verify the config was saved
-        const verifiedConfig = await queryRunner.manager.findOne(
-          MenteeReminderConfig,
-          {
-            where: { menteeId: mentee.menteeid }
-          }
-        )
-
-        if (!verifiedConfig) {
-          throw new Error(`Config not saved for mentee: ${mentee.menteeid}`)
-        }
-
-        // Then create and save the attempt
-        const attempt = new ReminderAttempt(savedConfig.menteeId, 1)
-        attempt.nextRetryAt = new Date() // Set immediate retry
-        await queryRunner.manager.save(attempt)
-        console.log(`Created initial attempt for mentee: ${mentee.menteeid}`)
+        const reminder = new MenteeReminder(mentee.menteeid)
+        reminder.nextRetryAt = this.calculateNextReminderDate()
+        console.log(reminder)
+        await this.reminderRepsitory.save(reminder)
       }
 
       await queryRunner.commitTransaction()
-      console.log('Transaction committed successfully')
     } catch (error) {
-      console.error('Error in scheduleReminders:', error)
       await queryRunner.rollbackTransaction()
       throw error
     } finally {
@@ -115,154 +87,113 @@ export class EmailReminderService {
   }
 
   public async processReminders(): Promise<void> {
-    console.log('Starting processReminders')
-    if (this.processingLock) {
-      console.log('Processing locked, skipping')
+    if (!this.isLastDayOfMonth()) {
+      console.log('Not the last day of the month')
       return
     }
 
+    if (this.processingLock) return
+
     try {
       this.processingLock = true
-      console.log('Processing lock acquired')
+      const pendingReminders = await this.getPendingReminders()
 
-      const pendingReminders = await this.getPendingAttempts()
-      console.log('Pending reminders found:', pendingReminders.length)
+      console.log('Pending reminders', pendingReminders)
 
-      for (const attempt of pendingReminders) {
-        console.log(`Processing reminder for mentee: ${attempt.menteeId}`)
-        const config = await this.configRepository.findOne({
-          where: { menteeId: attempt.menteeId }
-        })
-
-        if (!config) {
-          console.warn(`No config found for mentee: ${attempt.menteeId}`)
-          continue
-        }
-
-        await this.processReminderWithTransaction(attempt, config)
+      for (const reminder of pendingReminders) {
+        await this.processReminderWithRetry(reminder)
       }
-    } catch (error) {
-      console.error('Error in processReminders:', error)
-      throw error
     } finally {
       this.processingLock = false
-      console.log('Processing lock released')
     }
   }
 
-  private async processReminderWithTransaction(
-    attempt: ReminderAttempt,
-    config: MenteeReminderConfig
+  private async processReminderWithRetry(
+    reminder: MenteeReminder
   ): Promise<void> {
-    console.log(`Starting reminder transaction for mentee: ${attempt.menteeId}`)
     const queryRunner = dataSource.createQueryRunner()
     await queryRunner.connect()
+
+    console.log('Processing reminder', reminder)
 
     try {
       await queryRunner.startTransaction()
 
-      // Update attempt status first
-      attempt.status = ReminderStatus.PROCESSING
-      await queryRunner.manager.save(attempt)
+      const mentee = await this.menteeRepository
+        .createQueryBuilder('m')
+        .leftJoinAndSelect('m.profile', 'p')
+        .where('m.uuid = :menteeId', { menteeId: reminder.menteeId })
+        .getOne()
 
-      // Send email
-      const emailContent = getReminderEmailContent(config.firstName)
-      await sendEmail(config.email, emailContent.subject, emailContent.message)
-
-      // Update attempt and config
-      attempt.status = ReminderStatus.COMPLETE
-      attempt.processedAt = new Date()
-      config.currentSequence = attempt.sequence
-      config.lastReminderSentAt = new Date()
-
-      if (config.currentSequence === 0) {
-        config.firstReminderSentAt = new Date()
+      if (!mentee?.profile) {
+        throw new Error('Mentee or Profile not found')
       }
 
-      // Save config first
-      await queryRunner.manager.save(config)
+      // Send Email
 
-      if (attempt.sequence >= this.maxReminderSequence) {
-        config.isComplete = true
+      const emailContent = getReminderEmailContent(mentee.profile.first_name)
+      await sendEmail(
+        mentee.profile.primary_email,
+        emailContent.subject,
+        emailContent.message
+      )
+
+      // Update Reminder
+      reminder.remindersSent += 1
+      reminder.lastReminderSentAt = new Date()
+      reminder.retryCount = 0
+      reminder.lastErrorMessage = null
+
+      if (reminder.remindersSent === 1) {
+        reminder.firstReminderSentAt = new Date()
+      }
+
+      if (reminder.remindersSent >= this.MAX_REMINDERS) {
+        reminder.isComplete = true
       } else {
-        config.nextReminderDue = this.calculateNextReminderDate(1)
-
-        // Create and save next attempt after config is saved
-        const nextAttempt = new ReminderAttempt(
-          attempt.menteeId,
-          attempt.sequence + 1
-        )
-        nextAttempt.nextRetryAt = config.nextReminderDue
-        await queryRunner.manager.save(nextAttempt)
+        reminder.nextReminderDue = this.calculateNextReminderDate()
       }
 
-      // Save the current attempt
-      await queryRunner.manager.save(attempt)
-
-      // Update mentee
       await queryRunner.manager.update(
         Mentee,
-        { uuid: config.menteeId },
+        { uuid: reminder.menteeId },
         { last_monthlycheck_reminder_date: new Date() }
       )
 
+      await this.reminderRepsitory.save(reminder)
+
       await queryRunner.commitTransaction()
     } catch (error) {
-      console.error(
-        `Error processing reminder for mentee ${config.menteeId}:`,
-        error
-      )
       await queryRunner.rollbackTransaction()
-      await this.handleReminderError(attempt, error as Error)
+      await this.handleReminderError(reminder, error as Error)
     } finally {
       await queryRunner.release()
     }
   }
 
   private async handleReminderError(
-    attempt: ReminderAttempt,
+    reminder: MenteeReminder,
     error: Error
   ): Promise<void> {
-    console.log(
-      `Handling error for attempt ${attempt.sequence}:`,
-      error.message
-    )
-    attempt.retryCount += 1
-    attempt.status = ReminderStatus.FAILED
-    attempt.errorMessage = error.message
+    reminder.retryCount += 1
+    reminder.lastErrorMessage = error.message
 
-    if (attempt.retryCount < this.maxRetries) {
-      const backoffMinutes = Math.pow(2, attempt.retryCount) * 5
-      attempt.nextRetryAt = new Date(Date.now() + backoffMinutes * 60 * 1000)
-      console.log(`Scheduled retry in ${backoffMinutes} minutes`)
-      await this.attemptRepository.save(attempt)
-    } else {
-      console.error(`Max retries reached for attempt ${attempt.sequence}`)
+    if (reminder.retryCount <= this.MAX_RETRIES) {
+      const backoffMinutes = Math.pow(2, reminder.retryCount) * 5
+      reminder.nextRetryAt = new Date(Date.now() + backoffMinutes * 60 * 1000)
+      await this.reminderRepsitory.save(reminder)
     }
   }
 
-  private async getPendingAttempts(): Promise<ReminderAttempt[]> {
-    console.log('Fetching pending attempts')
-    return await this.attemptRepository
-      .createQueryBuilder('attempt')
-      .innerJoin(
-        MenteeReminderConfig,
-        'config',
-        'config.menteeId = attempt.menteeId'
-      )
-      .where('attempt.status IN (:...statuses)', {
-        statuses: [ReminderStatus.PENDING, ReminderStatus.FAILED]
+  private async getPendingReminders(): Promise<MenteeReminder[]> {
+    return await this.reminderRepsitory
+      .createQueryBuilder('reminder')
+      .where('reminder.isComplete = :isComplete', { isComplete: false })
+      .andWhere('reminder.nextRetryAt >= :now', { now: new Date() })
+      .andWhere('reminder.retryCount <= :maxRetries', {
+        maxRetries: this.MAX_RETRIES
       })
-      .andWhere('attempt.retryCount < :maxRetries', {
-        maxRetries: this.maxRetries
-      })
-      .andWhere('config.isComplete = :isComplete', {
-        isComplete: false
-      })
-      .andWhere('config.nextReminderDue <= :now', {
-        now: new Date()
-      })
-      .limit(this.batchSize)
+      .orderBy('reminder.nextRetryAt', 'ASC')
       .getMany()
   }
 }

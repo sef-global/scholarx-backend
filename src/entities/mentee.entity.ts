@@ -5,7 +5,6 @@ import { MenteeApplicationStatus, StatusUpdatedBy } from '../enums'
 import BaseEntity from './baseEntity'
 import { UUID } from 'typeorm/driver/mongodb/bson.typings'
 import MonthlyCheckIn from './checkin.entity'
-import FailedReminders from './failedReminders.entity'
 
 @Entity('mentee')
 class Mentee extends BaseEntity {
@@ -43,16 +42,12 @@ class Mentee extends BaseEntity {
   @OneToMany(() => MonthlyCheckIn, (checkIn) => checkIn.mentee)
   checkIns?: MonthlyCheckIn[]
 
-  @OneToMany(() => FailedReminders, (failedReminder) => failedReminder.mentee)
-  failedReminders?: FailedReminders[]
-
   constructor(
     state: MenteeApplicationStatus,
     application: Record<string, unknown>,
     profile: profileEntity,
     mentor: Mentor,
-    checkIns?: MonthlyCheckIn[],
-    failedReminders?: FailedReminders[]
+    checkIns?: MonthlyCheckIn[]
   ) {
     super()
     this.state = state || MenteeApplicationStatus.PENDING
@@ -60,7 +55,6 @@ class Mentee extends BaseEntity {
     this.profile = profile
     this.mentor = mentor
     this.checkIns = checkIns
-    this.failedReminders = failedReminders
   }
 }
 

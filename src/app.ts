@@ -19,7 +19,7 @@ import mentorRouter from './routes/mentor/mentor.route'
 import profileRouter from './routes/profile/profile.route'
 import path from 'path'
 import countryRouter from './routes/country/country.route'
-import { EmailReminderService } from './services/admin/reminder.service'
+import { ReminderSerivce } from './services/admin/reminder.service'
 const app = express()
 const staticFolder = 'uploads'
 export const certificatesDir = path.join(__dirname, 'certificates')
@@ -60,18 +60,19 @@ if (!fs.existsSync(certificatesDir)) {
   fs.mkdirSync(certificatesDir)
 }
 
-const sqlReminderService = new EmailReminderService()
+// Testing purposes
+const sqlReminderService = new ReminderSerivce()
+// To Do Testing
+// Schedule new reminders daily
+cron.schedule('* * * * *', async () => {
+  console.log('Scheduling daily reminders')
+  await sqlReminderService.scheduleNewReminders()
+})
 
 // Setup periodic processing
 setInterval(async () => {
   await sqlReminderService.processReminders()
 }, 60000) // Check every minute
-
-// Schedule new reminders daily
-cron.schedule('* * * * *', async () => {
-  console.log('Scheduling daily reminders')
-  await sqlReminderService.scheduleReminders()
-})
 
 export const startServer = async (port: number): Promise<Express> => {
   try {
