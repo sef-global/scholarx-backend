@@ -1,5 +1,6 @@
 import { dataSource } from '../configs/dbConfig'
 import Category from '../entities/category.entity'
+import { Country } from '../entities/country.entity'
 import Mentee from '../entities/mentee.entity'
 import Mentor from '../entities/mentor.entity'
 import type Profile from '../entities/profile.entity'
@@ -15,7 +16,8 @@ import { sendEmail } from './admin/email.service'
 export const createMentor = async (
   user: Profile,
   application: Record<string, unknown>,
-  categoryId: string
+  categoryId: string,
+  countryId: string
 ): Promise<{
   statusCode: number
   mentor?: Mentor | null
@@ -25,6 +27,7 @@ export const createMentor = async (
     const mentorRepository = dataSource.getRepository(Mentor)
     const categoryRepository = dataSource.getRepository(Category)
     const menteeRepository = dataSource.getRepository(Mentee)
+    const countryRepository = dataSource.getRepository(Country)
 
     const mentee = await menteeRepository.findOne({
       where: {
@@ -57,6 +60,17 @@ export const createMentor = async (
       }
     }
 
+    const country = await countryRepository.findOne({
+      where: { uuid: countryId }
+    })
+
+    if (!country) {
+      return {
+        statusCode: 404,
+        message: 'Country not found'
+      }
+    }
+
     for (const mentor of existingMentorApplications) {
       switch (mentor.state) {
         case MentorApplicationStatus.PENDING:
@@ -86,7 +100,8 @@ export const createMentor = async (
       category,
       application,
       true,
-      user
+      user,
+      country
     )
 
     const savedMentor = await mentorRepository.save(newMentor)
@@ -241,7 +256,7 @@ export const getAllMentors = async ({
             state: MentorApplicationStatus.APPROVED
           }
         : { state: MentorApplicationStatus.APPROVED },
-      relations: ['profile', 'category'],
+      relations: ['profile', 'category', 'mentees', 'mentees.profile'],
       select: ['application', 'uuid', 'availability'],
       order: {
         availability: 'DESC'

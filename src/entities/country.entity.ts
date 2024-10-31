@@ -1,5 +1,6 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import BaseEntity from './baseEntity'
+import Mentor from './mentor.entity'
 
 @Entity()
 export class Country extends BaseEntity {
@@ -8,6 +9,9 @@ export class Country extends BaseEntity {
 
   @Column()
   name: string
+
+  @OneToMany(() => Mentor, (mentor) => mentor.country)
+  mentors?: Mentor[]
 
   constructor(code: string, name: string) {
     super()
