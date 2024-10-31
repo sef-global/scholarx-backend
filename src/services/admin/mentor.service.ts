@@ -1,6 +1,5 @@
 import { dataSource } from '../../configs/dbConfig'
 import Category from '../../entities/category.entity'
-import { Country } from '../../entities/country.entity'
 import Mentor from '../../entities/mentor.entity'
 import Profile from '../../entities/profile.entity'
 import type { MentorApplicationStatus } from '../../enums'
@@ -60,9 +59,7 @@ export const updateMentorStatus = async (
 export const updateMentorDetails = async (
   mentorId: string,
   mentorData: Partial<Mentor>,
-  profileData?: Partial<Profile>,
-  categoryId?: string,
-  countryId?: string
+  profileData?: Partial<Profile>
 ): Promise<{
   statusCode: number
   mentor?: Mentor | null
@@ -72,7 +69,6 @@ export const updateMentorDetails = async (
     const mentorRepository = dataSource.getRepository(Mentor)
     const profileRepository = dataSource.getRepository(Profile)
     const categoryRepository = dataSource.getRepository(Category)
-    const countryRepository = dataSource.getRepository(Country)
 
     const mentor = await mentorRepository.findOne({
       where: { uuid: mentorId },
@@ -90,32 +86,20 @@ export const updateMentorDetails = async (
       mentor.availability = mentorData.availability
     }
 
-    if (categoryId) {
-      const category = await categoryRepository.findOne({
-        where: { uuid: categoryId }
-      })
+    if (mentorData.category) {
+      if (typeof mentorData.category === 'string') {
+        const category = await categoryRepository.findOne({
+          where: { uuid: mentorData.category }
+        })
 
-      if (!category) {
-        return {
-          statusCode: 404,
-          message: 'Category not found'
+        if (!category) {
+          return {
+            statusCode: 404,
+            message: 'Category not found'
+          }
         }
+        mentor.category = category
       }
-      mentor.category = category
-    }
-
-    if (countryId) {
-      const country = await countryRepository.findOne({
-        where: { uuid: countryId }
-      })
-
-      if (!country) {
-        return {
-          statusCode: 404,
-          message: 'Country not found'
-        }
-      }
-      mentor.country = country
     }
 
     // will override values of keys if exisitng keys provided. add new key-value pairs if not exists
@@ -154,7 +138,7 @@ export const updateMentorDetails = async (
 
     const updatedMentor = await mentorRepository.findOne({
       where: { uuid: mentorId },
-      relations: ['profile', 'category', 'country']
+      relations: ['profile', 'category']
     })
 
     return {

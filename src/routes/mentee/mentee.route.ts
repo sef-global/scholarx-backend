@@ -9,16 +9,9 @@ import {
 } from '../../controllers/mentee.controller'
 import { requestBodyValidator } from '../../middlewares/requestValidator'
 import {
-  addFeedbackMonthlyCheckInSchema,
   menteeApplicationSchema,
-  postMonthlyCheckInSchema,
   updateMenteeStatusSchema
 } from '../../schemas/mentee-routes.schemas'
-import {
-  addFeedbackMonthlyCheckIn,
-  getMonthlyCheckIns,
-  postMonthlyCheckIn
-} from '../../controllers/monthlyChecking.controller'
 
 const menteeRouter = express.Router()
 
@@ -35,19 +28,5 @@ menteeRouter.put(
   updateMenteeStatus
 )
 menteeRouter.put('/revoke-application', requireAuth, revokeApplication)
-
-menteeRouter.post(
-  '/checkin',
-  [requireAuth, requestBodyValidator(postMonthlyCheckInSchema)],
-  postMonthlyCheckIn
-)
-
-menteeRouter.get('/checkin/:menteeId', requireAuth, getMonthlyCheckIns)
-
-menteeRouter.put(
-  '/checking/feedback',
-  [requireAuth, requestBodyValidator(addFeedbackMonthlyCheckInSchema)],
-  addFeedbackMonthlyCheckIn
-)
 
 export default menteeRouter

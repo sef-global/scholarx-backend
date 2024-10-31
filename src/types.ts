@@ -1,5 +1,3 @@
-import type Mentee from './entities/mentee.entity'
-
 export interface ApiResponse<T> {
   statusCode: number
   message?: string
@@ -33,17 +31,4 @@ export interface LinkedInProfile {
   familyName: string
   picture: string
   email: string
-}
-
-export interface MonthlyCheckInResponse {
-  uuid: string
-  title: string
-  generalUpdatesAndFeedback: string
-  progressTowardsGoals: string
-  mediaContentLinks: string[]
-  mentorFeedback: string | null
-  isCheckedByMentor: boolean
-  mentorCheckedDate: Date | null
-  checkInDate: Date
-  mentee: Mentee
 }

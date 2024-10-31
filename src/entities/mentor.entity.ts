@@ -4,7 +4,6 @@ import Mentee from './mentee.entity'
 import Category from './category.entity'
 import { MentorApplicationStatus } from '../enums'
 import BaseEntity from './baseEntity'
-import { Country } from './country.entity'
 
 @Entity('mentor')
 class Mentor extends BaseEntity {
@@ -29,10 +28,6 @@ class Mentor extends BaseEntity {
   @JoinColumn()
   profile: Profile
 
-  @ManyToOne(() => Country, (country) => country.mentors)
-  @JoinColumn()
-  country: Country
-
   @OneToMany(() => Mentee, (mentee) => mentee.mentor)
   mentees?: Mentee[]
 
@@ -41,8 +36,7 @@ class Mentor extends BaseEntity {
     category: Category,
     application: Record<string, unknown>,
     availability: boolean,
-    profile: Profile,
-    country: Country
+    profile: Profile
   ) {
     super()
     this.state = state
@@ -50,7 +44,6 @@ class Mentor extends BaseEntity {
     this.application = application
     this.availability = availability
     this.profile = profile
-    this.country = country
   }
 }
 

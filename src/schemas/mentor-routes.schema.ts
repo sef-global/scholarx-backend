@@ -3,8 +3,7 @@ import { MentorApplicationStatus } from '../enums'
 
 export const mentorApplicationSchema = z.object({
   application: z.record(z.unknown()),
-  categoryId: z.string(),
-  countryId: z.string().optional()
+  categoryId: z.string()
 })
 
 export const getMenteesByMentorSchema = z.object({

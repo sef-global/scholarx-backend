@@ -51,8 +51,6 @@ export const updateMentorHandler = async (
 
     const mentorUpdateData: Partial<Mentor> = { ...data }
     const profileUpdateData: Partial<Profile> = { ...data.profile }
-    const categoryId: string = data.categoryId
-    const countryId: string = data.countryId
 
     if (req.file) {
       profileUpdateData.image_url = `${IMG_HOST}/${req.file.filename}`
@@ -63,9 +61,7 @@ export const updateMentorHandler = async (
     const { mentor, statusCode, message } = await updateMentorDetails(
       mentorId,
       mentorUpdateData,
-      profileUpdateData,
-      categoryId,
-      countryId
+      profileUpdateData
     )
     return res.status(statusCode).json({ mentor, message })
   } catch (err) {

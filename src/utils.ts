@@ -34,24 +34,12 @@ export const getMentorPublicData = (mentor: Mentor): Mentor => {
   delete profile.created_at
   delete profile.updated_at
 
-  let appliedMenteesCount = 0
-  let availableMenteeSlots = mentor.application.noOfMentees as number
-
   if (mentor.mentees) {
-    appliedMenteesCount = mentor.mentees.length
-    let approvedMenteesCount = 0
-
     mentor.mentees = mentor.mentees.map((mentee) => {
-      if (mentee.state === MenteeApplicationStatus.APPROVED) {
-        approvedMenteesCount++
-      }
       return getMenteePublicData(mentee)
     })
-
-    availableMenteeSlots -= approvedMenteesCount
   }
-  mentor.application.appliedMenteesCount = appliedMenteesCount
-  mentor.application.availableMenteeSlots = availableMenteeSlots
+
   return mentor
 }
 

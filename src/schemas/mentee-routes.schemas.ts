@@ -9,37 +9,3 @@ export const menteeApplicationSchema = z.object({
 export const updateMenteeStatusSchema = z.object({
   state: z.nativeEnum(MenteeApplicationStatus)
 })
-
-export const postMonthlyCheckInSchema = z.object({
-  menteeId: z.string(),
-  title: z.enum([
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ]),
-  generalUpdatesAndFeedback: z
-    .string()
-    .min(1, 'Please provide a valid feedback'),
-  progressTowardsGoals: z
-    .string()
-    .min(1, 'Please provide a valid progress report'),
-  mediaContentLinks: z
-    .array(z.string())
-    .min(1, 'Please provide at least 1 media content links')
-})
-
-export const addFeedbackMonthlyCheckInSchema = z.object({
-  menteeId: z.string(),
-  checkInId: z.string(),
-  mentorFeedback: z.string().optional(),
-  isCheckedByMentor: z.boolean()
-})
