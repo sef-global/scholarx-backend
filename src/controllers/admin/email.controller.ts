@@ -4,6 +4,7 @@ import { type ApiResponse } from '../../types'
 import type Email from '../../entities/email.entity'
 import { ProfileTypes } from '../../enums'
 import { sendEmail } from '../../services/admin/email.service'
+import { ReminderService } from '../../services/admin/reminder.service'
 
 export const sendEmailController = async (
   req: Request,
@@ -31,14 +32,30 @@ export const sendEmailController = async (
   }
 }
 
-export const enableEmailReminderHandler = async (
+const reminderService = new ReminderService()
+
+export const processEmailReminderHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    res.status(200).json({ message: 'Reminder enabled' })
+    const { statusCode, message } = await reminderService.processReminders()
+    res.status(statusCode).json({ message })
   } catch (err) {
     console.error('Error enabling reminder', err)
     res.status(500).json({ message: 'Error enabling reminder' })
+  }
+}
+
+export const scheduleNewReminderHandler = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { statusCode, message } = await reminderService.scheduleNewReminders()
+    res.status(statusCode).json({ message })
+  } catch (err) {
+    console.error('Error scheduling reminder', err)
+    res.status(500).json({ message: 'Error scheduling reminder' })
   }
 }

@@ -11,6 +11,6 @@ adminRouter.use('/users', userRouter)
 adminRouter.use('/mentors', mentorRouter)
 adminRouter.use('/mentees', menteeRouter)
 adminRouter.use('/categories', categoryRouter)
-adminRouter.use('/enable', reminderRouter)
+adminRouter.use('/reminders', reminderRouter)
 
 export default adminRouter

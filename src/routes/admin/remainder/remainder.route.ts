@@ -1,8 +1,12 @@
 import express from 'express'
-import { enableEmailReminderHandler } from '../../../controllers/admin/email.controller'
+import {
+  processEmailReminderHandler,
+  scheduleNewReminderHandler
+} from '../../../controllers/admin/email.controller'
 
 const reminderRouter = express.Router()
 
-reminderRouter.get('/', enableEmailReminderHandler)
+reminderRouter.get('/process', processEmailReminderHandler)
+reminderRouter.get('/schedule', scheduleNewReminderHandler)
 
 export default reminderRouter
