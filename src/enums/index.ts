@@ -35,5 +35,6 @@ export enum ReminderStatus {
   FAILED = 'failed',
   DONE = 'done',
   SCHEDULED = 'scheduled',
-  SENT = 'sent'
+  SENT = 'sent',
+  WAITING = 'waiting'
 }

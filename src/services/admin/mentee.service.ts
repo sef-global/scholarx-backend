@@ -1,13 +1,15 @@
 import { dataSource } from '../../configs/dbConfig'
 import Mentee from '../../entities/mentee.entity'
+import MenteeReminder from '../../entities/menteeReminders.entity'
 import Mentor from '../../entities/mentor.entity'
 import {
   MenteeApplicationStatus,
   MentorApplicationStatus,
+  ReminderStatus,
   type StatusUpdatedBy
 } from '../../enums'
 import { type PaginatedApiResponse } from '../../types'
-import { getEmailContent } from '../../utils'
+import { calculateNextReminderDate, getEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
 export const getAllMentees = async ({
@@ -108,6 +110,7 @@ export const updateStatus = async (
 }> => {
   try {
     const menteeRepository = dataSource.getRepository(Mentee)
+    const reminderRepsitory = dataSource.getRepository(MenteeReminder)
     const mentee = await menteeRepository.findOne({
       where: {
         uuid: menteeId
@@ -163,6 +166,15 @@ export const updateStatus = async (
           certificate_id: content?.uniqueId
         }
       )
+
+      if (state === MenteeApplicationStatus.APPROVED) {
+        await reminderRepsitory.save({
+          menteeId,
+          status: ReminderStatus.SCHEDULED,
+          nextReminderDue: calculateNextReminderDate()
+        })
+      }
+
       return {
         statusCode: 200,
         message: 'Mentee application state successfully updated'

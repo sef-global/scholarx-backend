@@ -329,3 +329,11 @@ export const formatValidationErrors = (
     message: `${issue.path.join('.')} is ${issue.message}`
   }))
 }
+
+export function calculateNextReminderDate(): Date {
+  const today = new Date()
+  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0)
+
+  lastDayOfMonth.setHours(0, 0, 0, 0)
+  return lastDayOfMonth
+}

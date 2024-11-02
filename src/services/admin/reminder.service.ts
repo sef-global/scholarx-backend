@@ -3,7 +3,7 @@ import MenteeReminder from '../../entities/menteeReminders.entity'
 import Mentee from '../../entities/mentee.entity'
 import { dataSource } from '../../configs/dbConfig'
 import { MenteeApplicationStatus, ReminderStatus } from '../../enums'
-import { getReminderEmailContent } from '../../utils'
+import { calculateNextReminderDate, getReminderEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
 export class ReminderService {
@@ -17,25 +17,6 @@ export class ReminderService {
   constructor() {
     this.reminderRepsitory = dataSource.getRepository(MenteeReminder)
     this.menteeRepository = dataSource.getRepository(Mentee)
-  }
-
-  private calculateNextReminderDate(): Date {
-    const today = new Date()
-    const lastDayOfMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() + 2,
-      0
-    )
-
-    lastDayOfMonth.setHours(0, 0, 0, 0)
-    return lastDayOfMonth
-  }
-
-  private isLastDayOfMonth(): boolean {
-    const today = new Date()
-    const tomorrow = new Date(today)
-    tomorrow.setDate(today.getDate() + 1)
-    return tomorrow.getDate() === 1
   }
 
   public async scheduleNewReminders(): Promise<{
@@ -65,7 +46,6 @@ export class ReminderService {
             .getQuery()
           return 'm.uuid NOT IN' + subQuery
         })
-        .limit(this.BATCH_SIZE)
         .getRawMany()
 
       console.log('eligible mentees', eligibileMentees)
@@ -81,7 +61,7 @@ export class ReminderService {
         const reminder = new MenteeReminder(mentee.menteeid)
         console.log('Before Scheduled', reminder)
         reminder.status = ReminderStatus.SCHEDULED
-        reminder.nextRetryAt = this.calculateNextReminderDate()
+        reminder.nextReminderDue = calculateNextReminderDate()
         console.log('After Schedules', reminder)
         await this.reminderRepsitory.save(reminder)
       }
@@ -89,6 +69,7 @@ export class ReminderService {
       return { statusCode: 200, message: 'Reminders scheduled successfully' }
     } catch (error) {
       await queryRunner.rollbackTransaction()
+      console.log('Error scheduling reminders', error)
       return { statusCode: 500, message: 'Error scheduling reminders' }
     } finally {
       await queryRunner.release()
@@ -137,11 +118,6 @@ export class ReminderService {
 
     console.log('Processing reminder', reminder)
 
-    if (reminder.lastReminderSentAt?.getMonth() === new Date().getMonth()) {
-      console.log('Reminder already sent this month')
-      return
-    }
-
     try {
       await queryRunner.startTransaction()
 
@@ -156,6 +132,11 @@ export class ReminderService {
       }
 
       // Send Email
+
+      // if (reminder.lastReminderSentAt?.getMonth() === new Date().getMonth()) {
+      //   console.log('Reminder already sent this month')
+      //   return
+      // }
 
       reminder.status = ReminderStatus.SENDING
 
@@ -175,6 +156,10 @@ export class ReminderService {
       reminder.retryCount = 0
       reminder.lastErrorMessage = null
 
+      if (reminder.remindersSent <= this.MAX_REMINDERS) {
+        reminder.status = ReminderStatus.SCHEDULED
+      }
+
       if (reminder.remindersSent === 1) {
         reminder.firstReminderSentAt = new Date()
       }
@@ -182,7 +167,7 @@ export class ReminderService {
       if (reminder.remindersSent >= this.MAX_REMINDERS) {
         reminder.isComplete = true
       } else {
-        reminder.nextReminderDue = this.calculateNextReminderDate()
+        reminder.nextReminderDue = calculateNextReminderDate()
       }
 
       await queryRunner.manager.update(
@@ -221,7 +206,7 @@ export class ReminderService {
     return await this.reminderRepsitory
       .createQueryBuilder('reminder')
       .where('reminder.isComplete = :isComplete', { isComplete: false })
-      .andWhere('reminder.nextRetryAt >= :now', { now: new Date() })
+      .andWhere('reminder.nextReminderDue >= :now', { now: new Date() })
       .andWhere('reminder.retryCount <= :maxRetries', {
         maxRetries: this.MAX_RETRIES
       })
