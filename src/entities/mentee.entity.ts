@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToOne } from 'typeorm'
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm'
 import Mentor from './mentor.entity'
 import profileEntity from './profile.entity'
 import { MenteeApplicationStatus, StatusUpdatedBy } from '../enums'
 import BaseEntity from './baseEntity'
 import { UUID } from 'typeorm/driver/mongodb/bson.typings'
+import MonthlyCheckIn from './checkin.entity'
 
 @Entity('mentee')
 class Mentee extends BaseEntity {
@@ -35,17 +36,22 @@ class Mentee extends BaseEntity {
   @ManyToOne(() => Mentor, (mentor) => mentor.mentees)
   mentor: Mentor
 
+  @OneToMany(() => MonthlyCheckIn, (checkIn) => checkIn.mentee)
+  checkIns?: MonthlyCheckIn[]
+
   constructor(
     state: MenteeApplicationStatus,
     application: Record<string, unknown>,
     profile: profileEntity,
-    mentor: Mentor
+    mentor: Mentor,
+    checkIns?: MonthlyCheckIn[]
   ) {
     super()
     this.state = state || MenteeApplicationStatus.PENDING
     this.application = application
     this.profile = profile
     this.mentor = mentor
+    this.checkIns = checkIns
   }
 }
 

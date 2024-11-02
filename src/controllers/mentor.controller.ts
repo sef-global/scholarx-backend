@@ -18,12 +18,13 @@ export const mentorApplicationHandler = async (
 ): Promise<ApiResponse<Mentor>> => {
   try {
     const user = req.user as Profile
-    const { application, categoryId } = req.body
+    const { application, categoryId, countryId } = req.body
 
     const { mentor, statusCode, message } = await createMentor(
       user,
       application,
-      categoryId
+      categoryId,
+      countryId
     )
 
     return res.status(statusCode).json({ mentor, message })
