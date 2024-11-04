@@ -4,7 +4,10 @@ import { type ApiResponse } from '../../types'
 import type Email from '../../entities/email.entity'
 import { ProfileTypes } from '../../enums'
 import { sendEmail } from '../../services/admin/email.service'
-import { ReminderService } from '../../services/admin/reminder.service'
+import { MonthlyReminderService } from '../../services/admin/reminder.service'
+import { dataSource } from '../../configs/dbConfig'
+import { MonthlyReminder } from '../../entities/monthlyReminders.entity'
+import Mentee from '../../entities/mentee.entity'
 
 export const sendEmailController = async (
   req: Request,
@@ -32,7 +35,10 @@ export const sendEmailController = async (
   }
 }
 
-const reminderService = new ReminderService()
+const reminderService = new MonthlyReminderService(
+  dataSource.getRepository(MonthlyReminder),
+  dataSource.getRepository(Mentee)
+)
 
 export const processEmailReminderHandler = async (
   req: Request,
@@ -44,18 +50,5 @@ export const processEmailReminderHandler = async (
   } catch (err) {
     console.error('Error enabling reminder', err)
     res.status(500).json({ message: 'Error enabling reminder' })
-  }
-}
-
-export const scheduleNewReminderHandler = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { statusCode, message } = await reminderService.scheduleNewReminders()
-    res.status(statusCode).json({ message })
-  } catch (err) {
-    console.error('Error scheduling reminder', err)
-    res.status(500).json({ message: 'Error scheduling reminder' })
   }
 }

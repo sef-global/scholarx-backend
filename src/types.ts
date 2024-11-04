@@ -1,4 +1,6 @@
+import { type Repository } from 'typeorm'
 import type Mentee from './entities/mentee.entity'
+import { type MonthlyReminder } from './entities/monthlyReminders.entity'
 
 export interface ApiResponse<T> {
   statusCode: number
@@ -46,4 +48,16 @@ export interface MonthlyCheckInResponse {
   mentorCheckedDate: Date | null
   checkInDate: Date
   mentee: Mentee
+}
+
+export interface ServiceDependencies {
+  menteeRepository: Repository<Mentee>
+  reminderRepository: Repository<MonthlyReminder>
+  logger: Console
+  config: {
+    MAX_ATTEMPTS: number
+    MAX_REMINDERS: number
+    RETRY_BASE_MINUTES: number
+  }
+  error?: Error
 }

@@ -1,216 +1,120 @@
 import { type Repository } from 'typeorm'
-import MenteeReminder from '../../entities/menteeReminders.entity'
-import Mentee from '../../entities/mentee.entity'
-import { dataSource } from '../../configs/dbConfig'
+import { MonthlyReminder } from '../../entities/monthlyReminders.entity'
+import type Mentee from '../../entities/mentee.entity'
 import { MenteeApplicationStatus, ReminderStatus } from '../../enums'
-import { calculateNextReminderDate, getReminderEmailContent } from '../../utils'
+import { getReminderEmailContent } from '../../utils'
 import { sendEmail } from './email.service'
 
-export class ReminderService {
-  private readonly reminderRepsitory: Repository<MenteeReminder>
-  private readonly menteeRepository: Repository<Mentee>
-  private readonly MAX_RETRIES = 3
-  private readonly BATCH_SIZE = 10
-  private readonly MAX_REMINDERS = 6
-  private processingLock = false
+export class MonthlyReminderService {
+  constructor(
+    private readonly reminderRepo: Repository<MonthlyReminder>,
+    private readonly menteeRepo: Repository<Mentee>
+  ) {}
 
-  constructor() {
-    this.reminderRepsitory = dataSource.getRepository(MenteeReminder)
-    this.menteeRepository = dataSource.getRepository(Mentee)
-  }
-
-  public async scheduleNewReminders(): Promise<{
+  async processReminders(): Promise<{
     statusCode: number
     message: string
   }> {
-    // if (!this.isLastDayOfMonth()) {
-    //   console.log('Not the last day of the month')
-    //   return { statusCode: 200, message: 'Not the last day of the month' }
-    // }
-
-    const queryRunner = dataSource.createQueryRunner()
-    await queryRunner.connect()
-
+    // Schedule new reminders
     try {
-      await queryRunner.startTransaction()
+      await this.scheduleNewReminder()
 
-      const eligibileMentees = await this.menteeRepository
-        .createQueryBuilder('m')
-        .select(['m.uuid AS menteeId'])
-        .where('m.state = :state', { state: MenteeApplicationStatus.APPROVED })
-        .andWhere((qb) => {
-          const subQuery = qb
-            .subQuery()
-            .select('r.menteeId')
-            .from(MenteeReminder, 'r')
-            .getQuery()
-          return 'm.uuid NOT IN' + subQuery
+      const pendingReminders = await this.reminderRepo
+        .createQueryBuilder('reminder')
+        .leftJoinAndSelect('reminder.mentee', 'mentee')
+        .leftJoinAndSelect('mentee.profile', 'profile')
+        .where('reminder.remindersSent <= :maxReminders', { maxReminders: 6 })
+        .andWhere('reminder.status != :status', {
+          status: ReminderStatus.COMPLETED
         })
-        .getRawMany()
-
-      console.log('eligible mentees', eligibileMentees)
-
-      if (eligibileMentees.length === 0) {
-        return { statusCode: 200, message: 'No mentees to schedule' }
-      }
-
-      for (const mentee of eligibileMentees) {
-        if (!mentee.menteeid) {
-          continue
-        }
-        const reminder = new MenteeReminder(mentee.menteeid)
-        console.log('Before Scheduled', reminder)
-        reminder.status = ReminderStatus.SCHEDULED
-        reminder.nextReminderDue = calculateNextReminderDate()
-        console.log('After Schedules', reminder)
-        await this.reminderRepsitory.save(reminder)
-      }
-      await queryRunner.commitTransaction()
-      return { statusCode: 200, message: 'Reminders scheduled successfully' }
-    } catch (error) {
-      await queryRunner.rollbackTransaction()
-      console.log('Error scheduling reminders', error)
-      return { statusCode: 500, message: 'Error scheduling reminders' }
-    } finally {
-      await queryRunner.release()
-    }
-  }
-
-  public async processReminders(): Promise<{
-    statusCode: number
-    message: string
-  }> {
-    // if (!this.isLastDayOfMonth()) {
-    //   console.log('Not the last day of the month')
-    //   return { statusCode: 200, message: 'Not the last day of the month' }
-    // }
-
-    if (this.processingLock)
-      return { statusCode: 429, message: 'Processing in progress' }
-
-    try {
-      this.processingLock = true
-      const pendingReminders = await this.getScheduledReminders()
-
-      console.log('Pending reminders', pendingReminders)
+        .andWhere(
+          "(reminder.lastSentDate IS NULL OR DATE_PART('month', reminder.lastSentDate) != DATE_PART('month', CURRENT_DATE))"
+        )
+        .getMany()
 
       if (pendingReminders.length === 0) {
-        return { statusCode: 200, message: 'No reminders to process' }
+        return {
+          statusCode: 200,
+          message: 'No reminders to process'
+        }
       }
 
       for (const reminder of pendingReminders) {
-        await this.processReminderWithRetry(reminder)
+        try {
+          reminder.status = ReminderStatus.SENDING
+          await this.reminderRepo.save(reminder)
+
+          // Send email
+          const emailContent = getReminderEmailContent(
+            reminder.mentee.profile.first_name
+          )
+          await sendEmail(
+            reminder.mentee.profile.primary_email,
+            emailContent.subject,
+            emailContent.message
+          )
+
+          // Update reminder status
+          reminder.remindersSent += 1
+          reminder.lastSentDate = new Date()
+          reminder.status =
+            reminder.remindersSent >= 6
+              ? ReminderStatus.COMPLETED
+              : ReminderStatus.SCHEDULED
+
+          await this.reminderRepo.save(reminder)
+        } catch (error) {
+          reminder.status = ReminderStatus.FAILED
+          await this.reminderRepo.save(reminder)
+          console.error(
+            `Failed to process reminder for mentee ${reminder.mentee.uuid}:`,
+            error
+          )
+        }
       }
 
-      return { statusCode: 200, message: 'Reminders processed' }
+      return {
+        statusCode: 200,
+        message: `Processed ${pendingReminders.length} reminders`
+      }
     } catch (error) {
-      return { statusCode: 500, message: 'Error processing reminders' }
-    } finally {
-      this.processingLock = false
+      console.error('Error processing reminders:', error)
+      return {
+        statusCode: 500,
+        message: 'Failed to process reminders'
+      }
     }
   }
 
-  private async processReminderWithRetry(
-    reminder: MenteeReminder
-  ): Promise<void> {
-    const queryRunner = dataSource.createQueryRunner()
-    await queryRunner.connect()
-
-    console.log('Processing reminder', reminder)
-
-    try {
-      await queryRunner.startTransaction()
-
-      const mentee = await this.menteeRepository
-        .createQueryBuilder('m')
-        .leftJoinAndSelect('m.profile', 'p')
-        .where('m.uuid = :menteeId', { menteeId: reminder.menteeId })
-        .getOne()
-
-      if (!mentee?.profile) {
-        throw new Error('Mentee or Profile not found')
-      }
-
-      // Send Email
-
-      // if (reminder.lastReminderSentAt?.getMonth() === new Date().getMonth()) {
-      //   console.log('Reminder already sent this month')
-      //   return
-      // }
-
-      reminder.status = ReminderStatus.SENDING
-
-      await this.reminderRepsitory.save(reminder)
-
-      const emailContent = getReminderEmailContent(mentee.profile.first_name)
-      await sendEmail(
-        mentee.profile.primary_email,
-        emailContent.subject,
-        emailContent.message
-      )
-
-      // Update Reminder
-      reminder.status = ReminderStatus.SENT
-      reminder.remindersSent += 1
-      reminder.lastReminderSentAt = new Date()
-      reminder.retryCount = 0
-      reminder.lastErrorMessage = null
-
-      if (reminder.remindersSent <= this.MAX_REMINDERS) {
-        reminder.status = ReminderStatus.SCHEDULED
-      }
-
-      if (reminder.remindersSent === 1) {
-        reminder.firstReminderSentAt = new Date()
-      }
-
-      if (reminder.remindersSent >= this.MAX_REMINDERS) {
-        reminder.isComplete = true
-      } else {
-        reminder.nextReminderDue = calculateNextReminderDate()
-      }
-
-      await queryRunner.manager.update(
-        Mentee,
-        { uuid: reminder.menteeId },
-        { last_monthlycheck_reminder_date: new Date() }
-      )
-
-      await this.reminderRepsitory.save(reminder)
-
-      await queryRunner.commitTransaction()
-    } catch (error) {
-      await queryRunner.rollbackTransaction()
-      await this.handleReminderError(reminder, error as Error)
-    } finally {
-      await queryRunner.release()
-    }
-  }
-
-  private async handleReminderError(
-    reminder: MenteeReminder,
-    error: Error
-  ): Promise<void> {
-    reminder.status = ReminderStatus.FAILED
-    reminder.retryCount += 1
-    reminder.lastErrorMessage = error.message
-
-    if (reminder.retryCount <= this.MAX_RETRIES) {
-      const backoffMinutes = Math.pow(2, reminder.retryCount) * 5
-      reminder.nextRetryAt = new Date(Date.now() + backoffMinutes * 60 * 1000)
-      await this.reminderRepsitory.save(reminder)
-    }
-  }
-
-  private async getScheduledReminders(): Promise<MenteeReminder[]> {
-    return await this.reminderRepsitory
-      .createQueryBuilder('reminder')
-      .where('reminder.isComplete = :isComplete', { isComplete: false })
-      .andWhere('reminder.nextReminderDue >= :now', { now: new Date() })
-      .andWhere('reminder.retryCount <= :maxRetries', {
-        maxRetries: this.MAX_RETRIES
+  private async scheduleNewReminder(): Promise<void> {
+    const newMentees = await this.menteeRepo
+      .createQueryBuilder('mentee')
+      .leftJoinAndSelect('mentee.profile', 'profile')
+      .where('mentee.state = :state', {
+        state: MenteeApplicationStatus.APPROVED
       })
-      .orderBy('reminder.nextRetryAt', 'ASC')
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('reminder.mentee.uuid')
+          .from(MonthlyReminder, 'reminder')
+          .getQuery()
+        return 'mentee.uuid NOT IN ' + subQuery
+      })
       .getMany()
+
+    if (newMentees.length > 0) {
+      const reminders = newMentees.map((mentee) =>
+        this.reminderRepo.create({
+          mentee,
+          remindersSent: 0,
+          status: ReminderStatus.SCHEDULED,
+          lastSentDate: null
+        })
+      )
+
+      await this.reminderRepo.save(reminders)
+      console.log(`Scheduled ${reminders.length} new reminders`)
+    }
   }
 }

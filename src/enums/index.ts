@@ -31,10 +31,8 @@ export enum StatusUpdatedBy {
 export enum ReminderStatus {
   PENDING = 'pending',
   SENDING = 'sending',
-  COMPLETE = 'complete',
+  COMPLETED = 'completed',
   FAILED = 'failed',
-  DONE = 'done',
-  SCHEDULED = 'scheduled',
   SENT = 'sent',
-  WAITING = 'waiting'
+  SCHEDULED = 'scheduled'
 }
