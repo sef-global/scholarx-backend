@@ -19,6 +19,10 @@ export class MonthlyReminderService {
     try {
       await this.scheduleNewReminder()
 
+      const today = new Date()
+      const todayDateString = today.toDateString()
+      console.log(todayDateString)
+
       const pendingReminders = await this.reminderRepo
         .createQueryBuilder('reminder')
         .leftJoinAndSelect('reminder.mentee', 'mentee')
@@ -39,7 +43,23 @@ export class MonthlyReminderService {
         }
       }
 
-      for (const reminder of pendingReminders) {
+      const remindersToSend = pendingReminders.filter(
+        (reminder) =>
+          reminder.nextReminderDate &&
+          new Date(reminder?.nextReminderDate).toDateString() ===
+            todayDateString
+      )
+
+      console.log(remindersToSend)
+
+      if (remindersToSend.length === 0) {
+        return {
+          statusCode: 200,
+          message: 'No reminders to process today'
+        }
+      }
+
+      for (const reminder of remindersToSend) {
         try {
           reminder.status = ReminderStatus.SENDING
           await this.reminderRepo.save(reminder)
@@ -48,6 +68,7 @@ export class MonthlyReminderService {
           const emailContent = getReminderEmailContent(
             reminder.mentee.profile.first_name
           )
+
           await sendEmail(
             reminder.mentee.profile.primary_email,
             emailContent.subject,
@@ -62,6 +83,13 @@ export class MonthlyReminderService {
               ? ReminderStatus.COMPLETED
               : ReminderStatus.SCHEDULED
 
+          // Calculate next reminder date if not completed
+
+          if (reminder.status !== ReminderStatus.COMPLETED) {
+            reminder.nextReminderDate = await this.calculateNextReminderDate(
+              today
+            )
+          }
           await this.reminderRepo.save(reminder)
         } catch (error) {
           reminder.status = ReminderStatus.FAILED
@@ -86,7 +114,15 @@ export class MonthlyReminderService {
     }
   }
 
+  private async calculateNextReminderDate(currentDate: Date): Promise<Date> {
+    const nextDate = new Date(currentDate)
+    nextDate.setDate(nextDate.getDate() + 25)
+    return nextDate
+  }
+
   private async scheduleNewReminder(): Promise<void> {
+    const today = new Date()
+
     const newMentees = await this.menteeRepo
       .createQueryBuilder('mentee')
       .leftJoinAndSelect('mentee.profile', 'profile')
@@ -103,13 +139,20 @@ export class MonthlyReminderService {
       })
       .getMany()
 
+    console.log(newMentees)
+
     if (newMentees.length > 0) {
-      const reminders = newMentees.map((mentee) =>
-        this.reminderRepo.create({
-          mentee,
-          remindersSent: 0,
-          status: ReminderStatus.SCHEDULED,
-          lastSentDate: null
+      const reminders = await Promise.all(
+        newMentees.map(async (mentee) => {
+          const reminder = new MonthlyReminder()
+          reminder.mentee = mentee
+          reminder.remindersSent = 0
+          reminder.status = ReminderStatus.SCHEDULED
+          reminder.lastSentDate = null
+          reminder.nextReminderDate = await this.calculateNextReminderDate(
+            today
+          )
+          return reminder
         })
       )
 

@@ -22,5 +22,8 @@ export class MonthlyReminder extends BaseEntity {
   remindersSent!: number
 
   @Column({ type: 'timestamp', nullable: true })
+  nextReminderDate!: Date | null
+
+  @Column({ type: 'timestamp', nullable: true })
   lastSentDate!: Date | null
 }

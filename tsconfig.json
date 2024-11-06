@@ -8,5 +8,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts", "test/", "jest.config.ts","mocks.ts"]
+  "include": ["src/**/*.ts", "test/", "jest.config.ts","mocks.ts", "src/migrations/1730893653817-MonthlyChecking.ts"]
 }
