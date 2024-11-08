@@ -17,7 +17,7 @@
     "migration:run": "npm run typeorm:db -- migration:run",
     "migration:revert": "npm run typeorm:db -- migration:revert",
     "sync:db": "npm run typeorm:db schema:sync",
-    "seed": "npm run build && node dist/src/scripts/seed-db.js"
+    "seed": "npx ts-node src/scripts/seed-db.ts"
   },
   "author": "",
   "license": "ISC",
