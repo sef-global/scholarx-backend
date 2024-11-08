@@ -111,14 +111,6 @@ export const fetchMonthlyCheckIns = async (
       order: { checkInDate: 'DESC' }
     })
 
-    if (checkIns.length === 0 || !checkIns) {
-      return {
-        statusCode: 404,
-        checkIns: [],
-        message: 'No check-ins found'
-      }
-    }
-
     return {
       statusCode: 200,
       checkIns,
