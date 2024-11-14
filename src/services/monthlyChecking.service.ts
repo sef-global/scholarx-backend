@@ -73,7 +73,7 @@ export const addMonthlyCheckInByMentee = async (
       title,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
-      mediaContentLinks,
+      mediaContentLinks: mediaContentLinks || null,
       checkInDate: new Date(),
       mentee
     })

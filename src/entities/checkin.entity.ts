@@ -13,7 +13,7 @@ class MonthlyCheckIn extends BaseEntity {
   @Column({ type: 'text' })
   progressTowardsGoals: string
 
-  @Column({ type: 'json' })
+  @Column({ type: 'json', nullable: true })
   mediaContentLinks: string[]
 
   @Column({ type: 'text', nullable: true })
