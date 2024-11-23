@@ -122,58 +122,6 @@ To enable Email functionality in this project, follow these steps:
 3. Provide the app name as "scholarx" and click create.
 4. Copy the given password and paste it without spaces for SMTP_PASSWORD property in .env file.
 5. Enter your email for SMTP_EMAIL property in .env file.
-
-## Code Quality
-
-We strive to maintain a high code quality. You can check for linting issues by running:
-
-```bash
-npm run lint
-```
-
-And to automatically format the code, use:
-
-```bash
-npm run format
-```
-
-## Project Structure
-
-Here's an overview of the project structure:
-
-```
-scholarx-backend/
-├── src/
-│   ├── controllers/
-│   │   └── index.ts
-│   ├── middleware/
-│   │   └── index.ts
-│   ├── routes/
-│   │   └── index.ts
-│   ├── services/
-│   │   └── auth.service.ts
-│   ├── entities/
-│   │   └── profile.entity.ts
-│   ├── index.ts
-│   └── types.ts
-├── .env.example
-├── .gitignore
-├── package.json
-├── tsconfig.json
-└── README.md
-```
-
-- `src/controllers/`: Contains the controller classes that handle incoming requests.
-- `src/middleware/`: Contains the middleware functions used to modify requests and responses.
-- `src/routes/`: Contains the route definitions for the application.
-- `src/services/`: Contains the service definitions for the application.
-- `src/entities/`: Contains the entity models for the application.
-- `src/index.ts`: Creates and configures the Express application and starts the server.
-- `src/types.ts`: Defines custom types for the application.
-- `.env.example`: An example configuration file for environment variables.
-- `.gitignore`: A list of files and directories to be ignored by Git.
-- `package.json`: Contains information about the project and its dependencies.
-- `tsconfig.json`: Configuration file for the TypeScript compiler.
      
 ## Setting up Google Authentication
 
@@ -280,3 +228,41 @@ We appreciate your interest in ScholarX. Happy contributing! If you have any que
 7. In setting section verify the LinkedIn Page and generate URL.
 
 8. Verify it from your account.
+
+## Project Structure
+
+Here's an overview of the project structure:
+
+```
+scholarx-backend/
+├── src/
+│   ├── controllers/
+│   │   └── index.ts
+│   ├── middleware/
+│   │   └── index.ts
+│   ├── routes/
+│   │   └── index.ts
+│   ├── services/
+│   │   └── auth.service.ts
+│   ├── entities/
+│   │   └── profile.entity.ts
+│   ├── index.ts
+│   └── types.ts
+├── .env.example
+├── .gitignore
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+- `src/controllers/`: Contains the controller classes that handle incoming requests.
+- `src/middleware/`: Contains the middleware functions used to modify requests and responses.
+- `src/routes/`: Contains the route definitions for the application.
+- `src/services/`: Contains the service definitions for the application.
+- `src/entities/`: Contains the entity models for the application.
+- `src/index.ts`: Creates and configures the Express application and starts the server.
+- `src/types.ts`: Defines custom types for the application.
+- `.env.example`: An example configuration file for environment variables.
+- `.gitignore`: A list of files and directories to be ignored by Git.
+- `package.json`: Contains information about the project and its dependencies.
+- `tsconfig.json`: Configuration file for the TypeScript compiler.
