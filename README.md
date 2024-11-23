@@ -18,10 +18,11 @@ We welcome contributions to make ScholarX even better! Feel free to send us a pu
 
 ## Prerequisites
 
-Before you can start using this project, make sure you have the following installed on your machine:
+Before you can start using this project, make sure you have the following installed on your local machine:
 
 - Node.js (version 18 or later)
 - npm (version 9 or later)
+- PostgreSQL (version 15 or later)
 
 ## Getting Started
 
@@ -39,13 +40,13 @@ Follow these steps to get started with the ScholarX backend:
    npm install
    ```
 
-3. Copy the `.env` file:
+3. Copy `.env.example` file as `.env`:
 
    ```bash
-   cp .env.example .env
+   cp .env.example .env  #For Linux and macos
    ```
 
-4. Replace the environment variables in the newly created `.env` file with your configuration.
+4. Replace the environment variables in the newly created `.env` file with your configurations.
 
 5. Start the server:
 
@@ -61,62 +62,68 @@ Follow these steps to get started with the ScholarX backend:
 
 7. Open your web browser and navigate to `http://localhost:${server_port}` to access the running server.
 
-## Docker Setup
+Database Configuration and Migrations
+-------------------------------------
 
-If you prefer to use Docker for development, follow these steps:
+### Setting up the Database
 
-1. Ensure Docker and Docker Compose are installed on your machine. You can download them from here https://www.docker.com/products/docker-desktop/.
+1.  Ensure you have PostgreSQL installed on your machine. If not, you can download it from [here](https://www.postgresql.org/download/).
 
-2. Build the Docker images:
+2.  Create a new PostgreSQL database:
 
-`docker-compose build`
+   ```bash
+   CREATE DATABASE scholarx;
+   ```
+3.  Update your `.env` file with your database configuration:
 
-3. Start the Docker containers:
+    ```bash
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_USER=your_db_user
+    DB_PASSWORD=your_db_password
+    DB_NAME=scholarx
+	```
+4.  Synchronize the database schema:
 
-`docker-compose up`
+    ```bash
+     npm run sync:db
+     ```
+    This command synchronizes your database schema with the current state of the entities on your project.
 
-4. The application and its services are now running in Docker containers. You can access the application at `http://localhost:${SERVER_PORT}`, where `SERVER_PORT` is the port number specified in your `.env` file.
+4.  Seed the database
 
-5. To stop the Docker containers, use the following commnd:
+     ```bash
+     npm run seed
+     ```
+    This command builds the project and runs the database seeding script located in `dist/src/scripts/seed-db.js`.
 
-`docker-compose down`
+### Example Migration Commands
 
-Please note that the Docker Compose setup assumes that you have a `.env` file in your project root. You can create one by copying the `.env.example` file:
+-   To generate a new migration named `AddUserTable`:
 
-`cp .env.example .env`
+    
+     ```bash
+     npm run migration:generate -- -n AddUserTable
+     ```
 
-Then, replace the environment variables in the newly created `.env` file with your configuration.
+-   To run all pending migrations:
 
-The environment directive sets environment variables inside the Docker container. These variables are used to configure the PostgreSQL server. The values for `${DB_USER}`, `${DB_PASSWORD}`, and `${DB_NAME}` should be specified in your .env file.
 
-Remember to replace `${SERVER_PORT}` with the actual port number if it's a fixed value. If it's specified in the `.env` file, you can leave it as is.
+     ```bash
+     npm run migration:run
+     ```
 
-In the `docker-compose.yml` file, we also have a `db` service for the PostgreSQL database:
+## Setting up SMTP
 
-```dockercompose
-db:
-  image: postgres:15
-  ports:
-    - "5432:5432"
-  environment:
-    - POSTGRES_USER=${DB_USER}
-    - POSTGRES_PASSWORD=${DB_PASSWORD}
-    - POSTGRES_DB=${DB_NAME}
-```
+To enable Email functionality in this project, follow these steps:
 
-This service uses the official postgres:15 Docker image. The ports directive maps port 5432 inside the Docker container to port 5432 on your host machine, allowing you to connect to the PostgreSQL server at `localhost:5432`.
+1. Go to your Google Account. (Make sure to enable 2-step verification)
+2. Go to App Passwords section.
+3. Provide the app name as "scholarx" and click create.
+4. Copy the given password and paste it without spaces for SMTP_PASSWORD property in .env file.
+5. Enter your email for SMTP_EMAIL property in .env file.
 
-Now, you can connect to the PostgreSQL server running inside the Docker container using a database client. Use `localhost:5432` as the server address, and the `${DB_USER}`, `${DB_PASSWORD}`, and `${DB_NAME}` values from your `.env` file for the username, password, and database name, respectively.
-
-### Note
-
-If you have a local PostgreSQL server running on port 5432, you will need to stop it before starting the Docker container, or change the port mapping to avoid a conflict.
-
-Remember to replace `${SERVER_PORT}` with the actual port number if it's a fixed value. If it's specified in the `.env` file, you can leave it as is.
-
----
-
-#### Code Quality
+## Code Quality
 
 We strive to maintain a high code quality. You can check for linting issues by running:
 
@@ -167,99 +174,6 @@ scholarx-backend/
 - `.gitignore`: A list of files and directories to be ignored by Git.
 - `package.json`: Contains information about the project and its dependencies.
 - `tsconfig.json`: Configuration file for the TypeScript compiler.
-
-Database Configuration and Migration
-------------------------------------
-
-### Setting up the Database
-
-1.  Ensure you have PostgreSQL installed on your machine. If not, you can download it from [here](https://www.postgresql.org/download/).
-
-2.  Create a new PostgreSQL database:
-
-   ```bash
-   CREATE DATABASE scholarx;
-   ```
-	
-
-3.  Update your `.env` file with your database configuration:
-
-    ```bash
-    DB_HOST=localhost
-    DB_PORT=5432
-    DB_USER=your_db_user
-    DB_PASSWORD=your_db_password
-    DB_NAME=scholarx
-	```
-
-### Running Migrations and Seeding the Database
-
-#### Migration Commands
-
-1.  **Generate a new migration**:
-
-    
-    ```bash
-    npm run migration:generate -- -n MigrationName
-    ```
-
-    This command generates a new migration file with the specified name.
-
-2.  **Run migrations**:
-
-    
-     ```bash
-     npm run migration:run
-     ```
-
-    This command runs all pending migrations.
-
-3.  **Synchronize the database schema**:
-
-    
-     ```bash
-     npm run sync:db
-     ```
-
-    This command synchronizes your database schema with the current state of your entities.
-
-4.  **Seed the database**:
-
-    
-     ```bash
-     npm run seed
-     ```
-
-    This command builds the project and runs the database seeding script located in `dist/src/scripts/seed-db.js`.
-
-### Example Migration and Seeding Commands
-
--   To generate a new migration named `AddUserTable`:
-
-    
-     ```bash
-     npm run migration:generate -- -n AddUserTable
-     ```
-
--   To run all pending migrations:
-
-
-     ```bash
-     npm run migration:run
-     ```
-
--   To synchronize the database schema:
-
-     ```bash
-     npm run sync:db
-     ```
-
--   To seed the database:
-
-   
-     ```bash
-     npm run seed
-     ```
      
 ## Setting up Google Authentication
 
@@ -366,11 +280,3 @@ We appreciate your interest in ScholarX. Happy contributing! If you have any que
 7. In setting section verify the LinkedIn Page and generate URL.
 
 8. Verify it from your account.
-
-## Create dummy data
-
-1. Run the seeding script:
-
-   ```bash
-   npm run seed
-   ```
