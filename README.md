@@ -249,8 +249,6 @@ We appreciate your interest in ScholarX. Happy contributing! If you have any que
 
 8. Verify it from your account.
 
-
-
 ## Project Structure
 
 Here's an overview of the project structure:
