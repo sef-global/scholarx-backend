@@ -14,9 +14,14 @@ RUN npm install
 # (assuming your app is in the "src" directory of your project)
 COPY . .
 
+# Copy the init-db.sh script to the working directory
+COPY init-db.sh /app/src/init-db.sh
+
+# Make the init-db.sh script executable
+RUN chmod +x /app/src/init-db.sh
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
 
 # Run the app when the container launches
-CMD [ "npm", "start" ]
 
+CMD [ "sh", "init-db.sh"]
