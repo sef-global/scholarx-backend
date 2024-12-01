@@ -6,7 +6,6 @@ echo "Database is ready. Running migrations..."
 
 # Run the migrations
 npm run sync:db
-npm run migration:generate
 npm run seed
 
 echo "Migrations complete. Database is ready."

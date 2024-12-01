@@ -62,6 +62,26 @@ Follow these steps to get started with the ScholarX backend:
 
 7. Open your web browser and navigate to `http://localhost:${server_port}` to access the running server.
 
+Docker Setup
+-------------------------------------
+
+You can also run the ScholaX backend using Docker. Follow these setps:
+
+1. Ensure you have Docker and Docker Compose installed on you machine.
+
+2. Build and run the Docker constainers.
+
+```bash
+docker compose up --build
+```
+3. The application will be available at `http://localhost:${server_port}`.
+
+4. To stop the containers, run:
+
+```bash
+docker compose down
+```
+
 Database Configuration and Migrations
 -------------------------------------
 
@@ -228,6 +248,8 @@ We appreciate your interest in ScholarX. Happy contributing! If you have any que
 7. In setting section verify the LinkedIn Page and generate URL.
 
 8. Verify it from your account.
+
+
 
 ## Project Structure
 
