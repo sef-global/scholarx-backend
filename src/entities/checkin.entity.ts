@@ -5,7 +5,7 @@ import Mentee from './mentee.entity'
 @Entity('monthly-check-in')
 class MonthlyCheckIn extends BaseEntity {
   @Column({ type: 'text' })
-  title: string
+  month: string
 
   @Column({ type: 'text' })
   generalUpdatesAndFeedback: string
@@ -33,7 +33,7 @@ class MonthlyCheckIn extends BaseEntity {
   mentee: Mentee
 
   constructor(
-    title: string,
+    month: string,
     generalUpdatesAndFeedback: string,
     progressTowardsGoals: string,
     mediaContentLinks: string[],
@@ -44,7 +44,7 @@ class MonthlyCheckIn extends BaseEntity {
     mentee: Mentee
   ) {
     super()
-    this.title = title
+    this.month = month
     this.generalUpdatesAndFeedback = generalUpdatesAndFeedback
     this.progressTowardsGoals = progressTowardsGoals
     this.mediaContentLinks = mediaContentLinks

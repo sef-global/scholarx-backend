@@ -12,7 +12,7 @@ export const updateMenteeStatusSchema = z.object({
 
 export const postMonthlyCheckInSchema = z.object({
   menteeId: z.string(),
-  title: z.enum([
+  month: z.enum([
     'January',
     'February',
     'March',

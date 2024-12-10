@@ -37,7 +37,7 @@ export interface LinkedInProfile {
 
 export interface MonthlyCheckInResponse {
   uuid: string
-  title: string
+  month: string
   generalUpdatesAndFeedback: string
   progressTowardsGoals: string
   mediaContentLinks: string[]
