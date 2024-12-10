@@ -26,6 +26,8 @@ Before you can start using this project, make sure you have the following instal
 
 ## Getting Started
 
+### **Project setup walkthrough :- https://youtu.be/1STopJMM2nM**
+
 Follow these steps to get started with the ScholarX backend:
 
 1. Clone this repository to your local machine:
