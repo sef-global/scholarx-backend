@@ -15,7 +15,7 @@ export const postMonthlyCheckIn = async (
   try {
     const {
       menteeId,
-      title,
+      month,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks
@@ -23,7 +23,7 @@ export const postMonthlyCheckIn = async (
 
     const newCheckIn = await addMonthlyCheckInByMentee(
       menteeId,
-      title,
+      month,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks
