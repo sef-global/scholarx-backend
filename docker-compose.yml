@@ -22,7 +22,7 @@ services:
       - CLIENT_URL=${CLIENT_URL}
       - IMG_HOST=${IMG_HOST}
       - SMTP_MAIL=${SMTP_MAIL}
-      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
     command: ["sh", "/app/src/init-db.sh"]
   db:
     image: postgres:15
@@ -32,3 +32,8 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
