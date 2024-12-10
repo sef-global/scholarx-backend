@@ -3,7 +3,6 @@ import userRouter from './user/user.route'
 import mentorRouter from './mentor/mentor.route'
 import categoryRouter from './category/category.route'
 import menteeRouter from './mentee/mentee.route'
-import reminderRouter from './remainder/remainder.route'
 
 const adminRouter = express()
 
