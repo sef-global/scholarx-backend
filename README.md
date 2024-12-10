@@ -26,6 +26,8 @@ Before you can start using this project, make sure you have the following instal
 
 ## Getting Started
 
+### **Project setup walkthrough :- https://youtu.be/1STopJMM2nM**
+
 Follow these steps to get started with the ScholarX backend:
 
 1. Clone this repository to your local machine:
@@ -61,6 +63,26 @@ Follow these steps to get started with the ScholarX backend:
    ```
 
 7. Open your web browser and navigate to `http://localhost:${server_port}` to access the running server.
+
+Docker Setup (optional)
+-------------------------------------
+
+Alternatively you can use Docker to run ScholarX. Follow these setps:
+
+1. Ensure you have Docker and Docker Compose installed on you machine.
+
+2. Build and run the Docker containers.
+
+```bash
+docker compose up --build
+```
+3. The application will be available at `http://localhost:${server_port}`.
+
+4. To stop the containers, run:
+
+```bash
+docker compose down
+```
 
 Database Configuration and Migrations
 -------------------------------------
