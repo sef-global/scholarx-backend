@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import type { Express } from 'express'
+import type { Express, NextFunction, Request, Response } from 'express'
 import express from 'express'
 import fs from 'fs'
 import passport from 'passport'
@@ -18,6 +18,7 @@ import mentorRouter from './routes/mentor/mentor.route'
 import profileRouter from './routes/profile/profile.route'
 import path from 'path'
 import countryRouter from './routes/country/country.route'
+import { errorHandler } from './ErrorHandler'
 
 const app = express()
 const staticFolder = 'uploads'
@@ -47,6 +48,10 @@ app.use('/api/mentees', menteeRouter)
 app.use('/api/categories', categoryRouter)
 app.use('/api/emails', emailRouter)
 app.use('/api/countries', countryRouter)
+
+app.use(async (err: Error, req: Request, res: Response, next: NextFunction) => {
+  await errorHandler.handleError(err, res)
+})
 
 if (!fs.existsSync(staticFolder)) {
   fs.mkdirSync(staticFolder, { recursive: true })

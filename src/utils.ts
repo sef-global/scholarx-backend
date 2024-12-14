@@ -1,6 +1,6 @@
 import { JWT_SECRET, CLIENT_URL } from './configs/envConfig'
 import jwt from 'jsonwebtoken'
-import type { Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 import type Mentor from './entities/mentor.entity'
 import path from 'path'
 import multer from 'multer'
@@ -11,6 +11,7 @@ import { randomUUID } from 'crypto'
 import { certificatesDir } from './app'
 import type Mentee from './entities/mentee.entity'
 import { type ZodError } from 'zod'
+import { type ApiResponse } from './types'
 
 export const signAndSetCookie = (res: Response, uuid: string): void => {
   const token = jwt.sign({ userId: uuid }, JWT_SECRET ?? '')
@@ -311,3 +312,15 @@ export const formatValidationErrors = (
     message: `${issue.path.join('.')} is ${issue.message}`
   }))
 }
+
+export const asyncHandler =
+  (
+    fn: (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) => Promise<ApiResponse<any>>
+  ) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next)
+  }
