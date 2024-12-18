@@ -47,7 +47,7 @@ export const addFeedbackByMentor = async (
 
 export const addMonthlyCheckInByMentee = async (
   menteeId: string,
-  title: string,
+  month: string,
   generalUpdatesAndFeedback: string,
   progressTowardsGoals: string,
   mediaContentLinks: string[]
@@ -70,7 +70,7 @@ export const addMonthlyCheckInByMentee = async (
     }
 
     const newCheckIn = checkInRepository.create({
-      title,
+      month,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
       mediaContentLinks: mediaContentLinks || null,
