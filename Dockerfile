@@ -1,6 +1,10 @@
 # Use an official Node.js runtime as the base image
 FROM node:18
 
+
+# Install postgresql-client
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Set the working directory in the Docker container to /app
 WORKDIR /app/src
 

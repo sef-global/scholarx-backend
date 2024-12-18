@@ -47,3 +47,7 @@ export interface MonthlyCheckInResponse {
   checkInDate: Date
   mentee: Mentee
 }
+
+export interface MessageResponse {
+  message: string
+}
