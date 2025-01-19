@@ -147,7 +147,7 @@ export const getEmailContent = async (
           subject: 'Thank you very much for applying to ScholarX',
           message: `Dear ${name},<br /><br />
           Thank you very much for applying to ScholarX. Your application has been received. Our team will soon review your application, and we will keep you posted on the progress via email.
-          Please reach out to us via <a href="mailto:sustainableedufoundation@gmail.com">sustainableedufoundation@gmail.com</a> for any clarifications.`
+          Please reach out to us via <a href="mailto:admin@sefglobal.org">admin@sefglobal.org</a> for any clarifications.`
         }
       case MentorApplicationStatus.APPROVED:
         return {
@@ -190,7 +190,7 @@ export const getEmailContent = async (
         return {
           subject: 'Thank you very much for applying to ScholarX',
           message: `Dear ${name},<br /><br />
-          Thank you very much for applying to ScholarX. Your application has been received. Mentor will soon review your application and we will keep you posted on the progress via email. Until then, read more about student experience <a href="https://medium.com/search?q=scholarx">here</a> and reach out to us via <a href="mailto:sustainableedufoundation@gmail.com">sustainableedufoundation@gmail.com</a> for any clarifications. `
+          Thank you very much for applying to ScholarX. Your application has been received. Mentor will soon review your application and we will keep you posted on the progress via email. Until then, read more about student experience <a href="https://medium.com/search?q=scholarx">here</a> and reach out to us via <a href="mailto:admin@sefglobal.org">admin@sefglobal.org</a> for any clarifications. `
         }
       case MenteeApplicationStatus.APPROVED:
         return {
@@ -281,7 +281,7 @@ export const getMentorNotifyEmailContent = (
     subject: 'New Mentee Application Received',
     message: `Dear ${name},<br /><br />
     We wanted to let you know that a new mentee has applied to be mentored by you through the ScholarX program. Please visit your dashboard to review their application at your earliest convenience.<br /><br />
-    If you have any questions or need assistance, feel free to reach out to us at sustainableedufoundation@gmail.com.
+    If you have any questions or need assistance, feel free to reach out to us at admin@sefglobal.org.
     <br /><br />
     Thank you for your continued support and commitment to the ScholarX program.<br /><br />
     `
