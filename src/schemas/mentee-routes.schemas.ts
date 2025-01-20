@@ -12,7 +12,7 @@ export const updateMenteeStatusSchema = z.object({
 
 export const postMonthlyCheckInSchema = z.object({
   menteeId: z.string(),
-  title: z.enum([
+  month: z.enum([
     'January',
     'February',
     'March',
@@ -32,9 +32,7 @@ export const postMonthlyCheckInSchema = z.object({
   progressTowardsGoals: z
     .string()
     .min(1, 'Please provide a valid progress report'),
-  mediaContentLinks: z
-    .array(z.string())
-    .min(1, 'Please provide at least 1 media content links')
+  mediaContentLinks: z.array(z.string()).optional()
 })
 
 export const addFeedbackMonthlyCheckInSchema = z.object({

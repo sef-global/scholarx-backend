@@ -47,7 +47,7 @@ export const addFeedbackByMentor = async (
 
 export const addMonthlyCheckInByMentee = async (
   menteeId: string,
-  title: string,
+  month: string,
   generalUpdatesAndFeedback: string,
   progressTowardsGoals: string,
   mediaContentLinks: string[]
@@ -70,10 +70,10 @@ export const addMonthlyCheckInByMentee = async (
     }
 
     const newCheckIn = checkInRepository.create({
-      title,
+      month,
       generalUpdatesAndFeedback,
       progressTowardsGoals,
-      mediaContentLinks,
+      mediaContentLinks: mediaContentLinks || null,
       checkInDate: new Date(),
       mentee
     })
@@ -110,14 +110,6 @@ export const fetchMonthlyCheckIns = async (
       relations: ['mentee'],
       order: { checkInDate: 'DESC' }
     })
-
-    if (checkIns.length === 0 || !checkIns) {
-      return {
-        statusCode: 404,
-        checkIns: [],
-        message: 'No check-ins found'
-      }
-    }
 
     return {
       statusCode: 200,

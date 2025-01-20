@@ -18,12 +18,15 @@ We welcome contributions to make ScholarX even better! Feel free to send us a pu
 
 ## Prerequisites
 
-Before you can start using this project, make sure you have the following installed on your machine:
+Before you can start using this project, make sure you have the following installed on your local machine:
 
 - Node.js (version 18 or later)
 - npm (version 9 or later)
+- PostgreSQL (version 15 or later)
 
 ## Getting Started
+
+### **Project setup walkthrough :- https://youtu.be/1STopJMM2nM**
 
 Follow these steps to get started with the ScholarX backend:
 
@@ -39,13 +42,13 @@ Follow these steps to get started with the ScholarX backend:
    npm install
    ```
 
-3. Copy the `.env` file:
+3. Copy `.env.example` file as `.env`:
 
    ```bash
-   cp .env.example .env
+   cp .env.example .env  #For Linux and macos
    ```
 
-4. Replace the environment variables in the newly created `.env` file with your configuration.
+4. Replace the environment variables in the newly created `.env` file with your configurations.
 
 5. Start the server:
 
@@ -61,115 +64,28 @@ Follow these steps to get started with the ScholarX backend:
 
 7. Open your web browser and navigate to `http://localhost:${server_port}` to access the running server.
 
-## Docker Setup
+Docker Setup (optional)
+-------------------------------------
 
-If you prefer to use Docker for development, follow these steps:
+Alternatively you can use Docker to run ScholarX. Follow these setps:
 
-1. Ensure Docker and Docker Compose are installed on your machine. You can download them from here https://www.docker.com/products/docker-desktop/.
+1. Ensure you have Docker and Docker Compose installed on you machine.
 
-2. Build the Docker images:
-
-`docker-compose build`
-
-3. Start the Docker containers:
-
-`docker-compose up`
-
-4. The application and its services are now running in Docker containers. You can access the application at `http://localhost:${SERVER_PORT}`, where `SERVER_PORT` is the port number specified in your `.env` file.
-
-5. To stop the Docker containers, use the following commnd:
-
-`docker-compose down`
-
-Please note that the Docker Compose setup assumes that you have a `.env` file in your project root. You can create one by copying the `.env.example` file:
-
-`cp .env.example .env`
-
-Then, replace the environment variables in the newly created `.env` file with your configuration.
-
-The environment directive sets environment variables inside the Docker container. These variables are used to configure the PostgreSQL server. The values for `${DB_USER}`, `${DB_PASSWORD}`, and `${DB_NAME}` should be specified in your .env file.
-
-Remember to replace `${SERVER_PORT}` with the actual port number if it's a fixed value. If it's specified in the `.env` file, you can leave it as is.
-
-In the `docker-compose.yml` file, we also have a `db` service for the PostgreSQL database:
-
-```dockercompose
-db:
-  image: postgres:15
-  ports:
-    - "5432:5432"
-  environment:
-    - POSTGRES_USER=${DB_USER}
-    - POSTGRES_PASSWORD=${DB_PASSWORD}
-    - POSTGRES_DB=${DB_NAME}
-```
-
-This service uses the official postgres:15 Docker image. The ports directive maps port 5432 inside the Docker container to port 5432 on your host machine, allowing you to connect to the PostgreSQL server at `localhost:5432`.
-
-Now, you can connect to the PostgreSQL server running inside the Docker container using a database client. Use `localhost:5432` as the server address, and the `${DB_USER}`, `${DB_PASSWORD}`, and `${DB_NAME}` values from your `.env` file for the username, password, and database name, respectively.
-
-### Note
-
-If you have a local PostgreSQL server running on port 5432, you will need to stop it before starting the Docker container, or change the port mapping to avoid a conflict.
-
-Remember to replace `${SERVER_PORT}` with the actual port number if it's a fixed value. If it's specified in the `.env` file, you can leave it as is.
-
----
-
-#### Code Quality
-
-We strive to maintain a high code quality. You can check for linting issues by running:
+2. Build and run the Docker containers.
 
 ```bash
-npm run lint
+docker compose up --build
 ```
+3. The application will be available at `http://localhost:${server_port}`.
 
-And to automatically format the code, use:
+4. To stop the containers, run:
 
 ```bash
-npm run format
+docker compose down
 ```
 
-## Project Structure
-
-Here's an overview of the project structure:
-
-```
-scholarx-backend/
-├── src/
-│   ├── controllers/
-│   │   └── index.ts
-│   ├── middleware/
-│   │   └── index.ts
-│   ├── routes/
-│   │   └── index.ts
-│   ├── services/
-│   │   └── auth.service.ts
-│   ├── entities/
-│   │   └── profile.entity.ts
-│   ├── index.ts
-│   └── types.ts
-├── .env.example
-├── .gitignore
-├── package.json
-├── tsconfig.json
-└── README.md
-```
-
-- `src/controllers/`: Contains the controller classes that handle incoming requests.
-- `src/middleware/`: Contains the middleware functions used to modify requests and responses.
-- `src/routes/`: Contains the route definitions for the application.
-- `src/services/`: Contains the service definitions for the application.
-- `src/entities/`: Contains the entity models for the application.
-- `src/index.ts`: Creates and configures the Express application and starts the server.
-- `src/types.ts`: Defines custom types for the application.
-- `.env.example`: An example configuration file for environment variables.
-- `.gitignore`: A list of files and directories to be ignored by Git.
-- `package.json`: Contains information about the project and its dependencies.
-- `tsconfig.json`: Configuration file for the TypeScript compiler.
-
-Database Configuration and Migration
-------------------------------------
+Database Configuration and Migrations
+-------------------------------------
 
 ### Setting up the Database
 
@@ -180,8 +96,6 @@ Database Configuration and Migration
    ```bash
    CREATE DATABASE scholarx;
    ```
-	
-
 3.  Update your `.env` file with your database configuration:
 
     ```bash
@@ -191,48 +105,21 @@ Database Configuration and Migration
     DB_PASSWORD=your_db_password
     DB_NAME=scholarx
 	```
+4.  Synchronize the database schema:
 
-### Running Migrations and Seeding the Database
-
-#### Migration Commands
-
-1.  **Generate a new migration**:
-
-    
     ```bash
-    npm run migration:generate -- -n MigrationName
-    ```
-
-    This command generates a new migration file with the specified name.
-
-2.  **Run migrations**:
-
-    
-     ```bash
-     npm run migration:run
-     ```
-
-    This command runs all pending migrations.
-
-3.  **Synchronize the database schema**:
-
-    
-     ```bash
      npm run sync:db
      ```
+    This command synchronizes your database schema with the current state of the entities on your project.
 
-    This command synchronizes your database schema with the current state of your entities.
+4.  Seed the database
 
-4.  **Seed the database**:
-
-    
      ```bash
      npm run seed
      ```
-
     This command builds the project and runs the database seeding script located in `dist/src/scripts/seed-db.js`.
 
-### Example Migration and Seeding Commands
+### Example Migration Commands
 
 -   To generate a new migration named `AddUserTable`:
 
@@ -248,18 +135,15 @@ Database Configuration and Migration
      npm run migration:run
      ```
 
--   To synchronize the database schema:
+## Setting up SMTP
 
-     ```bash
-     npm run sync:db
-     ```
+To enable Email functionality in this project, follow these steps:
 
--   To seed the database:
-
-   
-     ```bash
-     npm run seed
-     ```
+1. Go to your Google Account. (Make sure to enable 2-step verification)
+2. Go to App Passwords section.
+3. Provide the app name as "scholarx" and click create.
+4. Copy the given password and paste it without spaces for SMTP_PASSWORD property in .env file.
+5. Enter your email for SMTP_EMAIL property in .env file.
      
 ## Setting up Google Authentication
 
@@ -367,10 +251,40 @@ We appreciate your interest in ScholarX. Happy contributing! If you have any que
 
 8. Verify it from your account.
 
-## Create dummy data
+## Project Structure
 
-1. Run the seeding script:
+Here's an overview of the project structure:
 
-   ```bash
-   npm run seed
-   ```
+```
+scholarx-backend/
+├── src/
+│   ├── controllers/
+│   │   └── index.ts
+│   ├── middleware/
+│   │   └── index.ts
+│   ├── routes/
+│   │   └── index.ts
+│   ├── services/
+│   │   └── auth.service.ts
+│   ├── entities/
+│   │   └── profile.entity.ts
+│   ├── index.ts
+│   └── types.ts
+├── .env.example
+├── .gitignore
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+- `src/controllers/`: Contains the controller classes that handle incoming requests.
+- `src/middleware/`: Contains the middleware functions used to modify requests and responses.
+- `src/routes/`: Contains the route definitions for the application.
+- `src/services/`: Contains the service definitions for the application.
+- `src/entities/`: Contains the entity models for the application.
+- `src/index.ts`: Creates and configures the Express application and starts the server.
+- `src/types.ts`: Defines custom types for the application.
+- `.env.example`: An example configuration file for environment variables.
+- `.gitignore`: A list of files and directories to be ignored by Git.
+- `package.json`: Contains information about the project and its dependencies.
+- `tsconfig.json`: Configuration file for the TypeScript compiler.

@@ -2,7 +2,7 @@ import { dataSource } from '../../configs/dbConfig'
 import { EmailStatusTypes } from '../../enums'
 import nodemailer from 'nodemailer'
 import Email from '../../entities/email.entity'
-import { SMTP_MAIL, SMTP_PASS } from '../../configs/envConfig'
+import { SMTP_MAIL, SMTP_PASSWORD } from '../../configs/envConfig'
 import { loadTemplate } from '../../utils'
 
 const transporter = nodemailer.createTransport({
@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: SMTP_MAIL,
-    pass: SMTP_PASS
+    pass: SMTP_PASSWORD
   }
 })
 
