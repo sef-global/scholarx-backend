@@ -174,7 +174,13 @@ export const getMentor = async (
     const mentorRepository = dataSource.getRepository(Mentor)
     const mentor = await mentorRepository.findOne({
       where: { uuid: mentorId },
-      relations: ['profile', 'category', 'mentees', 'mentees.profile'],
+      relations: [
+        'profile',
+        'category',
+        'mentees',
+        'mentees.profile',
+        'country'
+      ],
       select: ['application', 'uuid', 'availability']
     })
 
@@ -256,7 +262,13 @@ export const getAllMentors = async ({
             state: MentorApplicationStatus.APPROVED
           }
         : { state: MentorApplicationStatus.APPROVED },
-      relations: ['profile', 'category', 'mentees', 'mentees.profile'],
+      relations: [
+        'profile',
+        'category',
+        'mentees',
+        'mentees.profile',
+        'country'
+      ],
       select: ['application', 'uuid', 'availability'],
       order: {
         availability: 'DESC'

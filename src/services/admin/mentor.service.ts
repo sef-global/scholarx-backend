@@ -182,7 +182,7 @@ export const getAllMentors = async ({
 
     const [mentors, count] = await mentorRepository.findAndCount({
       where: status ? { state: status } : {},
-      relations: ['profile', 'category'],
+      relations: ['profile', 'category', 'country'],
       skip: (pageNumber - 1) * pageSize,
       take: pageSize
     })
@@ -257,7 +257,7 @@ export const getMentor = async (
 
     const mentor = await mentorRepository.findOne({
       where: { uuid: mentorId },
-      relations: ['profile', 'category']
+      relations: ['profile', 'category', 'country']
     })
 
     if (!mentor) {
