@@ -33,7 +33,8 @@ Follow these steps to get started with the ScholarX backend:
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/yourusername/scholarx-backend.git
+   git clone https://github.com/sef-global/scholarx-backend.git
+   cd scholarx-backend
    ```
 
 2. Install the dependencies:
