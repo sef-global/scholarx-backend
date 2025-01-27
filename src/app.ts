@@ -18,6 +18,7 @@ import mentorRouter from './routes/mentor/mentor.route'
 import profileRouter from './routes/profile/profile.route'
 import path from 'path'
 import countryRouter from './routes/country/country.route'
+import { ReminderCronService } from './services/cron/reminder.cron'
 
 const app = express()
 const staticFolder = 'uploads'
@@ -73,5 +74,12 @@ export const startServer = async (port: number): Promise<Express> => {
     throw err
   }
 }
+
+const reminderCron = new ReminderCronService()
+reminderCron.start()
+
+process.on('SIGTERM', () => {
+  reminderCron.stop()
+})
 
 export default startServer

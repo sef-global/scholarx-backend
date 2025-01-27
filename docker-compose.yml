@@ -23,6 +23,7 @@ services:
       - IMG_HOST=${IMG_HOST}
       - SMTP_MAIL=${SMTP_MAIL}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - REMINDER_CRON_SCHEDULE=${REMINDER_CRON_SCHEDULE}
     command: ["sh", "/app/src/init-db.sh"]
   db:
     image: postgres:15
@@ -32,3 +33,8 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
