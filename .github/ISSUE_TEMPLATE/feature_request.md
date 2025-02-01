@@ -1,23 +1,19 @@
 ---
 name: Feature Request
 about: Suggest an idea for this project
-title: ''
-labels: ''
+title: '[FEATURE] '
+labels: enhancement
 assignees: ''
-
 ---
 
-**Description:**
-A clear and concise description of the implementation.
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-**Tasks:**
-Add the tasks need to complete to achieve the implementation.
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
 
-**Acceptance Criteria:**
-Implementation should be able to perform these functionalities. 
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
 
-**Additional Information:**
-Add additional information 
-
-**Related Dependencies or References:**
-Add related dependencies and references relating to the implementation.
+**Additional context**
+Add any other context or screenshots about the feature request here.
