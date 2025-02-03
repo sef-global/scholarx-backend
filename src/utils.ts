@@ -214,13 +214,13 @@ export const getEmailContent = async (
         }
       case MenteeApplicationStatus.REJECTED:
         return {
-          subject: 'Thank You for Your Interest in the ScholarX Program',
+          subject: 'Update on Your ScholarX Application',
           message: `Dear ${name},<br /><br />
-          We wanted to take a moment to thank you for your interest in the ScholarX program and for submitting your application. We appreciate the time and effort you put into it.<br /><br />
-          After a careful review of your application and considering all of the candidates, we regret to inform you that we are unable to offer you admission at this time. We received a large number of qualified applicants, and unfortunately, we could only accept a limited number of students.<br /><br />
-          However, we want to encourage you not to be discouraged by this decision. We recognize that the admissions process can be competitive, and we understand that this news may be disappointing. Please know that this does not reflect on your abilities, potential, or value as an individual.<br /><br />
-          We do offer the possibility for you to apply again next time if you meet the eligibility criteria. We invite you to stay engaged with us by attending our events, reaching out to our admissions team, and taking advantage of any opportunities to connect with our current students and alumni.<br /><br />
-          Thank you again for considering our program and for the time you invested in your application. We wish you all the best in your future endeavours.`
+          Thank you for applying to the ScholarX program. <br /><br />
+          Unfortunately, we have made the difficult decision to wind down ScholarX as part of a broader restructuring. As a result, we will not be processing new applications at this time. <br /><br />
+          However, some of our mentors have expressed interest in continuing to support students outside of the program. We will be sharing details about these opportunities in an upcoming post on our social media channels, so we encourage you to stay connected for updates. <br /><br />
+          We truly appreciate your interest in ScholarX, and we hope you still find valuable mentorship opportunities through the community.
+          `
         }
       case MenteeApplicationStatus.COMPLETED: {
         const templatePath = path.join(
@@ -236,13 +236,15 @@ export const getEmailContent = async (
           path.join(certificatesDir, `${uniqueId}_certificate.pdf`)
         )
         return {
-          subject: 'Congratulations! You have completed ScholarX',
+          subject: 'ScholarX Program Update',
           message: `Dear ${name},<br /><br />
-            We are delighted to inform you that you have successfully completed the ScholarX program. We extend our heartfelt congratulations to you!<br /><br />
-            We are proud of your dedication, hard work, and commitment to the program. You have demonstrated exceptional talent, and we are confident that you will go on to achieve great success in your academic and professional pursuits.<br /><br />
-            To commemorate your achievement, we have attached your certificate of completion. Please download and save the certificate for your records.<br /><br />
-            We look forward to seeing the unique perspective and insights you will bring to the program. We believe that you will flourish in this year's edition of ScholarX, and we are thrilled to be a part of your academic or professional journey.<br /><br />
-            Once again, congratulations on your completion! We cannot wait to see the great things you will achieve in the future.`,
+            I hope you’re having a wonderful week. <br /><br />
+            We wanted to share an important update regarding the ScholarX program. As part of a broader restructuring, we have made the difficult decision to wind down the program for the time being. <br /><br />
+            To ensure a smooth transition, you will continue to receive mentoring from your assigned mentor for up to six months from the time you were matched. <br /><br />
+            This decision was not made lightly, but we need to reassess how we approach ScholarX in the future to make it more sustainable. At present, we do not charge for these services, and without a continuous stream of funding, it has become challenging to manage the program on a long-term basis. <br /><br />
+            We truly hope you make the most of your ScholarX experience, as you will be part of the final cohort of this program in its current form. 
+            Thank you for being a part of ScholarX, and we appreciate your understanding. <br /><br />
+            `,
           attachment: [
             {
               filename: `${name}_certificate.pdf`,
